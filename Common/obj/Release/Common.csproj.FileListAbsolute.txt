@@ -1,0 +1,4 @@
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\bin\Release\Common.dll
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\bin\Release\Common.pdb
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\obj\Release\Common.dll
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\obj\Release\Common.pdb

@@ -1,0 +1,6 @@
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\FrameWork\bin\Release\FrameWork.dll
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\FrameWork\bin\Release\FrameWork.pdb
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\FrameWork\bin\Release\Newtonsoft.Json.dll
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\FrameWork\obj\Release\FrameWork.csprojResolveAssemblyReference.cache
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\FrameWork\obj\Release\FrameWork.dll
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\FrameWork\obj\Release\FrameWork.pdb

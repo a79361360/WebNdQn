@@ -1,0 +1,7 @@
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\BLL\bin\Debug\BLL.dll
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\BLL\bin\Debug\BLL.pdb
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\BLL\bin\Debug\Common.dll
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\BLL\bin\Debug\Common.pdb
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\BLL\obj\Debug\BLL.csprojResolveAssemblyReference.cache
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\BLL\obj\Debug\BLL.dll
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\BLL\obj\Debug\BLL.pdb

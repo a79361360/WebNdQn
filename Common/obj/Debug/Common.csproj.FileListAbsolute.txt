@@ -1,0 +1,6 @@
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\bin\Debug\Common.dll
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\bin\Debug\Common.pdb
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\obj\Debug\Common.dll
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\obj\Debug\Common.pdb
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\bin\Debug\MySql.Data.dll
+G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\obj\Debug\Common.csprojResolveAssemblyReference.cache
