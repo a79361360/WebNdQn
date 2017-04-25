@@ -38,5 +38,10 @@ namespace WebNdQn.Controllers
 
             return View();
         }
+
+        public ActionResult ShareWeixi() {
+            string test = Request["test"].ToString();
+            return JsonFormat(new ExtJson { success = true, msg = test });
+        }
     }
 }
