@@ -43,5 +43,60 @@ namespace WebNdQn.Controllers
             string test = Request["test"].ToString();
             return JsonFormat(new ExtJson { success = true, msg = test });
         }
+        public JavaScriptResult TestShare()
+        {
+            long timestamp = ConvertDateTimeInt(DateTime.Now);
+            string javastr = "wx.config({";
+            javastr += "debug: false,";
+            javastr += "appId: 'wxf8b4f85f3a794e77',";
+            javastr += "timestamp: 1493132657,";
+            javastr += "nonceStr: '3u26tVwtjaA6y8Bf',";
+            javastr += "signature: '5c14c41cd082f9bb8853475c8b9c1e8f97698ebe',";
+            javastr += "jsApiList: [";
+            javastr += "'checkJsApi',";
+            javastr += "'onMenuShareTimeline',";
+            javastr += "'onMenuShareAppMessage',";
+            javastr += "'onMenuShareQQ',";
+            javastr += "'onMenuShareWeibo',";
+            javastr += "'onMenuShareQZone',";
+            javastr += "'hideMenuItems',";
+            javastr += "'showMenuItems',";
+            javastr += "'hideAllNonBaseMenuItem',";
+            javastr += "'showAllNonBaseMenuItem',";
+            javastr += "'translateVoice',";
+            javastr += "'startRecord',";
+            javastr += "'stopRecord',";
+            javastr += "'onVoiceRecordEnd',";
+            javastr += "'playVoice',";
+            javastr += "'onVoicePlayEnd',";
+            javastr += "'pauseVoice',";
+            javastr += "'stopVoice',";
+            javastr += "'uploadVoice',";
+            javastr += "'downloadVoice',";
+            javastr += "'chooseImage',";
+            javastr += "'previewImage',";
+            javastr += "'uploadImage',";
+            javastr += "'downloadImage',";
+            javastr += "'getNetworkType',";
+            javastr += "'openLocation',";
+            javastr += "'getLocation',";
+            javastr += "'hideOptionMenu',";
+            javastr += "'showOptionMenu',";
+            javastr += "'closeWindow',";
+            javastr += "'scanQRCode',";
+            javastr += "'chooseWXPay',";
+            javastr += "'openProductSpecificView',";
+            javastr += "'addCard',";
+            javastr += "'chooseCard',";
+            javastr += "'openCard'";
+            javastr += "]";
+            javastr += "});";
+            return JavaScript(javastr);
+        }
+        public int ConvertDateTimeInt(System.DateTime time)
+        {
+            System.DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));
+            return (int)(time - startTime).TotalSeconds;
+        }
     }
 }

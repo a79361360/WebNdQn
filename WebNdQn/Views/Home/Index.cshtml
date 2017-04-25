@@ -1,6 +1,7 @@
 ﻿<title>Home</title>
 <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js" type="text/javascript"></script>
 <script type="text/javascript">
     $(function () {
         $("#btn").bind("click", function () {
@@ -53,612 +54,89 @@
                 <span id="btn" class="btn_1"></span>
             </div>
     </form>
+    <button class="btn btn_primary" id="onMenuShareAppMessage">onMenuShareAppMessage</button>
 </div>
-
-
 <script type="text/javascript">
-    @*/**!
- * 微信内置浏览器的Javascript API，功能包括：
- *
- * 1、分享到微信朋友圈
- * 2、分享给微信好友
- * 3、分享到腾讯微博
- * 4、新的分享接口，包含朋友圈、好友、微博的分享（for iOS）
- * 5、隐藏/显示右上角的菜单入口
- * 6、隐藏/显示底部浏览器工具栏
- * 7、获取当前的网络状态
- * 8、调起微信客户端的图片播放组件
- * 9、关闭公众平台Web页面
- * 10、判断当前网页是否在微信内置浏览器中打开
- * 11、增加打开扫描二维码
- * 12、支持WeixinApi的错误监控
- * 13、检测应用程序是否已经安装（需要官方开通权限）
- *
- * @author zhaoxianlie(http://www.baidufe.com)
- */*@
-    var WeixinApi = (function () {
-
-        "use strict";
-
-        @*/**
-         * 分享到微信朋友圈
-         * @param       {Object}    data       待分享的信息
-         * @p-config    {String}    appId      公众平台的appId（服务号可用）
-         * @p-config    {String}    imgUrl     图片地址
-         * @p-config    {String}    link       链接地址
-         * @p-config    {String}    desc       描述
-         * @p-config    {String}    title      分享的标题
-         *
-         * @param       {Object}    callbacks  相关回调方法
-         * @p-config    {Boolean}   async                   ready方法是否需要异步执行，默认false
-         * @p-config    {Function}  ready(argv)             就绪状态
-         * @p-config    {Function}  dataLoaded(data)        数据加载完成后调用，async为true时有用，也可以为空
-         * @p-config    {Function}  cancel(resp)    取消
-         * @p-config    {Function}  fail(resp)      失败
-         * @p-config    {Function}  confirm(resp)   成功
-         * @p-config    {Function}  all(resp)       无论成功失败都会执行的回调
-         */*@
-        function weixinShareTimeline(data, callbacks) {
-            callbacks = callbacks || {};
-            var shareTimeline = function (theData) {
-                WeixinJSBridge.invoke('shareTimeline', {
-                    "appid": theData.appId ? theData.appId : '',
-                    "img_url": theData.imgUrl,
-                    "link": theData.link,
-                    "desc": theData.title,
-                    "title": theData.desc, // 注意这里要分享出去的内容是desc
-                    "img_width": "640",
-                    "img_height": "640"
-                }, function (resp) {
-                    switch (resp.err_msg) {
-                        // share_timeline:cancel 用户取消
-                        case 'share_timeline:cancel':
-                            callbacks.cancel && callbacks.cancel(resp);
-                            break;
-                            // share_timeline:confirm 发送成功
-                        case 'share_timeline:confirm':
-                        case 'share_timeline:ok':
-                            callbacks.confirm && callbacks.confirm(resp);
-                            break;
-                            // share_timeline:fail　发送失败
-                        case 'share_timeline:fail':
-                        default:
-                            callbacks.fail && callbacks.fail(resp);
-                            break;
+    $(function () {
+        $.ajax({
+            type: 'GET',
+            url: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi'
+        })
+        //$.ajax({
+        //    type: 'GET',
+        //    url: '/Home/TestShare'
+        //})
+        wx.config({
+            debug: false,
+            appId: 'wxf8b4f85f3a794e77',
+            timestamp: 1493132657,
+            nonceStr: '3u26tVwtjaA6y8Bf',
+            signature: '5c14c41cd082f9bb8853475c8b9c1e8f97698ebe',
+            jsApiList: [
+              'checkJsApi',
+              'onMenuShareTimeline',
+              'onMenuShareAppMessage',
+              'onMenuShareQQ',
+              'onMenuShareWeibo',
+              'onMenuShareQZone',
+              'hideMenuItems',
+              'showMenuItems',
+              'hideAllNonBaseMenuItem',
+              'showAllNonBaseMenuItem',
+              'translateVoice',
+              'startRecord',
+              'stopRecord',
+              'onVoiceRecordEnd',
+              'playVoice',
+              'onVoicePlayEnd',
+              'pauseVoice',
+              'stopVoice',
+              'uploadVoice',
+              'downloadVoice',
+              'chooseImage',
+              'previewImage',
+              'uploadImage',
+              'downloadImage',
+              'getNetworkType',
+              'openLocation',
+              'getLocation',
+              'hideOptionMenu',
+              'showOptionMenu',
+              'closeWindow',
+              'scanQRCode',
+              'chooseWXPay',
+              'openProductSpecificView',
+              'addCard',
+              'chooseCard',
+              'openCard'
+            ]
+        });
+        wx.ready(function () {
+            alert(11);
+            document.querySelector('#onMenuShareAppMessage').onclick = function () {
+                alert(wx)
+                wx.onMenuShareAppMessage({
+                    title: '互联网之子',
+                    desc: '在长大的过程中，我才慢慢发现，我身边的所有事，别人跟我说的所有事，那些所谓本来如此，注定如此的事，它们其实没有非得如此，事情是可以改变的。更重要的是，有些事既然错了，那就该做出改变。',
+                    link: 'http://movie.douban.com/subject/25785114/',
+                    imgUrl: 'http://demo.open.weixin.qq.com/jssdk/images/p2166127561.jpg',
+                    trigger: function (res) {
+                        // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+                        alert('用户点击发送给朋友');
+                    },
+                    success: function (res) {
+                        alert('已分享');
+                    },
+                    cancel: function (res) {
+                        alert('已取消');
+                    },
+                    fail: function (res) {
+                        alert(JSON.stringify(res));
                     }
-                    // 无论成功失败都会执行的回调
-                    callbacks.all && callbacks.all(resp);
                 });
+                alert('已注册获取“发送给朋友”状态事件');
             };
-            WeixinJSBridge.on('menu:share:timeline', function (argv) {
-                if (callbacks.async && callbacks.ready) {
-                    window["_wx_loadedCb_"] = callbacks.dataLoaded || new Function();
-                    if (window["_wx_loadedCb_"].toString().indexOf("_wx_loadedCb_") > 0) {
-                        window["_wx_loadedCb_"] = new Function();
-                    }
-                    callbacks.dataLoaded = function (newData) {
-                        window["_wx_loadedCb_"](newData);
-                        shareTimeline(newData);
-                    };
-                    // 然后就绪
-                    callbacks.ready && callbacks.ready(argv);
-                } else {
-                    // 就绪状态
-                    callbacks.ready && callbacks.ready(argv);
-                    shareTimeline(data);
-                }
-            });
-        }
-
-        @*/**
-         * 发送给微信上的好友
-         * @param       {Object}    data       待分享的信息
-         * @p-config    {String}    appId      公众平台的appId（服务号可用）
-         * @p-config    {String}    imgUrl     图片地址
-         * @p-config    {String}    link       链接地址
-         * @p-config    {String}    desc       描述
-         * @p-config    {String}    title      分享的标题
-         *
-         * @param       {Object}    callbacks  相关回调方法
-         * @p-config    {Boolean}   async                   ready方法是否需要异步执行，默认false
-         * @p-config    {Function}  ready(argv)             就绪状态
-         * @p-config    {Function}  dataLoaded(data)        数据加载完成后调用，async为true时有用，也可以为空
-         * @p-config    {Function}  cancel(resp)    取消
-         * @p-config    {Function}  fail(resp)      失败
-         * @p-config    {Function}  confirm(resp)   成功
-         * @p-config    {Function}  all(resp)       无论成功失败都会执行的回调
-         */*@
-        function weixinSendAppMessage(data, callbacks) {
-            callbacks = callbacks || {};
-            var sendAppMessage = function (theData) {
-                WeixinJSBridge.invoke('sendAppMessage', {
-                    "appid": theData.appId ? theData.appId : '',
-                    "img_url": theData.imgUrl,
-                    "link": theData.link,
-                    "desc": theData.desc,
-                    "title": theData.title,
-                    "img_width": "640",
-                    "img_height": "640"
-                }, function (resp) {
-                    switch (resp.err_msg) {
-                        // send_app_msg:cancel 用户取消
-                        case 'send_app_msg:cancel':
-                            callbacks.cancel && callbacks.cancel(resp);
-                            break;
-                            // send_app_msg:confirm 发送成功
-                        case 'send_app_msg:confirm':
-                        case 'send_app_msg:ok':
-                            callbacks.confirm && callbacks.confirm(resp);
-                            break;
-                            // send_app_msg:fail　发送失败
-                        case 'send_app_msg:fail':
-                        default:
-                            callbacks.fail && callbacks.fail(resp);
-                            break;
-                    }
-                    // 无论成功失败都会执行的回调
-                    callbacks.all && callbacks.all(resp);
-                });
-            };
-            WeixinJSBridge.on('menu:share:appmessage', function (argv) {
-                if (callbacks.async && callbacks.ready) {
-                    window["_wx_loadedCb_"] = callbacks.dataLoaded || new Function();
-                    if (window["_wx_loadedCb_"].toString().indexOf("_wx_loadedCb_") > 0) {
-                        window["_wx_loadedCb_"] = new Function();
-                    }
-                    callbacks.dataLoaded = function (newData) {
-                        window["_wx_loadedCb_"](newData);
-                        sendAppMessage(newData);
-                    };
-                    // 然后就绪
-                    callbacks.ready && callbacks.ready(argv);
-                } else {
-                    // 就绪状态
-                    callbacks.ready && callbacks.ready(argv);
-                    sendAppMessage(data);
-                }
-            });
-        }
-
-        @*/**
-         * 分享到腾讯微博
-         * @param       {Object}    data       待分享的信息
-         * @p-config    {String}    link       链接地址
-         * @p-config    {String}    desc       描述
-         *
-         * @param       {Object}    callbacks  相关回调方法
-         * @p-config    {Boolean}   async                   ready方法是否需要异步执行，默认false
-         * @p-config    {Function}  ready(argv)             就绪状态
-         * @p-config    {Function}  dataLoaded(data)        数据加载完成后调用，async为true时有用，也可以为空
-         * @p-config    {Function}  cancel(resp)    取消
-         * @p-config    {Function}  fail(resp)      失败
-         * @p-config    {Function}  confirm(resp)   成功
-         * @p-config    {Function}  all(resp)       无论成功失败都会执行的回调
-         */*@
-        function weixinShareWeibo(data, callbacks) {
-            callbacks = callbacks || {};
-            var shareWeibo = function (theData) {
-                WeixinJSBridge.invoke('shareWeibo', {
-                    "content": theData.desc,
-                    "url": theData.link
-                }, function (resp) {
-                    switch (resp.err_msg) {
-                        // share_weibo:cancel 用户取消
-                        case 'share_weibo:cancel':
-                            callbacks.cancel && callbacks.cancel(resp);
-                            break;
-                            // share_weibo:confirm 发送成功
-                        case 'share_weibo:confirm':
-                        case 'share_weibo:ok':
-                            callbacks.confirm && callbacks.confirm(resp);
-                            break;
-                            // share_weibo:fail　发送失败
-                        case 'share_weibo:fail':
-                        default:
-                            callbacks.fail && callbacks.fail(resp);
-                            break;
-                    }
-                    // 无论成功失败都会执行的回调
-                    callbacks.all && callbacks.all(resp);
-                });
-            };
-            WeixinJSBridge.on('menu:share:weibo', function (argv) {
-                if (callbacks.async && callbacks.ready) {
-                    window["_wx_loadedCb_"] = callbacks.dataLoaded || new Function();
-                    if (window["_wx_loadedCb_"].toString().indexOf("_wx_loadedCb_") > 0) {
-                        window["_wx_loadedCb_"] = new Function();
-                    }
-                    callbacks.dataLoaded = function (newData) {
-                        window["_wx_loadedCb_"](newData);
-                        shareWeibo(newData);
-                    };
-                    // 然后就绪
-                    callbacks.ready && callbacks.ready(argv);
-                } else {
-                    // 就绪状态
-                    callbacks.ready && callbacks.ready(argv);
-                    shareWeibo(data);
-                }
-            });
-        }
-
-
-        @*/**
-         * 新的分享接口
-         * @param       {Object}    data       待分享的信息
-         * @p-config    {String}    appId      公众平台的appId（服务号可用）
-         * @p-config    {String}    imgUrl     图片地址
-         * @p-config    {String}    link       链接地址
-         * @p-config    {String}    desc       描述
-         * @p-config    {String}    title      分享的标题
-         *
-         * @param       {Object}    callbacks  相关回调方法
-         * @p-config    {Boolean}   async                   ready方法是否需要异步执行，默认false
-         * @p-config    {Function}  ready(argv,shareTo)             就绪状态
-         * @p-config    {Function}  dataLoaded(data)        数据加载完成后调用，async为true时有用，也可以为空
-         * @p-config    {Function}  cancel(resp,shareTo)    取消
-         * @p-config    {Function}  fail(resp,shareTo)      失败
-         * @p-config    {Function}  confirm(resp,shareTo)   成功
-         * @p-config    {Function}  all(resp,shareTo)       无论成功失败都会执行的回调
-         */*@
-        function weixinGeneralShare(data, callbacks) {
-            callbacks = callbacks || {};
-            var generalShare = function (general, theData) {
-
-                // 如果是分享到朋友圈，则需要把title和desc交换一下
-                if (general.shareTo == 'timeline') {
-                    var title = theData.title;
-                    theData.title = theData.desc || title;
-                    theData.desc = title;
-                }
-
-                // 分享出去
-                general.generalShare({
-                    "appid": theData.appId ? theData.appId : '',
-                    "img_url": theData.imgUrl,
-                    "link": theData.link,
-                    "desc": theData.desc,
-                    "title": theData.title,
-                    "img_width": "640",
-                    "img_height": "640"
-                }, function (resp) {
-                    switch (resp.err_msg) {
-                        // general_share:cancel 用户取消
-                        case 'general_share:cancel':
-                            callbacks.cancel && callbacks.cancel(resp, general.shareTo);
-                            break;
-                            // general_share:confirm 发送成功
-                        case 'general_share:confirm':
-                        case 'general_share:ok':
-                            callbacks.confirm && callbacks.confirm(resp, general.shareTo);
-                            break;
-                            // general_share:fail　发送失败
-                        case 'general_share:fail':
-                        default:
-                            callbacks.fail && callbacks.fail(resp, general.shareTo);
-                            break;
-                    }
-                    // 无论成功失败都会执行的回调
-                    callbacks.all && callbacks.all(resp, general.shareTo);
-                });
-            };
-            WeixinJSBridge.on('menu:general:share', function (general) {
-                if (callbacks.async && callbacks.ready) {
-                    window["_wx_loadedCb_"] = callbacks.dataLoaded || new Function();
-                    if (window["_wx_loadedCb_"].toString().indexOf("_wx_loadedCb_") > 0) {
-                        window["_wx_loadedCb_"] = new Function();
-                    }
-                    callbacks.dataLoaded = function (newData) {
-                        window["_wx_loadedCb_"](newData);
-                        generalShare(general, newData);
-                    };
-                    // 然后就绪
-                    callbacks.ready && callbacks.ready(general, general.shareTo);
-                } else {
-                    // 就绪状态
-                    callbacks.ready && callbacks.ready(general, general.shareTo);
-                    generalShare(general, data);
-                }
-            });
-        }
-        @*/**
-         * 加关注（此功能只是暂时先加上，不过因为权限限制问题，不能用，如果你的站点是部署在*.qq.com下，也许可行）
-         * @param       {String}    appWeixinId     微信公众号ID
-         * @param       {Object}    callbacks       回调方法
-         * @p-config    {Function}  fail(resp)      失败
-         * @p-config    {Function}  confirm(resp)   成功
-         */*@
-        function addContact(appWeixinId, callbacks) {
-            callbacks = callbacks || {};
-            WeixinJSBridge.invoke("addContact", {
-                webtype: "1",
-                username: appWeixinId
-            }, function (resp) {
-                var success = !resp.err_msg || "add_contact:ok" == resp.err_msg || "add_contact:added" == resp.err_msg;
-                if (success) {
-                    callbacks.success && callbacks.success(resp);
-                } else {
-                    callbacks.fail && callbacks.fail(resp);
-                }
-            })
-        }
-
-        @*/**
-         * 调起微信Native的图片播放组件。
-         * 这里必须对参数进行强检测，如果参数不合法，直接会导致微信客户端crash
-         *
-         * @param {String} curSrc 当前播放的图片地址
-         * @param {Array} srcList 图片地址列表
-         */*@
-        function imagePreview(curSrc, srcList) {
-            if (!curSrc || !srcList || srcList.length == 0) {
-                return;
-            }
-            WeixinJSBridge.invoke('imagePreview', {
-                'current': curSrc,
-                'urls': srcList
-            });
-        }
-        /**
-         * 显示网页右上角的按钮
-         */
-        function showOptionMenu() {
-            WeixinJSBridge.call('showOptionMenu');
-        }
-
-
-        /**
-         * 隐藏网页右上角的按钮
-         */
-        function hideOptionMenu() {
-            WeixinJSBridge.call('hideOptionMenu');
-        }
-
-        /**
-         * 显示底部工具栏
-         */
-        function showToolbar() {
-            WeixinJSBridge.call('showToolbar');
-        }
-
-        /**
-         * 隐藏底部工具栏
-         */
-        function hideToolbar() {
-            WeixinJSBridge.call('hideToolbar');
-        }
-
-        @*/**
-         * 返回如下几种类型：
-         *
-         * network_type:wifi     wifi网络
-         * network_type:edge     非wifi,包含3G/2G
-         * network_type:fail     网络断开连接
-         * network_type:wwan     2g或者3g
-         *
-         * 使用方法：
-         * WeixinApi.getNetworkType(function(networkType){
-         *
-         * });
-         *
-         * @param callback
-         */*@
-        function getNetworkType(callback) {
-            if (callback && typeof callback == 'function') {
-                WeixinJSBridge.invoke('getNetworkType', {}, function (e) {
-                    // 在这里拿到e.err_msg，这里面就包含了所有的网络类型
-                    callback(e.err_msg);
-                });
-            }
-        }
-
-        @*/**
-         * 关闭当前微信公众平台页面
-         * @param       {Object}    callbacks       回调方法
-         * @p-config    {Function}  fail(resp)      失败
-         * @p-config    {Function}  success(resp)   成功
-         */*@
-        function closeWindow(callbacks) {
-            callbacks = callbacks || {};
-            WeixinJSBridge.invoke("closeWindow", {}, function (resp) {
-                switch (resp.err_msg) {
-                    // 关闭成功
-                    case 'close_window:ok':
-                        callbacks.success && callbacks.success(resp);
-                        break;
-
-                        // 关闭失败
-                    default:
-                        callbacks.fail && callbacks.fail(resp);
-                        break;
-                }
-            });
-        }
-
-        @*/**
-         * 当页面加载完毕后执行，使用方法：
-         * WeixinApi.ready(function(Api){
-         *     // 从这里只用Api即是WeixinApi
-         * });
-         * @param readyCallback
-         */*@
-        function wxJsBridgeReady(readyCallback) {
-            if (readyCallback && typeof readyCallback == 'function') {
-                var Api = this;
-                var wxReadyFunc = function () {
-                    readyCallback(Api);
-                };
-                if (typeof window.WeixinJSBridge == "undefined") {
-                    if (document.addEventListener) {
-                        document.addEventListener('WeixinJSBridgeReady', wxReadyFunc, false);
-                    } else if (document.attachEvent) {
-                        document.attachEvent('WeixinJSBridgeReady', wxReadyFunc);
-                        document.attachEvent('onWeixinJSBridgeReady', wxReadyFunc);
-                    }
-                } else {
-                    wxReadyFunc();
-                }
-            }
-        }
-
-        /**
-         * 判断当前网页是否在微信内置浏览器中打开
-         */
-        function openInWeixin() {
-            return /MicroMessenger/i.test(navigator.userAgent);
-        }
-
-        @*/*
-         * 打开扫描二维码
-         * @param       {Object}    callbacks       回调方法
-         * @p-config    {Function}  fail(resp)      失败
-         * @p-config    {Function}  success(resp)   成功
-         */*@
-        function scanQRCode(callbacks) {
-            callbacks = callbacks || {};
-            WeixinJSBridge.invoke("scanQRCode", {}, function (resp) {
-                switch (resp.err_msg) {
-                    // 打开扫描器成功
-                    case 'scan_qrcode:ok':
-                        callbacks.success && callbacks.success(resp);
-                        break;
-
-                        // 打开扫描器失败
-                    default:
-                        callbacks.fail && callbacks.fail(resp);
-                        break;
-                }
-            });
-        }
-
-
-        @*/**
-         * 检测应用程序是否已安装 
-         *         by mingcheng 2014-10-17
-         *
-         * @param       {Object}    data               应用程序的信息
-         * @p-config    {String}    packageUrl      应用注册的自定义前缀，如 xxx:// 就取 xxx
-         * @p-config    {String}    packageName        应用的包名
-         *
-         * @param       {Object}    callbacks       相关回调方法
-         * @p-config    {Function}  fail(resp)      失败
-         * @p-config    {Function}  success(resp)   成功，如果有对应的版本信息，则写入到 resp.version 中
-         * @p-config    {Function}  all(resp)       无论成功失败都会执行的回调
-         */*@
-        function getInstallState(data, callbacks) {
-            callbacks = callbacks || {};
-
-            WeixinJSBridge.invoke("getInstallState", {
-                "packageUrl": data.packageUrl || "",
-                "packageName": data.packageName || ""
-            }, function (resp) {
-                var msg = resp.err_msg, match = msg.match(/state:yes_?(.*)$/);
-                if (match) {
-                    resp.version = match[1] || "";
-                    callbacks.success && callbacks.success(resp);
-                } else {
-                    callbacks.fail && callbacks.fail(resp);
-                }
-
-                callbacks.all && callbacks.all(resp);
-            });
-        }
-
-
-        @*/**
-         * 开启Api的debug模式，比如出了个什么错误，能alert告诉你，而不是一直很苦逼的在想哪儿出问题了
-         * @param    {Function}  callback(error) 出错后的回调，默认是alert
-         */*@
-        function enableDebugMode(callback) {
-            @*/**
-             * @param {String}  errorMessage   错误信息
-             * @param {String}  scriptURI      出错的文件
-             * @param {Long}    lineNumber     出错代码的行号
-             * @param {Long}    columnNumber   出错代码的列号
-             */*@
-            window.onerror = function (errorMessage, scriptURI, lineNumber, columnNumber) {
-
-                // 有callback的情况下，将错误信息传递到options.callback中
-                if (typeof callback === 'function') {
-                    callback({
-                        message: errorMessage,
-                        script: scriptURI,
-                        line: lineNumber,
-                        column: columnNumber
-                    });
-                } else {
-                    // 其他情况，都以alert方式直接提示错误信息
-                    var msgs = [];
-                    msgs.push("额，代码有错。。。");
-                    msgs.push("\n错误信息：", errorMessage);
-                    msgs.push("\n出错文件：", scriptURI);
-                    msgs.push("\n出错位置：", lineNumber + '行，' + columnNumber + '列');
-                    alert(msgs.join(''));
-                }
-            }
-        }
-
-        return {
-            version: "2.5",
-            enableDebugMode: enableDebugMode,
-            ready: wxJsBridgeReady,
-            shareToTimeline: weixinShareTimeline,
-            shareToWeibo: weixinShareWeibo,
-            shareToFriend: weixinSendAppMessage,
-            generalShare: weixinGeneralShare,
-            addContact: addContact,
-            showOptionMenu: showOptionMenu,
-            hideOptionMenu: hideOptionMenu,
-            showToolbar: showToolbar,
-            hideToolbar: hideToolbar,
-            getNetworkType: getNetworkType,
-            imagePreview: imagePreview,
-            closeWindow: closeWindow,
-            openInWeixin: openInWeixin,
-            getInstallState: getInstallState,
-            scanQRCode: scanQRCode
-        };
-    })();
-
-
-
-    // 所有功能必须包含在 WeixinApi.ready 中进行
-    WeixinApi.ready(function(Api){
-        // 微信分享的数据
-        var wxData = {
-            "imgUrl": "http://www.baidufe.com/fe/blog/static/img/weixin-qrcode-2.jpg",
-            "link": "http://www.baidufe.com",
-            "desc": "大家好，我是Alien，Web前端&Android客户端码农，喜欢技术上的瞎倒腾！欢迎多交流",
-            "title": "大家好，我是赵先烈"
-        };
-    // 分享的回调
-    var wxCallbacks = {
-        // 分享操作开始之前
-        ready:function () {
-            // 你可以在这里对分享的数据进行重组
-        },
-        // 分享被用户自动取消
-        cancel:function (resp) {
-            // 你可以在你的页面上给用户一个小Tip，为什么要取消呢？
-        },
-        // 分享失败了
-        fail:function (resp) {
-            // 分享失败了，是不是可以告诉用户：不要紧，可能是网络问题，一会儿再试试？
-        },
-        // 分享成功
-        confirm:function (resp) {
-            // 分享成功了，我们是不是可以做一些分享统计呢？
-        },
-        // 整个分享过程结束
-        all:function (resp) {
-            // 如果你做的是一个鼓励用户进行分享的产品，在这里是不是可以给用户一些反馈了？
-        }
-    };
-    // 用户点开右上角popup菜单后，点击分享给好友，会执行下面这个代码
-    Api.shareToFriend(wxData, wxCallbacks);
-    // 点击分享到朋友圈，会执行下面这个代码
-    Api.shareToTimeline(wxData, wxCallbacks);
-    // 点击分享到腾讯微博，会执行下面这个代码
-    Api.shareToWeibo(wxData, wxCallbacks);
-    });
+            alert(22);
+        });
+    })
 </script>
