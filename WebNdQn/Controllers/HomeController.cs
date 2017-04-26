@@ -11,6 +11,7 @@ namespace WebNdQn.Controllers
     public class HomeController : BaseController
     {
         CommonBLL bll = new CommonBLL();
+        WeiXinBLL wxll = new WeiXinBLL();
         public ActionResult Index()
         {
             return View();
@@ -40,12 +41,19 @@ namespace WebNdQn.Controllers
         }
 
         public ActionResult ShareWeixi() {
-            string test = Request["test"].ToString();
-            return JsonFormat(new ExtJson { success = true, msg = test });
+            //string access_token = wxll.Get_Access_Token("wxc4b8dfa5424ac1e9","c064bf2901b00931c0aa654f5d21cb74");
+            string access_token = "Bgbznk2ods_Y_vfDikpMAd_cwbM2tsBAJgZAZQ2O0bEbmCn1Q9AZ8mBPCSalthgBrJP2wqb6AMbI4ZPx9j7qLV4MwhovhvXWUE37BCXRmXS5i0Ht6R-nKy8urDVuoQ4rYAQaAEAJLB";
+            //string jsapi_ticket = wxll.Get_Jsapi_Ticket(access_token);
+            string jsapi_ticket = "kgt8ON7yVITDhtdwci0qeWuN-3Mn_q_dPJGra0ooR2HLQNbupFT-S95u5DfpnCt2Q3PBr88Fy0wfZ3IHBaiybQ";
+            //string test = Request["test"].ToString();
+
+            string signatrue = wxll.Get_signature(jsapi_ticket);
+            
+            return JsonFormat(new ExtJson { success = true, msg = jsapi_ticket });
         }
         public JavaScriptResult TestShare()
         {
-            long timestamp = ConvertDateTimeInt(DateTime.Now);
+            //long timestamp = ConvertDateTimeInt(DateTime.Now);
             string javastr = "wx.config({";
             javastr += "debug: false,";
             javastr += "appId: 'wxf8b4f85f3a794e77',";
@@ -92,11 +100,6 @@ namespace WebNdQn.Controllers
             javastr += "]";
             javastr += "});";
             return JavaScript(javastr);
-        }
-        public int ConvertDateTimeInt(System.DateTime time)
-        {
-            System.DateTime startTime = TimeZone.CurrentTimeZone.ToLocalTime(new System.DateTime(1970, 1, 1));
-            return (int)(time - startTime).TotalSeconds;
         }
     }
 }

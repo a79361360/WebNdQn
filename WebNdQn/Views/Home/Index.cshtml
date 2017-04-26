@@ -5,10 +5,6 @@
 <script type="text/javascript">
     $(function () {
         $("#btn").bind("click", function () {
-            var openwho = WeixinApi.openInWeixin();
-            alert(openwho)
-
-
             var phone = $("#phone").val();   //手机号码
             if (!telRuleCheck2(phone)) { alert("请输入正确的手机号码"); return }
             $.getJSON("/Home/SignPhoneFilter", { phone: phone }, function (ret) {
@@ -58,10 +54,6 @@
 </div>
 <script type="text/javascript">
     $(function () {
-        $.ajax({
-            type: 'GET',
-            url: 'https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=ACCESS_TOKEN&type=jsapi'
-        })
         //$.ajax({
         //    type: 'GET',
         //    url: '/Home/TestShare'

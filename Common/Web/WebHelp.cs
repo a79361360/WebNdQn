@@ -34,5 +34,9 @@ namespace FJSZ.OA.Common.Web
             }
             return ip;
         }
+        public static string GetUrl() {
+            string url = System.Web.HttpContext.Current.Request.Url.ToString();
+            return url;
+        }
     }
 }
