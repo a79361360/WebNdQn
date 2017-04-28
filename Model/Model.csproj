@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="CommonModel\Parameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WxModel\T_CooperConfig.cs" />
     <Compile Include="WxModel\Wx_Share.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

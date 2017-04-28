@@ -50,6 +50,7 @@
     <Compile Include="CommonObject\CacheAccess.cs" />
     <Compile Include="Dal\MySqlConn.cs" />
     <Compile Include="Dal\MySqlDal.cs" />
+    <Compile Include="DataTableToList.cs" />
     <Compile Include="DEncrypt\Base64Decoder.cs" />
     <Compile Include="DEncrypt\Base64Encoder.cs" />
     <Compile Include="DEncrypt\Compression.cs" />

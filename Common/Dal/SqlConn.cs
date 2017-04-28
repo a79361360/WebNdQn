@@ -17,7 +17,8 @@ namespace Common
         /// </summary>
         public SqlConn()
         {
-            string ll = FJSZ.OA.Common.DEncrypt.DEncrypt.Decrypt(System.Configuration.ConfigurationManager.ConnectionStrings["SQLConnString"].ConnectionString, "adc9ee659ca881f1c3096688fff9fc58");
+            //string ll = FJSZ.OA.Common.DEncrypt.DEncrypt.Decrypt(System.Configuration.ConfigurationManager.ConnectionStrings["SQLConnString"].ConnectionString, "adc9ee659ca881f1c3096688fff9fc58");
+            string ll = System.Configuration.ConfigurationManager.ConnectionStrings["SQLConnString"].ConnectionString;
             MSqlConn = new SqlConnection(ll);
         }
 

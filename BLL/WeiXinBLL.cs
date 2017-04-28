@@ -11,30 +11,45 @@ using System.Collections.Specialized;
 using Common.ExHelp;
 using Newtonsoft.Json;
 using Model.WxModel;
+using DAL;
+using Common;
 
 namespace BLL
 {
     public class WeiXinBLL
     {
         WebHttp web = new WebHttp();
-        public string Get_Jsapi_Ticket(string access_token) { 
-            string url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + access_token + "&type=jsapi";
-            string result = web.Get(url);
-            WxJsApi_ticket dto = JsonConvert.DeserializeObject<WxJsApi_ticket>(result);
-            return dto.ticket;
+        CommonDAL dal = new CommonDAL();
+        public string Get_Jsapi_Ticket(string access_token) {
+            var t = FJSZ.OA.Common.CacheAccess.GetFromCache("jsapi_ticket");
+            if (t==null)
+            {
+                string url = "https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=" + access_token + "&type=jsapi";
+                string result = web.Get(url);
+                WxJsApi_ticket dto = JsonConvert.DeserializeObject<WxJsApi_ticket>(result);
+                t = dto.ticket;
+                //int timout = 3600 - DateTime.Now.Minute * 60;
+                FJSZ.OA.Common.CacheAccess.InsertToCacheByTime("jsapi_ticket", dto.ticket, 7200);
+            }
+            return t.ToString();
         }
         public string Get_Access_Token(string appid,string secret) {
-            string url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appid + "&secret=" + secret;
-            string result = web.Get(url);
-            WxJsApi_token dto = JsonConvert.DeserializeObject<WxJsApi_token>(result);
-            return dto.access_token;
+            var t = FJSZ.OA.Common.CacheAccess.GetFromCache("jsapi_token");
+            if (t==null)
+            {
+                string url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appid + "&secret=" + secret;
+                string result = web.Get(url);
+                WxJsApi_token dto = JsonConvert.DeserializeObject<WxJsApi_token>(result);
+                t = dto.access_token;
+                FJSZ.OA.Common.CacheAccess.InsertToCacheByTime("jsapi_token", dto.access_token, 7200);
+            }
+            return t.ToString();
         }
-        public string Get_signature(string jsapi_ticket) {
-            long timestamp = 1493205225;
-            //long timestamp = DateTime.Now.ToUnixTimeStamp();
-            string noncestr = "Cz2dVmjsL1Lc0ygU";
-            //string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");
-            string url = WebHelp.GetUrl();
+        public string Get_signature(long timestamp, string noncestr)
+        {
+            string access_token = Get_Access_Token("wx905707332cae0c38", "7561c3788343a7b3787e26cdc818ae37");   //access_token
+            string jsapi_ticket = Get_Jsapi_Ticket(access_token);                                               //jsapi_ticket
+            string url = WebHelp.GetUrl();                                                                      //url
             List<Parameter> listParam = new List<Parameter>();
             listParam.Add(new Parameter("noncestr", noncestr));
             listParam.Add(new Parameter("jsapi_ticket", jsapi_ticket));
@@ -65,6 +80,16 @@ namespace BLL
             StringBuilder tmp = new StringBuilder();
             ListHelp.FillStringBuilder(tmp, dic);//将QueryString填入StringBuilder 
             return tmp;
+        }
+
+
+        public T_CooperConfig Get_CooperConfig(int coopertype)
+        {
+            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(coopertype));
+            if (list.Count > 0) {
+                return list[0];
+            }
+            return null;
         }
     }
 }

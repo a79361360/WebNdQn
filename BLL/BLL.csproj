@@ -52,6 +52,10 @@
       <Project>{f703ebb6-522b-4a5b-ab55-15f72c1b6508}</Project>
       <Name>Common</Name>
     </ProjectReference>
+    <ProjectReference Include="..\DAL\DAL.csproj">
+      <Project>{69996e62-87a3-4e85-8c63-6b96a71c9f74}</Project>
+      <Name>DAL</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Model\Model.csproj">
       <Project>{8f88859a-264f-45da-9899-e2c4fb32aa1e}</Project>
       <Name>Model</Name>
