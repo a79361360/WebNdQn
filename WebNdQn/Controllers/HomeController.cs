@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using Fgly.Common.Expand;
+using Model.WxModel;
 
 namespace WebNdQn.Controllers
 {
@@ -14,6 +16,22 @@ namespace WebNdQn.Controllers
         WeiXinBLL wxll = new WeiXinBLL();
         public ActionResult Index()
         {
+            int cooper = 0;
+            if(Request.QueryString["utype"]!=null){
+                cooper = Convert.ToInt32(Request.QueryString["utype"]);
+            }
+            T_CooperConfig dto = wxll.Get_CooperConfig(cooper);                             //取得配置
+            long timestamp = DateTime.Now.ToUnixTimeStamp();                                //时间戳
+            string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");     //随机字符串
+            string signatrue = wxll.Get_signature(timestamp, noncestr);                     //signatrue
+            ViewBag.appid = "wx905707332cae0c38";
+            ViewBag.timestamp = timestamp;
+            ViewBag.noncestr = noncestr;
+            ViewBag.signatrue = signatrue;
+            ViewBag.title = dto.title;              //标题
+            ViewBag.desc = dto.descride;            //描述
+            ViewBag.imgurl = dto.imgurl;            //图片地址
+            ViewBag.linkurl = dto.linkurl;          //链接地址
             return View();
         }
         public ActionResult SignPhoneFilter() {
@@ -41,13 +59,14 @@ namespace WebNdQn.Controllers
         }
 
         public ActionResult ShareWeixi() {
-            //string access_token = wxll.Get_Access_Token("wxc4b8dfa5424ac1e9","c064bf2901b00931c0aa654f5d21cb74");
-            string access_token = "Bgbznk2ods_Y_vfDikpMAd_cwbM2tsBAJgZAZQ2O0bEbmCn1Q9AZ8mBPCSalthgBrJP2wqb6AMbI4ZPx9j7qLV4MwhovhvXWUE37BCXRmXS5i0Ht6R-nKy8urDVuoQ4rYAQaAEAJLB";
-            //string jsapi_ticket = wxll.Get_Jsapi_Ticket(access_token);
-            string jsapi_ticket = "kgt8ON7yVITDhtdwci0qeWuN-3Mn_q_dPJGra0ooR2HLQNbupFT-S95u5DfpnCt2Q3PBr88Fy0wfZ3IHBaiybQ";
+            string access_token = wxll.Get_Access_Token("wx905707332cae0c38","7561c3788343a7b3787e26cdc818ae37");
+            //string access_token = "Bgbznk2ods_Y_vfDikpMAd_cwbM2tsBAJgZAZQ2O0bEbmCn1Q9AZ8mBPCSalthgBrJP2wqb6AMbI4ZPx9j7qLV4MwhovhvXWUE37BCXRmXS5i0Ht6R-nKy8urDVuoQ4rYAQaAEAJLB";
+            string jsapi_ticket = wxll.Get_Jsapi_Ticket(access_token);
+            //string jsapi_ticket = "kgt8ON7yVITDhtdwci0qeWuN-3Mn_q_dPJGra0ooR2HLQNbupFT-S95u5DfpnCt2Q3PBr88Fy0wfZ3IHBaiybQ";
             //string test = Request["test"].ToString();
-
-            string signatrue = wxll.Get_signature(jsapi_ticket);
+            long timestamp = DateTime.Now.ToUnixTimeStamp();        //时间戳
+            string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");
+            string signatrue = wxll.Get_signature(timestamp, noncestr);
             
             return JsonFormat(new ExtJson { success = true, msg = jsapi_ticket });
         }

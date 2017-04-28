@@ -236,9 +236,17 @@
       <Project>{24a6df54-bf7b-4fdd-bb23-78dde4ee90d8}</Project>
       <Name>BLL</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{f703ebb6-522b-4a5b-ab55-15f72c1b6508}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
     <ProjectReference Include="..\FrameWork\FrameWork.csproj">
       <Project>{1896f109-3fdf-49b9-bc0f-f2c622272555}</Project>
       <Name>FrameWork</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Model\Model.csproj">
+      <Project>{8f88859a-264f-45da-9899-e2c4fb32aa1e}</Project>
+      <Name>Model</Name>
     </ProjectReference>
   </ItemGroup>
   <PropertyGroup>
