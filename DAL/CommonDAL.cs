@@ -34,10 +34,27 @@ namespace DAL
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
-                new SqlParameter("@ctype",SqlDbType.Int)
+                new SqlParameter("@phone",SqlDbType.Int)
             };
             parameter[0].Value = ctype;
             parameter[1].Value = phone;
+            return dal.IntExtSql(sql, parameter);
+        }
+        /// <summary>
+        /// 取得传送过来的验证码信息
+        /// </summary>
+        /// <param name="type">1登入验证码，2充值验证码</param>
+        /// <param name="code">验证码</param>
+        /// <returns></returns>
+        public int TakeMsgCode(int type,int code) {
+            string sql = "INSERT INTO [T_MsgCode]([type],[code])VALUES(@type,@code)";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@type",SqlDbType.Int),
+                new SqlParameter("@code",SqlDbType.Int)
+            };
+            parameter[0].Value = type;
+            parameter[1].Value = code;
             return dal.IntExtSql(sql, parameter);
         }
     }

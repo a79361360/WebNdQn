@@ -57,7 +57,18 @@ namespace WebNdQn.Controllers
 
             return View();
         }
-
+        public ActionResult TakeCode() {
+            if (Request["type"] == null || Request["code"] == null) {
+                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            }
+            int type = Convert.ToInt32(Request["type"]);  //1为登入2为充值
+            int code = Convert.ToInt32(Request["code"]);  //验证码
+            int result = bll.TakeMsgCode(type, code);
+            if (result > 0) {
+                return JsonFormat(new ExtJson { success = true, msg = "保存验证码成功" });
+            }
+            return JsonFormat(new ExtJson { success = false, msg = "保存验证码失败" });
+        }
         public ActionResult ShareWeixi() {
             string access_token = wxll.Get_Access_Token("wx905707332cae0c38","7561c3788343a7b3787e26cdc818ae37");
             //string access_token = "Bgbznk2ods_Y_vfDikpMAd_cwbM2tsBAJgZAZQ2O0bEbmCn1Q9AZ8mBPCSalthgBrJP2wqb6AMbI4ZPx9j7qLV4MwhovhvXWUE37BCXRmXS5i0Ht6R-nKy8urDVuoQ4rYAQaAEAJLB";
@@ -120,5 +131,6 @@ namespace WebNdQn.Controllers
             javastr += "});";
             return JavaScript(javastr);
         }
+
     }
 }

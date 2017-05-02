@@ -44,5 +44,14 @@ namespace BLL
         public int TakeFlowLog(int ctype,string phone) {
             return dal.TakeFlowLog(ctype, phone);
         }
+        /// <summary>
+        /// 取得传送过来的验证码信息
+        /// </summary>
+        /// <param name="type">1登入验证码，2充值验证码</param>
+        /// <param name="code">验证码</param>
+        /// <returns></returns>
+        public int TakeMsgCode(int type, int code) {
+            return dal.TakeMsgCode(type, code);
+        }
     }
 }
