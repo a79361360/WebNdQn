@@ -23,5 +23,22 @@ namespace DAL
             DataTable dt = dal.ExtSql(sql, parameter);
             return dt;
         }
+        /// <summary>
+        /// 添加领取流量的记录
+        /// </summary>
+        /// <param name="ctype">公司类型</param>
+        /// <param name="phone">手机号码</param>
+        /// <returns>返回影响行数</returns>
+        public int TakeFlowLog(int ctype,string phone) {
+            string sql = "INSERT INTO [T_TakeFlowLog]([ctype],[phone])VALUES(@ctype,@phone)";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@ctype",SqlDbType.Int)
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = phone;
+            return dal.IntExtSql(sql, parameter);
+        }
     }
 }

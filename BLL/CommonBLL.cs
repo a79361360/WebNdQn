@@ -1,4 +1,5 @@
 ﻿using Common.ExHelp;
+using DAL;
 using Model.CommonModel;
 using System;
 using System.Collections.Generic;
@@ -11,6 +12,7 @@ namespace BLL
 {
     public class CommonBLL
     {
+        CommonDAL dal = new CommonDAL();
         public bool ReadPhoneFliter(string phone, string path) {
             List<string> list = (List<string>)FJSZ.OA.Common.CacheAccess.GetFromCache("MoneyList");
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/ExtProc_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "开始时间:" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss fffff"));
@@ -33,7 +35,14 @@ namespace BLL
             }
             return false;
         }
-
-
+        /// <summary>
+        /// 添加领取流量的记录
+        /// </summary>
+        /// <param name="ctype">公司类型</param>
+        /// <param name="phone">手机号码</param>
+        /// <returns>返回影响行数</returns>
+        public int TakeFlowLog(int ctype,string phone) {
+            return dal.TakeFlowLog(ctype, phone);
+        }
     }
 }

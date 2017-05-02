@@ -463,6 +463,46 @@ namespace Common
                 }
             }
         }
+        /// <summary>
+        /// 执行查询语句返回受影响的行数
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public int IntExtSql(String sql, object[] parameter)
+        {
+            SqlParameter[] sqlParameter = parameter as SqlParameter[];
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/IntExtSqlParamter_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", sql);
+            if (String.IsNullOrEmpty(sql)) { throw new Exception("Sql结构化查询语句不能为空！"); }
+            lock (this)
+            {
+                try
+                {
+                    MSqlConn.Open();
+                    _mCommand.CommandType = CommandType.Text;
+                    _mCommand.CommandText = sql;
+                    _mCommand.Parameters.Clear();
+                    if (sqlParameter != null)
+                    {
+                        foreach (SqlParameter temp in sqlParameter)
+                        {
+                            _mCommand.Parameters.Add(temp);
+                            logstr += temp.ParameterName + "   " + temp.Value;
+                        }
+                    }
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/IntExtSqlParamter_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", sql + "Parameter: " + logstr);
+                    int retValue = _mCommand.ExecuteNonQuery();
+
+                    return retValue;
+                }
+                finally
+                {
+                    if (MSqlConn.State == ConnectionState.Open)
+                    {
+                        MSqlConn.Close();
+                    }
+                }
+            }
+        }
 
         /// <summary>
         /// 批量存储数据
