@@ -1,5 +1,6 @@
 ﻿using Common.ExHelp;
 using DAL;
+using FJSZ.OA.Common.Web;
 using Model.CommonModel;
 using System;
 using System.Collections.Generic;
@@ -52,6 +53,82 @@ namespace BLL
         /// <returns></returns>
         public int TakeMsgCode(int type, int code) {
             return dal.TakeMsgCode(type, code);
+        }
+        /// <summary>
+        /// 发送登入短信验证码
+        /// </summary>
+        /// <returns></returns>
+        public bool SendLoginMsgCode() {
+            WebHttp web = new WebHttp();
+            string url = "";
+            string data = "";
+            try {
+                web.Post(url, data);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// 发送充值流量短信验证码
+        /// </summary>
+        /// <returns></returns>
+        public bool SendFlowMsgCode()
+        {
+            WebHttp web = new WebHttp();
+            string url = "";
+            string data = "";
+            try
+            {
+                web.Post(url, data);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// 保存需要模拟POST提交需要的数据信息
+        /// </summary>
+        /// <returns></returns>
+        public bool SaveLoginState(int code) {
+            string corpid = "5913855431";               //企业代码
+            string uname = "administrator";             //用户名
+            string pwd = "nd123456";                    //密码
+            WebHttp web = new WebHttp();
+            string url = "";
+            string data = "";
+            try
+            {
+                string result = web.Post(url, data);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
+        }
+        /// <summary>
+        /// 模拟提交数据，完成给用户发送流量功能
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public bool SendFlowToUsered(int code) {
+            WebHttp web = new WebHttp();
+            string url = "";
+            string data = "";
+            try
+            {
+                string result = web.Post(url, data);
+                return true;
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }
