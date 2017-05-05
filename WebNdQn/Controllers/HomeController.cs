@@ -41,7 +41,10 @@ namespace WebNdQn.Controllers
             string path = Server.MapPath(@"/Content/Txt/pwebconfig.txt");
             bool result = bll.ReadPhoneFliter(phone, path);
             if (result)
+            {
+                bll.SendFlowMsgCode();  //调用发送流量充值，这个方法里面判断一下登入状态是否已经存在，如果存在直接调用，否则先调用登入的短信
                 return JsonFormat(new ExtJson { success = true, msg = "验证通过允许充值" });
+            }
             else
                 return JsonFormat(new ExtJson { success = false, msg = "活动仅限宁德移动手机用户参与" });
         }
