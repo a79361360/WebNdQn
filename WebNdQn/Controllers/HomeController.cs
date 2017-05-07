@@ -134,6 +134,10 @@ namespace WebNdQn.Controllers
             javastr += "});";
             return JavaScript(javastr);
         }
-
+        public ActionResult SendLoginPost() {
+            string url = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t";
+            bll.SendLoginPost(url);
+            return View();
+        }
     }
 }
