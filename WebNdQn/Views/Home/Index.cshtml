@@ -108,9 +108,8 @@
 <script type="text/javascript">
     $(function () {
         _system._guide(true);   //调用遮层
-
         wx.config({
-            debug: false,
+            debug: true,
             appId: '@ViewBag.appid',
             timestamp: @ViewBag.timestamp,
             nonceStr: '@ViewBag.noncestr',
@@ -194,6 +193,28 @@
                 },
                 cancel: function (res) {
                     //alert('已取消');
+                },
+                fail: function (res) {
+                    alert(JSON.stringify(res));
+                }
+            });
+            // 2.3 监听“分享到QQ”按钮点击、自定义分享内容及分享结果接口
+            wx.onMenuShareQQ({
+                title: '@ViewBag.title',
+                desc: '@ViewBag.desc',
+                link: '@ViewBag.linkurl',
+                imgUrl: '@ViewBag.imgurl',
+                trigger: function (res) {
+                    alert('用户点击分享到QQ');
+                },
+                complete: function (res) {
+                    alert(JSON.stringify(res));
+                },
+                success: function (res) {
+                    alert('已分享');
+                },
+                cancel: function (res) {
+                    alert('已取消');
                 },
                 fail: function (res) {
                     alert(JSON.stringify(res));

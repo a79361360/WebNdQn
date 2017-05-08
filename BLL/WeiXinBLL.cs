@@ -47,7 +47,7 @@ namespace BLL
         }
         public string Get_signature(long timestamp, string noncestr)
         {
-            string access_token = Get_Access_Token("wx905707332cae0c38", "7561c3788343a7b3787e26cdc818ae37");   //access_token
+            string access_token = Get_Access_Token(Wx_config.appid, Wx_config.appsecret);   //access_token
             string jsapi_ticket = Get_Jsapi_Ticket(access_token);                                               //jsapi_ticket
             string url = WebHelp.GetUrl();                                                                      //url
             List<Parameter> listParam = new List<Parameter>();
