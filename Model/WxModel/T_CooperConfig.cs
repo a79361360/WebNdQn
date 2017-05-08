@@ -9,11 +9,17 @@ namespace Model.WxModel
     public class T_CooperConfig
     {
         public int id {get;set;}
-        public int coopertype {get;set;}
+        public int ctype { get;set;}
+        public int issue { get; set; }
         public string title {get;set;}
         public string descride {get;set;}
         public string imgurl {get;set;}
         public string linkurl {get;set;}
+        public string corpid { get; set; }
+        public string username { get; set; }
+        public string userpwd { get; set; }
+        public string signphone { get; set; }
+        public int state { get; set; }
         public DateTime addtime {get;set;}
     }
 }

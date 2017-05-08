@@ -503,7 +503,72 @@ namespace Common
                 }
             }
         }
+        /// <summary>
+        /// 单字段的查询结果
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <returns></returns>
+        public object ExtScalarSql(String sql)
+        {
+            if (String.IsNullOrEmpty(sql)) { throw new Exception("Sql结构化查询语句不能为空！"); }
+            lock (this)
+            {
+                try
+                {
+                    MSqlConn.Open();
+                    _mCommand.CommandType = CommandType.Text;
+                    _mCommand.CommandText = sql;
+                    object retValue = _mCommand.ExecuteScalar();
 
+                    return retValue;
+                }
+                finally
+                {
+                    if (MSqlConn.State == ConnectionState.Open)
+                    {
+                        MSqlConn.Close();
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// 单字段的查询结果带加密参数
+        /// </summary>
+        /// <param name="sql"></param>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public object ExtScalarSql(String sql, object[] parameter)
+        {
+            SqlParameter[] sqlParameter = parameter as SqlParameter[];
+            lock (this)
+            {
+                try
+                {
+                    MSqlConn.Open();
+                    _mCommand.CommandType = CommandType.Text;
+                    _mCommand.CommandText = sql;
+                    _mCommand.Parameters.Clear();
+                    if (sqlParameter != null)
+                    {
+                        foreach (SqlParameter temp in sqlParameter)
+                        {
+                            _mCommand.Parameters.Add(temp);
+                        }
+                    }
+                    object retValue = _mCommand.ExecuteScalar();
+
+                    return retValue;
+                }
+                finally
+                {
+                    if (MSqlConn.State == ConnectionState.Open)
+                    {
+                        MSqlConn.Close();
+                    }
+                }
+            }
+        }
         /// <summary>
         /// 批量存储数据
         /// </summary>

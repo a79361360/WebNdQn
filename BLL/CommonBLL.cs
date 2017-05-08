@@ -38,6 +38,17 @@ namespace BLL
             return false;
         }
         /// <summary>
+        /// 校验当前手机号是否已经参加过活动
+        /// </summary>
+        /// <param name="phone">手机号码</param>
+        /// <param name="ctype">公司类型</param>
+        /// <param name="issue">活动期号</param>
+        /// <returns></returns>
+        public int DecidePhone(string phone,int ctype,int issue) {
+            int result = dal.DecidePhone(phone, ctype, issue);
+            return result;
+        }
+        /// <summary>
         /// 添加领取流量的记录
         /// </summary>
         /// <param name="ctype">公司类型</param>
@@ -50,10 +61,11 @@ namespace BLL
         /// 取得传送过来的验证码信息
         /// </summary>
         /// <param name="type">1登入验证码，2充值验证码</param>
+        /// <param name="phone">手机号码</param>
         /// <param name="code">验证码</param>
         /// <returns></returns>
-        public int TakeMsgCode(int type, int code) {
-            return dal.TakeMsgCode(type, code);
+        public int TakeMsgCode(int type,string phone, int code) {
+            return dal.TakeMsgCode(type, phone, code);
         }
         /// <summary>
         /// 发送登入短信验证码

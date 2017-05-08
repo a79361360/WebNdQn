@@ -12,16 +12,45 @@ namespace DAL
     public class CommonDAL
     {
         SqlDal dal = new SqlDal();
-        public DataTable GetCooperConfig(int coopertype)
+        /// <summary>
+        /// 取得公司的活动配置信息
+        /// </summary>
+        /// <param name="ctype">公司类型</param>
+        /// <param name="issue">活动期号</param>
+        /// <returns></returns>
+        public DataTable GetCooperConfig(int ctype,int issue)
         {
-            string sql = "SELECT [id],[coopertype],[title],[descride],[imgurl],[linkurl],[addtime] FROM [ndll_db].[dbo].[T_CooperConfig] WHERE coopertype=@coopertype";
+            string sql = "SELECT [id],[ctype],[issue],[title],[descride],[imgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state=1";
             SqlParameter[] parameter = new[]
             {
-                new SqlParameter("@coopertype",SqlDbType.Int)
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int)
             };
-            parameter[0].Value = coopertype;
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
             DataTable dt = dal.ExtSql(sql, parameter);
             return dt;
+        }
+        /// <summary>
+        /// 当前手机是否已经添加过这个公司的这一期活动
+        /// </summary>
+        /// <param name="phone">用户手机号码</param>
+        /// <param name="ctype">公司类型</param>
+        /// <param name="issue">活动期号</param>
+        /// <returns></returns>
+        public int DecidePhone(string phone, int ctype, int issue) {
+            string sql = "SELECT COUNT(*) FROM [dbo].[T_TakeFlowLog] WHERE ctype=@ctype AND issue=@issue AND phone=@phone";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int),
+                new SqlParameter("@phone",SqlDbType.NVarChar,20)
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            parameter[2].Value = phone;
+            int result = Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
+            return result;
         }
         /// <summary>
         /// 添加领取流量的记录
@@ -44,17 +73,20 @@ namespace DAL
         /// 取得传送过来的验证码信息
         /// </summary>
         /// <param name="type">1登入验证码，2充值验证码</param>
+        /// <param name="phone">手机号码</param>
         /// <param name="code">验证码</param>
         /// <returns></returns>
-        public int TakeMsgCode(int type,int code) {
-            string sql = "INSERT INTO [T_MsgCode]([type],[code])VALUES(@type,@code)";
+        public int TakeMsgCode(int type,string phone,int code) {
+            string sql = "INSERT INTO [T_MsgCode]([type],[phone],[code])VALUES(@type,@phone,@code)";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@type",SqlDbType.Int),
+                new SqlParameter("@phone",SqlDbType.NVarChar,20),
                 new SqlParameter("@code",SqlDbType.Int)
             };
             parameter[0].Value = type;
-            parameter[1].Value = code;
+            parameter[1].Value = phone;
+            parameter[2].Value = code;
             return dal.IntExtSql(sql, parameter);
         }
     }

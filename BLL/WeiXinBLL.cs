@@ -83,9 +83,9 @@ namespace BLL
         }
 
 
-        public T_CooperConfig Get_CooperConfig(int coopertype)
+        public T_CooperConfig Get_CooperConfig(int ctype,int issue)
         {
-            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(coopertype));
+            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
             if (list.Count > 0) {
                 return list[0];
             }
