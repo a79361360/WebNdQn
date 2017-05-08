@@ -24,7 +24,6 @@ namespace WebNdQn.Controllers
             long timestamp = DateTime.Now.ToUnixTimeStamp();                                //时间戳
             string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");     //随机字符串
             string signatrue = wxll.Get_signature(timestamp, noncestr);                     //signatrue
-            //ViewBag.appid = "wx905707332cae0c38";
             ViewBag.appid = Wx_config.appid;
             ViewBag.timestamp = timestamp;
             ViewBag.noncestr = noncestr;
