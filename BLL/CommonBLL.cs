@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -130,5 +131,16 @@ namespace BLL
                 return false;
             }
         }
+
+        public void SendLoginPost(string url) {
+            WebHttp web = new WebHttp();
+            //string data = "LoginType=1&SMSTimes=90&SMSAliasTimes=90&txtCorpCode=5913855431&txtUserName=administrator&rbl_PType=1&txtPd=nd11@3S23456&txtCheckCode=&button3=登录&txtQDLRegisterUrl=/ADCQDLPortal/Production/ProductOrderControl.aspx";
+            //CookieContainer cookie = new CookieContainer();
+            //web.GetHttpCookies(url, data,ref cookie);
+            web.LoginCnblogs();
+            //web.GetHttpCookies(url, data, ref cookie);
+        }
+
+
     }
 }
