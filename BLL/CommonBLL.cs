@@ -1,7 +1,9 @@
-﻿using Common.ExHelp;
+﻿using Common;
+using Common.ExHelp;
 using DAL;
 using FJSZ.OA.Common.Web;
 using Model.CommonModel;
+using Model.WxModel;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -71,18 +73,28 @@ namespace BLL
         /// 发送登入短信验证码
         /// </summary>
         /// <returns></returns>
-        public bool SendLoginMsgCode() {
-            WebHttp web = new WebHttp();
-            string url = "";
-            string data = "";
-            try {
-                web.Post(url, data);
+        public bool SendLoginMsgCode(int ctype,int issue) {
+            var t = FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_cache" + issue.ToString());
+            if (t == null) {
+                IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
+                if (list.Count > 0)
+                {
+                    T_CooperConfig dto = list[0];
+                    WebHttp web = new WebHttp();
+                    web.SendLoginPost(dto.corpid, dto.username, dto.userpwd);
+                }
+            }
+            //WebHttp web = new WebHttp();
+            //string url = "";
+            //string data = "";
+            //try {
+            //    web.Post(url, data);
                 return true;
-            }
-            catch
-            {
-                return false;
-            }
+            //}
+            //catch
+            //{
+            //    return false;
+            //}
         }
         /// <summary>
         /// 发送充值流量短信验证码
@@ -152,7 +164,6 @@ namespace BLL
             web.LoginCnblogs();
             //web.GetHttpCookies(url, data, ref cookie);
         }
-
 
     }
 }

@@ -54,7 +54,7 @@ namespace WebNdQn.Controllers
                     return JsonFormat(new ExtJson { success = false, msg = "当前手机号已经添加过活动" });
                 }
                 else {
-                    bll.SendFlowMsgCode();  //调用发送流量充值，这个方法里面判断一下登入状态是否已经存在，如果存在直接调用，否则先调用登入的短信,做到这里，考虑到一个问题，充值的流量是不是一个固定值???
+                    bll.SendLoginMsgCode(Convert.ToInt32(ctype), Convert.ToInt32(issue));  //调用发送流量充值，这个方法里面判断一下登入状态是否已经存在，如果存在直接调用，否则先调用登入的短信,做到这里，考虑到一个问题，充值的流量是不是一个固定值???
                 }
                 return JsonFormat(new ExtJson { success = true, msg = "验证通过允许充值" });
             }
@@ -64,7 +64,6 @@ namespace WebNdQn.Controllers
         public ActionResult About()
         {
             ViewBag.Message = "Your application description page.";
-
             return View();
         }
 
