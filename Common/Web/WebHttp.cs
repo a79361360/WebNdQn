@@ -131,7 +131,7 @@ namespace FJSZ.OA.Common.Web
             }
         }
 
-
+        //test
         public void LoginCnblogs()
         {
             HttpClient httpClient = new HttpClient();
@@ -175,17 +175,22 @@ namespace FJSZ.OA.Common.Web
                 result = response.Content.ReadAsStringAsync().Result;
                 string[] strCookies = (string[])response.Headers.GetValues("Set-Cookie");
                 //临时跳转
-                ECLogin(httpClient);
+                ECLogin(httpClient,0,0);
             //} while (result.Contains("验证码错误，麻烦您重新输入"));
             //用完要记得释放
             httpClient.Dispose();
         }
-        public void ECLogin(HttpClient httpClient) {
-            string url = "http://www.fj.10086.cn/power/ADCECPortal/EC/ECUserLoginProcess.aspx?loginType=1&SMSCheck=0&Ref=%2fpower%2fNewGroupPortal%2fMYPower100%2fIndex.html";
-            HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
-            string result = response.Content.ReadAsStringAsync().Result;
-        }
-        public void SendLoginPost(string corpid, string username, string userpwd)
+
+        /// <summary>
+        /// 生成登入cache
+        /// </summary>
+        /// <param name="corpid">企业代码</param>
+        /// <param name="username">用户账号</param>
+        /// <param name="userpwd">用户密码</param>
+        /// <param name="ctype">公司类型</param>
+        /// <param name="issue">活动期号</param>
+        /// <returns></returns>
+        public void SendLoginPost(string corpid, string username, string userpwd,int ctype,int issue)
         {
             HttpClient httpClient = new HttpClient();
             httpClient.MaxResponseContentBufferSize = 256000;
@@ -226,9 +231,44 @@ namespace FJSZ.OA.Common.Web
             result = response.Content.ReadAsStringAsync().Result;
             string[] strCookies = (string[])response.Headers.GetValues("Set-Cookie");
             //临时跳转
-            ECLogin(httpClient);
+            ECLogin(httpClient, ctype, issue);
+            FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(ctype.ToString() + "login_cache" + issue.ToString(), httpClient, 300);   //20分钟
             //用完要记得释放
-            httpClient.Dispose();
+            //httpClient.Dispose();
+        }
+        /// <summary>
+        /// 生成登入cache的过程有一个后台的自动跳转，这边也需要模拟
+        /// </summary>
+        /// <param name="httpClient"></param>
+        public void ECLogin(HttpClient httpClient,int ctype,int issue)
+        {
+            string url = "http://www.fj.10086.cn/power/ADCECPortal/EC/ECUserLoginProcess.aspx?loginType=1&SMSCheck=0&Ref=%2fpower%2fNewGroupPortal%2fMYPower100%2fIndex.html";
+            HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
+            string result = response.Content.ReadAsStringAsync().Result;
+            FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(ctype.ToString() + "login_cache" + issue.ToString() + "str", httpClient, 300);   //20分钟
+        }
+        public void TakeCodeSaveLoginState(HttpClient httpClient,int code,string result) {
+            string url = "http://www.fj.10086.cn/power/ADCECPORTAL/EC/SMSLogin.aspx?msgType=SMS&logType=1";
+            String __LASTFOCUS = new Regex("id=\"__LASTFOCUS\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            String __EVENTTARGET = new Regex("id=\"__EVENTTARGET\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            String __EVENTARGUMENT = new Regex("id=\"__EVENTARGUMENT\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            String __VIEWSTATE = new Regex("id=\"__VIEWSTATE\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            String __VIEWSTATEENCRYPTED = new Regex("id=\"__VIEWSTATEENCRYPTED\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+
+            List<KeyValuePair<String, String>> paramList = new List<KeyValuePair<String, String>>();
+            paramList.Add(new KeyValuePair<string, string>("__LASTFOCUS", __LASTFOCUS));
+            paramList.Add(new KeyValuePair<string, string>("__EVENTTARGET", __EVENTTARGET));
+            paramList.Add(new KeyValuePair<string, string>("__EVENTARGUMENT", __EVENTARGUMENT));
+            paramList.Add(new KeyValuePair<string, string>("__VIEWSTATE", __VIEWSTATE));
+            paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEENCRYPTED", __VIEWSTATEENCRYPTED));
+
+            paramList.Add(new KeyValuePair<string, string>("ScriptManager1", "UpdatePanel1|btnSubmit"));
+            paramList.Add(new KeyValuePair<string, string>("txtVCode", code.ToString()));
+            paramList.Add(new KeyValuePair<string, string>("MobileAndEmailCheck", ""));
+            paramList.Add(new KeyValuePair<string, string>("__ASYNCPOST", "true"));
+            paramList.Add(new KeyValuePair<string, string>("btnSubmit", "登录"));
+            HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
+            String result1 = response.Content.ReadAsStringAsync().Result;
         }
     }
 }

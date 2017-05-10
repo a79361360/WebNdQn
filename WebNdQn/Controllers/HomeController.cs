@@ -54,6 +54,7 @@ namespace WebNdQn.Controllers
                     return JsonFormat(new ExtJson { success = false, msg = "当前手机号已经添加过活动" });
                 }
                 else {
+                    //产生Session状态
                     bll.SendLoginMsgCode(Convert.ToInt32(ctype), Convert.ToInt32(issue));  //调用发送流量充值，这个方法里面判断一下登入状态是否已经存在，如果存在直接调用，否则先调用登入的短信,做到这里，考虑到一个问题，充值的流量是不是一个固定值???
                 }
                 return JsonFormat(new ExtJson { success = true, msg = "验证通过允许充值" });
@@ -84,7 +85,10 @@ namespace WebNdQn.Controllers
             string phone = Request["phone"].ToString();     //哪个手机号码接收到的
             int type = Convert.ToInt32(Request["type"]);    //1为登入2为充值
             int code = Convert.ToInt32(Request["code"]);    //验证码
-            int result = bll.TakeMsgCode(type, phone, code);
+            if (type == 1) {
+
+            }
+            int result = bll.TakeMsgCode(type, phone, code);    //将收到的验证码保存
             if (result > 0) {
                 return JsonFormat(new ExtJson { success = true, msg = "保存验证码成功" });
             }
@@ -106,6 +110,7 @@ namespace WebNdQn.Controllers
             
             return JsonFormat(new ExtJson { success = true, msg = jsapi_ticket });
         }
+        //test
         public ActionResult SendLoginPost() {
             string url = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t";
             bll.SendLoginPost(url);

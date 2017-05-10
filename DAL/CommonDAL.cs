@@ -32,6 +32,21 @@ namespace DAL
             return dt;
         }
         /// <summary>
+        /// 取得公司的活动配置信息
+        /// </summary>
+        /// <param name="phone">校验的手机号码</param>
+        /// <returns></returns>
+        public DataTable GetCooperConfig(string phone) {
+            string sql = "SELECT top 1 [id],[ctype],[issue],[title],[descride],[imgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE signphone=@phone and state=1 order by id desc";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@phone",SqlDbType.Int)
+            };
+            parameter[0].Value = phone;
+            DataTable dt = dal.ExtSql(sql, parameter);
+            return dt;
+        }
+        /// <summary>
         /// 当前手机是否已经添加过这个公司的这一期活动
         /// </summary>
         /// <param name="phone">用户手机号码</param>

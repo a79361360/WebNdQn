@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -74,14 +75,14 @@ namespace BLL
         /// </summary>
         /// <returns></returns>
         public bool SendLoginMsgCode(int ctype,int issue) {
-            var t = FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_cache" + issue.ToString());
-            if (t == null) {
+            HttpClient cache = (HttpClient)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_state" + issue.ToString()); //Session状态是否存在
+            if (cache == null) {
                 IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
                 if (list.Count > 0)
                 {
                     T_CooperConfig dto = list[0];
                     WebHttp web = new WebHttp();
-                    web.SendLoginPost(dto.corpid, dto.username, dto.userpwd);
+                    web.SendLoginPost(dto.corpid, dto.username, dto.userpwd, ctype, issue);   //生成登入cache,等待短信
                 }
             }
             //WebHttp web = new WebHttp();
@@ -119,22 +120,33 @@ namespace BLL
         /// 保存需要模拟POST提交需要的数据信息
         /// </summary>
         /// <returns></returns>
-        public bool SaveLoginState(int code) {
-            string corpid = "5913855431";               //企业代码
-            string uname = "administrator";             //用户名
-            string pwd = "nd123456";                    //密码
-            WebHttp web = new WebHttp();
-            string url = "";
-            string data = "";
-            try
-            {
-                string result = web.Post(url, data);
-                return true;
+        public int SaveLoginState(string phone,int code) {
+            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(phone));
+            if (list.Count > 0) {
+                T_CooperConfig dto = list[0];
+                int ctype = dto.ctype;int issue = dto.issue;    //公司类型，活动期号
+                HttpClient cache = (HttpClient)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_cache" + issue.ToString());    //登入cache
+                if (cache == null)
+                {
+                    return -1005;   //登入cache已经失效，接收到登入的短信也没有用了
+                }
+                string result = (string)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_cache" + issue.ToString() + "str");
+                WebHttp web = new WebHttp();
+                web.TakeCodeSaveLoginState(cache, code, result);
             }
-            catch
-            {
-                return false;
-            }
+            return 1;
+            //WebHttp web = new WebHttp();
+            //string url = "";
+            //string data = "";
+            //try
+            //{
+            //    string result = web.Post(url, data);
+            //    return true;
+            //}
+            //catch
+            //{
+            //    return false;
+            //}
         }
         /// <summary>
         /// 模拟提交数据，完成给用户发送流量功能
@@ -155,7 +167,7 @@ namespace BLL
                 return false;
             }
         }
-
+        //test
         public void SendLoginPost(string url) {
             WebHttp web = new WebHttp();
             //string data = "LoginType=1&SMSTimes=90&SMSAliasTimes=90&txtCorpCode=5913855431&txtUserName=administrator&rbl_PType=1&txtPd=nd11@3S23456&txtCheckCode=&button3=登录&txtQDLRegisterUrl=/ADCQDLPortal/Production/ProductOrderControl.aspx";

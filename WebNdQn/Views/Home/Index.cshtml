@@ -4,13 +4,15 @@
 <script src="~/Scripts/jquery-1.10.2.min.js"></script>
 <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js" type="text/javascript"></script>
 <script type="text/javascript">
-    var sharenum = 0;       //分享次数
+    var sharenum = 1;       //分享次数
     $(function () {
         $("#btn").bind("click", function () {
             var phone = $("#phone").val();   //手机号码
             if (!telRuleCheck2(phone)) { alert("请输入正确的手机号码"); return }
             if (parseInt(sharenum)<1) { alert("请进行分享后再进行兑换"); return }
-            $.getJSON("/Home/SignPhoneFilter", { phone: phone }, function (ret) {
+            var ctype = $(this).getUrlParam("ctype");
+            var issue = $(this).getUrlParam("issue");   
+            $.getJSON("/Home/SignPhoneFilter", { phone: phone,ctype:ctype,issue:issue }, function (ret) {
                 alert(ret.msg);
             })
         })
