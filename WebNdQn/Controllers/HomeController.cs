@@ -18,8 +18,8 @@ namespace WebNdQn.Controllers
         public ActionResult Index()
         {
             int cooper = 0, issue = 1;
-            if(Request.QueryString["utype"]!=null){
-                cooper = Convert.ToInt32(Request.QueryString["utype"]);
+            if(Request.QueryString["ctype"] !=null){
+                cooper = Convert.ToInt32(Request.QueryString["ctype"]);
                 issue = Convert.ToInt32(Request.QueryString["issue"]);
             }
             T_CooperConfig dto = wxll.Get_CooperConfig(cooper, issue);                              //取得配置
@@ -86,7 +86,7 @@ namespace WebNdQn.Controllers
             int type = Convert.ToInt32(Request["type"]);    //1为登入2为充值
             int code = Convert.ToInt32(Request["code"]);    //验证码
             if (type == 1) {
-
+                bll.SaveLoginState(phone, code);
             }
             int result = bll.TakeMsgCode(type, phone, code);    //将收到的验证码保存
             if (result > 0) {

@@ -245,7 +245,7 @@ namespace FJSZ.OA.Common.Web
             string url = "http://www.fj.10086.cn/power/ADCECPortal/EC/ECUserLoginProcess.aspx?loginType=1&SMSCheck=0&Ref=%2fpower%2fNewGroupPortal%2fMYPower100%2fIndex.html";
             HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
             string result = response.Content.ReadAsStringAsync().Result;
-            FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(ctype.ToString() + "login_cache" + issue.ToString() + "str", httpClient, 300);   //20分钟
+            FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(ctype.ToString() + "login_cache" + issue.ToString() + "str", result, 300);   //20分钟
         }
         public void TakeCodeSaveLoginState(HttpClient httpClient,int code,string result) {
             string url = "http://www.fj.10086.cn/power/ADCECPORTAL/EC/SMSLogin.aspx?msgType=SMS&logType=1";
@@ -253,6 +253,7 @@ namespace FJSZ.OA.Common.Web
             String __EVENTTARGET = new Regex("id=\"__EVENTTARGET\" value=\"(.*?)\"").Match(result).Groups[1].Value;
             String __EVENTARGUMENT = new Regex("id=\"__EVENTARGUMENT\" value=\"(.*?)\"").Match(result).Groups[1].Value;
             String __VIEWSTATE = new Regex("id=\"__VIEWSTATE\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            String __VIEWSTATEGENERATOR = new Regex("id=\"__VIEWSTATEGENERATOR\" value=\"(.*?)\"").Match(result).Groups[1].Value;
             String __VIEWSTATEENCRYPTED = new Regex("id=\"__VIEWSTATEENCRYPTED\" value=\"(.*?)\"").Match(result).Groups[1].Value;
 
             List<KeyValuePair<String, String>> paramList = new List<KeyValuePair<String, String>>();
@@ -260,6 +261,8 @@ namespace FJSZ.OA.Common.Web
             paramList.Add(new KeyValuePair<string, string>("__EVENTTARGET", __EVENTTARGET));
             paramList.Add(new KeyValuePair<string, string>("__EVENTARGUMENT", __EVENTARGUMENT));
             paramList.Add(new KeyValuePair<string, string>("__VIEWSTATE", __VIEWSTATE));
+            paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEGENERATOR", __VIEWSTATEGENERATOR));
+            
             paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEENCRYPTED", __VIEWSTATEENCRYPTED));
 
             paramList.Add(new KeyValuePair<string, string>("ScriptManager1", "UpdatePanel1|btnSubmit"));
@@ -268,8 +271,20 @@ namespace FJSZ.OA.Common.Web
             paramList.Add(new KeyValuePair<string, string>("__ASYNCPOST", "true"));
             paramList.Add(new KeyValuePair<string, string>("btnSubmit", "登录"));
             HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
+            string[] strCookies = (string[])response.Headers.GetValues("Set-Cookie");
             String result1 = response.Content.ReadAsStringAsync().Result;
         }
+
+
+
+
+
+
+
+
+
+
+
     }
 }
 

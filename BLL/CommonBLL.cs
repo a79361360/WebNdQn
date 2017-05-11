@@ -1,5 +1,6 @@
 ﻿using Common;
 using Common.ExHelp;
+using CsharpHttpHelper;
 using DAL;
 using FJSZ.OA.Common.Web;
 using Model.CommonModel;
@@ -81,8 +82,9 @@ namespace BLL
                 if (list.Count > 0)
                 {
                     T_CooperConfig dto = list[0];
-                    WebHttp web = new WebHttp();
-                    web.SendLoginPost(dto.corpid, dto.username, dto.userpwd, ctype, issue);   //生成登入cache,等待短信
+                    //WebHttp web = new WebHttp();
+                    //web.SendLoginPost(dto.corpid, dto.username, dto.userpwd, ctype, issue);   //生成登入cache,等待短信
+                    HelpWebLogin(dto.corpid, dto.username, dto.userpwd, ctype, issue);
                 }
             }
             //WebHttp web = new WebHttp();
@@ -148,6 +150,62 @@ namespace BLL
             //    return false;
             //}
         }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        public void HelpWebLogin(string corpid, string username, string userpwd, int ctype, int issue) {
+            HttpHelper helpweb = new HttpHelper();
+            HttpItem item = new HttpItem()
+            {
+                URL = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t",//URL     必需项    
+                Method = "get",//URL     可选项 默认为Get   
+                ContentType = "text/html",//返回类型    可选项有默认值   
+                //ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
+            };
+            //请求的返回值对象
+            HttpResult result = helpweb.GetHtml(item);
+            //获取请请求的Html
+            string html = result.Html;
+            //获取请求的Cookie
+            string cookie = result.Cookie;
+
+            string postdata = "LoginType=1&SMSTimes=90&SMSAliasTimes=90&txtCorpCode=" + corpid + "&txtUserName" + username + "&rbl_PType=1&txtPd=" + userpwd.Insert(3, "1@3S") + "&txtCheckCode=&button3=登录&txtQDLRegisterUrl=/ADCQDLPortal/Production/ProductOrderControl.aspx";
+            helpweb = new HttpHelper();
+            item = new HttpItem()
+            {
+                URL = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t",//URL     必需项    
+                Method = "post",//URL     可选项 默认为Get   
+                ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值
+                Postdata = postdata,//Post要发送的数据
+                Allowautoredirect = true,//自动跳转
+                AutoRedirectCookie = true//是否自动处理Cookie 
+            };
+            //请求的返回值对象
+            result = helpweb.GetHtml(item);
+            //获取请请求的Html
+            html = result.Html;
+            //获取请求的Cookie
+            string cookie1 = result.Cookie;
+            string curcookie = HttpHelper.MergerCookies(cookie, cookie1);
+
+        }
+
+
+
+
+
         /// <summary>
         /// 模拟提交数据，完成给用户发送流量功能
         /// </summary>

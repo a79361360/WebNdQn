@@ -40,7 +40,7 @@ namespace DAL
             string sql = "SELECT top 1 [id],[ctype],[issue],[title],[descride],[imgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE signphone=@phone and state=1 order by id desc";
             SqlParameter[] parameter = new[]
             {
-                new SqlParameter("@phone",SqlDbType.Int)
+                new SqlParameter("@phone",SqlDbType.NVarChar,20)
             };
             parameter[0].Value = phone;
             DataTable dt = dal.ExtSql(sql, parameter);
