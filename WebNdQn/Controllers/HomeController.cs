@@ -8,6 +8,7 @@ using System.Web.Mvc;
 using Fgly.Common.Expand;
 using Model.WxModel;
 using FJSZ.OA.Common.Web;
+using System.Net.Http;
 
 namespace WebNdQn.Controllers
 {
@@ -15,6 +16,69 @@ namespace WebNdQn.Controllers
     {
         CommonBLL bll = new CommonBLL();
         WeiXinBLL wxll = new WeiXinBLL();
+        public ActionResult Wx_Auth_Code() {
+            if (Request["code"] == null || Request["state"] == null) {
+                return Content("参数为空");
+            }
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Wx_Auth_Code");
+            string code = Request["code"].ToString();
+            string state = Request["state"].ToString();
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "code：" + code + " state: " + state);
+            WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(Wx_config.appid, Wx_config.appsecret, code);
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "取得token值：" + dto1.access_token + " 取得Openid值: " + dto1.openid);
+            //取得CGI的token值
+            string cgi_token = wxll.Get_Cgi_Taoke(Wx_config.appid, Wx_config.appsecret);
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "cgi_token：" + cgi_token);
+            Wx_UserInfo dto2 = wxll.Get_Cgi_UserInfo(dto1.openid, cgi_token);
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "subscribe：" + dto2.subscribe + "openid: " + dto2.openid);
+            string url = state.Replace("|","&")+ "&gzstate=" + dto2.subscribe;
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "url：" + url);
+            return Redirect(url);
+        }
+        public ActionResult Default() {
+            if (Request["gzstate"] == null)
+            {
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate为空");
+                //snsapi_base,snsapi_userinfo
+                string state = Request.Url.AbsoluteUri.Replace("&", "|");
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "state的值： " + state);
+                string url = wxll.Wx_Auth_Code(Wx_config.appid, "http://wx.ndll800.com/Home/Wx_Auth_Code", "snsapi_base", state);
+                return Redirect(url);
+            }
+            else {
+                string gz = Request["gzstate"].ToString();
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate：" + gz);
+                ViewBag.Gz = gz;
+            }
+            return View();
+        }
+        public ActionResult SignPhoneFilter_gz() {
+            if (Request["phone"] == null || Request["ctype"] == null || Request["issue"] == null)
+            {
+                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            }
+            string phone = Request["phone"].ToString();     //用户手机号码
+            string ctype = Request["ctype"].ToString();     //公司类型
+            string issue = Request["issue"].ToString();     //活动期号
+            phone = phone.Substring(0, 7);
+            string path = Server.MapPath(@"/Content/Txt/pwebconfig.txt");
+            bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
+            if (result)
+            {
+                int de_reslut = bll.DecidePhone(phone, Convert.ToInt32(ctype), Convert.ToInt32(issue));   //手机号码是否已经参加过活动
+                if (de_reslut > 0)
+                {
+                    return JsonFormat(new ExtJson { success = false, msg = "当前手机号已经添加过活动" });
+                }
+                else {
+                    //产生Session状态
+                    //bll.SendLoginMsgCode(Convert.ToInt32(ctype), Convert.ToInt32(issue));  //调用发送流量充值，这个方法里面判断一下登入状态是否已经存在，如果存在直接调用，否则先调用登入的短信,做到这里，考虑到一个问题，充值的流量是不是一个固定值???
+                }
+                return JsonFormat(new ExtJson { success = true, msg = "验证通过允许充值" });
+            }
+            else
+                return JsonFormat(new ExtJson { success = false, msg = "活动仅限宁德移动手机用户参与" });
+        }
         public ActionResult Index()
         {
             int cooper = 0, issue = 1;
@@ -30,10 +94,13 @@ namespace WebNdQn.Controllers
             ViewBag.timestamp = timestamp;
             ViewBag.noncestr = noncestr;
             ViewBag.signatrue = signatrue;
-            ViewBag.title = dto.title;              //标题
-            ViewBag.desc = dto.descride;            //描述
-            ViewBag.imgurl = dto.imgurl;            //图片地址
-            ViewBag.linkurl = dto.linkurl;          //链接地址
+            if (dto != null)
+            {
+                ViewBag.title = dto.title;              //标题
+                ViewBag.desc = dto.descride;            //描述
+                ViewBag.imgurl = dto.imgurl;            //图片地址
+                ViewBag.linkurl = dto.linkurl;          //链接地址
+            }
             return View();
         }
         public ActionResult SignPhoneFilter() {

@@ -6,6 +6,7 @@ using FJSZ.OA.Common.Web;
 using Model.CommonModel;
 using Model.WxModel;
 using System;
+using System.Web;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -82,9 +83,9 @@ namespace BLL
                 if (list.Count > 0)
                 {
                     T_CooperConfig dto = list[0];
-                    //WebHttp web = new WebHttp();
-                    //web.SendLoginPost(dto.corpid, dto.username, dto.userpwd, ctype, issue);   //生成登入cache,等待短信
-                    HelpWebLogin(dto.corpid, dto.username, dto.userpwd, ctype, issue);
+                    WebHttp web = new WebHttp();
+                    web.SendLoginPost(dto.corpid, dto.username, dto.userpwd, ctype, issue);   //生成登入cache,等待短信
+                    //HelpWebLogin(dto.corpid, dto.username, dto.userpwd, ctype, issue);
                 }
             }
             //WebHttp web = new WebHttp();
@@ -127,30 +128,19 @@ namespace BLL
             if (list.Count > 0) {
                 T_CooperConfig dto = list[0];
                 int ctype = dto.ctype;int issue = dto.issue;    //公司类型，活动期号
-                HttpClient cache = (HttpClient)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_cache" + issue.ToString());    //登入cache
+                //HttpClient cache = (HttpClient)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_cache" + issue.ToString());    //登入cache
+                HttpClient cache = (HttpClient)HttpContext.Current.Session[ctype.ToString() + "login_cache" + issue.ToString()];
                 if (cache == null)
                 {
                     return -1005;   //登入cache已经失效，接收到登入的短信也没有用了
                 }
                 string result = (string)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_cache" + issue.ToString() + "str");
                 WebHttp web = new WebHttp();
+                //web.TakeCodeSaveLoginState(cache, code, result);
                 web.TakeCodeSaveLoginState(cache, code, result);
             }
             return 1;
-            //WebHttp web = new WebHttp();
-            //string url = "";
-            //string data = "";
-            //try
-            //{
-            //    string result = web.Post(url, data);
-            //    return true;
-            //}
-            //catch
-            //{
-            //    return false;
-            //}
         }
-
 
 
 

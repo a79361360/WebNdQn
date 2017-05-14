@@ -61,6 +61,43 @@ namespace BLL
             string signature = Encryptor.SHA1Encrypt(str.ToString());
             return signature.ToLower();
         }
+
+        /// <summary>
+        /// 取得CGI的TOKEN值
+        /// </summary>
+        /// <param name="appid"></param>
+        /// <param name="secret"></param>
+        /// <returns></returns>
+        public string Get_Cgi_Taoke(string appid, string secret) {
+            var t = FJSZ.OA.Common.CacheAccess.GetFromCache("cgi_token");
+            if (t == null)
+            {
+                string url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appid + "&secret=" + secret;
+                string result = web.Get(url);
+                WxJsApi_token dto = JsonConvert.DeserializeObject<WxJsApi_token>(result);
+                t = dto.access_token;
+                FJSZ.OA.Common.CacheAccess.InsertToCacheByTime("cgi_token", dto.access_token, 7200);
+            }
+            return t.ToString();
+        }
+        public Wx_UserInfo Get_Cgi_UserInfo(string openid,string token) {
+            string url = "https://api.weixin.qq.com/cgi-bin/user/info?access_token=" + token + "&openid=" + openid + "&lang=zh_CN";
+            string result = web.Get(url);
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Get_Cgi_UserInfo：" + result);
+            Wx_UserInfo dto = JsonConvert.DeserializeObject<Wx_UserInfo>(result);
+            return dto;
+        }
+        public string Wx_Auth_Code(string appid,string backurl,string scope,string state) {
+            string url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid="+appid+"&redirect_uri="+ backurl + "&response_type=code&scope="+ scope + "&state="+ state + "#wechat_redirect";
+            return url;
+        }
+        //取得网页授权token
+        public WxJsApi_token Wx_Auth_AccessToken(string appid,string secret,string code) {
+            string url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="+ appid + "&secret="+ secret + "&code="+ code + "&grant_type=authorization_code";
+            string result = web.Get(url);
+            WxJsApi_token dto = JsonConvert.DeserializeObject<WxJsApi_token>(result);
+            return dto;
+        }
         /// <summary>
         /// 将待签名的参数列表按ACSII码按字典排序后,再生成字符串
         /// </summary>

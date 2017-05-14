@@ -175,6 +175,7 @@
     <Content Include="Content\Img\bg_1.png" />
     <Content Include="Content\Img\btn_1.png" />
     <Content Include="Content\Img\guide1.png" />
+    <Content Include="Content\Img\wx_gzh.png" />
     <Content Include="Content\Txt\pwebconfig.txt" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -222,6 +223,7 @@
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
     <Content Include="Views\Home\TestShare.cshtml" />
     <Content Include="Views\Home\SendLoginPost.cshtml" />
+    <Content Include="Views\Home\Default.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

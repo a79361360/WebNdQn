@@ -193,9 +193,9 @@ namespace FJSZ.OA.Common.Web
         public void SendLoginPost(string corpid, string username, string userpwd,int ctype,int issue)
         {
             HttpClient httpClient = new HttpClient();
-            httpClient.MaxResponseContentBufferSize = 256000;
+            //httpClient.MaxResponseContentBufferSize = 256000;
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
-            httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
+            //httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
             String url = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t";
             HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
             String result = response.Content.ReadAsStringAsync().Result;
@@ -232,7 +232,9 @@ namespace FJSZ.OA.Common.Web
             string[] strCookies = (string[])response.Headers.GetValues("Set-Cookie");
             //临时跳转
             ECLogin(httpClient, ctype, issue);
-            FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(ctype.ToString() + "login_cache" + issue.ToString(), httpClient, 300);   //20分钟
+            //FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(ctype.ToString() + "login_cache" + issue.ToString(), httpClient, 300);   //20分钟
+            HttpContext.Current.Session[ctype.ToString() + "login_cache" + issue.ToString()] = httpClient;
+            //HttpContext.Current.Session[ctype.ToString() + "login_cookie" + issue.ToString()] = CookietoString(strCookies);
             //用完要记得释放
             //httpClient.Dispose();
         }
@@ -247,8 +249,43 @@ namespace FJSZ.OA.Common.Web
             string result = response.Content.ReadAsStringAsync().Result;
             FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(ctype.ToString() + "login_cache" + issue.ToString() + "str", result, 300);   //20分钟
         }
+        public void TakeCodeSaveLoginState(HttpClient httpClient, int code)
+        {
+            string url = "http://www.fj.10086.cn/power/ADCECPORTAL/EC/SMSLogin.aspx?msgType=SMS&logType=1";
+            HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
+            String result = response.Content.ReadAsStringAsync().Result;
+
+            String __LASTFOCUS = new Regex("id=\"__LASTFOCUS\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            String __EVENTTARGET = new Regex("id=\"__EVENTTARGET\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            String __EVENTARGUMENT = new Regex("id=\"__EVENTARGUMENT\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            String __VIEWSTATE = new Regex("id=\"__VIEWSTATE\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            String __VIEWSTATEGENERATOR = new Regex("id=\"__VIEWSTATEGENERATOR\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            String __VIEWSTATEENCRYPTED = new Regex("id=\"__VIEWSTATEENCRYPTED\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+
+            List<KeyValuePair<String, String>> paramList = new List<KeyValuePair<String, String>>();
+            paramList.Add(new KeyValuePair<string, string>("__LASTFOCUS", __LASTFOCUS));
+            paramList.Add(new KeyValuePair<string, string>("__EVENTTARGET", __EVENTTARGET));
+            paramList.Add(new KeyValuePair<string, string>("__EVENTARGUMENT", __EVENTARGUMENT));
+            paramList.Add(new KeyValuePair<string, string>("__VIEWSTATE", __VIEWSTATE));
+            paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEGENERATOR", __VIEWSTATEGENERATOR));
+
+            paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEENCRYPTED", __VIEWSTATEENCRYPTED));
+
+            paramList.Add(new KeyValuePair<string, string>("ScriptManager1", "UpdatePanel1|btnSubmit"));
+            paramList.Add(new KeyValuePair<string, string>("txtVCode", code.ToString()));
+            paramList.Add(new KeyValuePair<string, string>("MobileAndEmailCheck", ""));
+            paramList.Add(new KeyValuePair<string, string>("__ASYNCPOST", "true"));
+            paramList.Add(new KeyValuePair<string, string>("btnSubmit", "登录"));
+            url = "http://www.fj.10086.cn/power/ADCECPORTAL/EC/SMSLogin.aspx?msgType=SMS&logType=1";
+            response = httpClient.PostAsync(new Uri(url), new FormUrlEncodedContent(paramList)).Result;
+
+            // HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
+            string[] strCookies = (string[])response.Headers.GetValues("Set-Cookie");
+            String result1 = response.Content.ReadAsStringAsync().Result;
+        }
         public void TakeCodeSaveLoginState(HttpClient httpClient,int code,string result) {
             string url = "http://www.fj.10086.cn/power/ADCECPORTAL/EC/SMSLogin.aspx?msgType=SMS&logType=1";
+            
             String __LASTFOCUS = new Regex("id=\"__LASTFOCUS\" value=\"(.*?)\"").Match(result).Groups[1].Value;
             String __EVENTTARGET = new Regex("id=\"__EVENTTARGET\" value=\"(.*?)\"").Match(result).Groups[1].Value;
             String __EVENTARGUMENT = new Regex("id=\"__EVENTARGUMENT\" value=\"(.*?)\"").Match(result).Groups[1].Value;
@@ -270,20 +307,67 @@ namespace FJSZ.OA.Common.Web
             paramList.Add(new KeyValuePair<string, string>("MobileAndEmailCheck", ""));
             paramList.Add(new KeyValuePair<string, string>("__ASYNCPOST", "true"));
             paramList.Add(new KeyValuePair<string, string>("btnSubmit", "登录"));
-            HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
+            HttpResponseMessage response = httpClient.PostAsync(new Uri(url), new FormUrlEncodedContent(paramList)).Result;
+            
             string[] strCookies = (string[])response.Headers.GetValues("Set-Cookie");
             String result1 = response.Content.ReadAsStringAsync().Result;
+            url = "http://www.fj.10086.cn/power/adcecportal/EC/ECTransPage.aspx?refurl=NpK9bxYuGA%2bywHG1pfz8t8OgWt7%2fBdI2svgx3Q0663yX4lYfMd4eDijWpyadY7xdwOWhBbUiR7D3GkWXzztfZwtt2nK5xkg%2b0wljagpkaGF5RudZ9ahjoR7yEIEtQ9I4VggqI9mIrV%2bfUAbO8q%2f7mdw9shPUtRtRHnhjj4ufgSns53198sggPY%2b5AAsDkOumo6Y9QmeDzB5pIZXGzYeSPIHJBP1ZU09JyijyEysY%2f3w%3d";
+            response = httpClient.GetAsync(new Uri(url)).Result;
+            String result2 = response.Content.ReadAsStringAsync().Result;
         }
+        //public void TakeCodeSaveLoginState(string strcookie, int code, string result)
+        //{
+        //    string url = "http://www.fj.10086.cn/power/ADCECPORTAL/EC/SMSLogin.aspx?msgType=SMS&logType=1";
+
+        //    var baseAddress = new Uri(url);
+        //    using (var handler = new HttpClientHandler { UseCookies = false })
+        //    using (var httpClient = new HttpClient(handler) { BaseAddress = baseAddress })
+        //    {
+        //        String __LASTFOCUS = new Regex("id=\"__LASTFOCUS\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+        //        String __EVENTTARGET = new Regex("id=\"__EVENTTARGET\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+        //        String __EVENTARGUMENT = new Regex("id=\"__EVENTARGUMENT\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+        //        String __VIEWSTATE = new Regex("id=\"__VIEWSTATE\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+        //        String __VIEWSTATEGENERATOR = new Regex("id=\"__VIEWSTATEGENERATOR\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+        //        String __VIEWSTATEENCRYPTED = new Regex("id=\"__VIEWSTATEENCRYPTED\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+
+        //        List<KeyValuePair<String, String>> paramList = new List<KeyValuePair<String, String>>();
+        //        paramList.Add(new KeyValuePair<string, string>("__LASTFOCUS", __LASTFOCUS));
+        //        paramList.Add(new KeyValuePair<string, string>("__EVENTTARGET", __EVENTTARGET));
+        //        paramList.Add(new KeyValuePair<string, string>("__EVENTARGUMENT", __EVENTARGUMENT));
+        //        paramList.Add(new KeyValuePair<string, string>("__VIEWSTATE", __VIEWSTATE));
+        //        paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEGENERATOR", __VIEWSTATEGENERATOR));
+
+        //        paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEENCRYPTED", __VIEWSTATEENCRYPTED));
+
+        //        paramList.Add(new KeyValuePair<string, string>("ScriptManager1", "UpdatePanel1|btnSubmit"));
+        //        paramList.Add(new KeyValuePair<string, string>("txtVCode", code.ToString()));
+        //        paramList.Add(new KeyValuePair<string, string>("MobileAndEmailCheck", ""));
+        //        paramList.Add(new KeyValuePair<string, string>("__ASYNCPOST", "true"));
+        //        paramList.Add(new KeyValuePair<string, string>("btnSubmit", "登录"));
+        //        HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
+        //        string[] strCookies = (string[])response.Headers.GetValues("Set-Cookie");
+        //        String result1 = response.Content.ReadAsStringAsync().Result;
+        //        var message = new HttpRequestMessage(HttpMethod.Post, "/test");
+        //        message.Headers.Add("Cookie", strcookie);
+        //        message.Content
+        //        HttpResponseMessage result2 = client.SendAsync(message).Result;
+
+        //    }
+        //}
 
 
-
-
-
-
-
-
-
-
+        private string CookietoString(string[] cookie)
+        {
+            string strcookie = "";
+            foreach (var item in cookie)
+            {
+                if (strcookie == "")
+                    strcookie = item;
+                else
+                    strcookie += ";" + item;
+            }
+            return strcookie;
+        }
 
     }
 }
