@@ -23,11 +23,23 @@ namespace WebNdQn.Controllers
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Wx_Auth_Code");
             string code = Request["code"].ToString();
             string state = Request["state"].ToString();
+            Dictionary<string, string> dic = ParmToDic(state);      //字典
+            string ctype = "0", issue = "0";
+            if (dic.Count > 0)
+            {
+                ctype = dic["ctype"];
+                issue = dic["issue"];
+            }
+            else {
+                return Content("缺少参数");
+            }
+
+            T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "code：" + code + " state: " + state);
-            WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(Wx_config.appid, Wx_config.appsecret, code);
+            WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(dto.wx_appid, dto.wx_secret, code);
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "取得token值：" + dto1.access_token + " 取得Openid值: " + dto1.openid);
             //取得CGI的token值
-            string cgi_token = wxll.Get_Cgi_Taoke(Wx_config.appid, Wx_config.appsecret);
+            string cgi_token = wxll.Get_Cgi_Taoke(dto.wx_appid, dto.wx_secret);
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "cgi_token：" + cgi_token);
             Wx_UserInfo dto2 = wxll.Get_Cgi_UserInfo(dto1.openid, cgi_token);
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "subscribe：" + dto2.subscribe + "openid: " + dto2.openid);
@@ -35,17 +47,48 @@ namespace WebNdQn.Controllers
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "url：" + url);
             return Redirect(url);
         }
+        //转换成数组
+        public Dictionary<string, string> ParmToDic(string url) {
+            string[] str = url.Split('?');
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            if (str.Length > 1) {
+                string[] str1 = str[1].Split('|');
+                foreach(string item in str1){
+                    string[] str2 = item.Split('=');
+                    dic.Add(str2[0], str2[1]);
+                }
+            }
+            //string lll = "http://wx.ndll800.com/home/default?ctype=1&issue=1";
+            //ParmToDic(lll);
+            return dic;
+        }
         public ActionResult Default() {
             if (Request["gzstate"] == null)
             {
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate为空");
-                //snsapi_base,snsapi_userinfo
-                string state = Request.Url.AbsoluteUri.Replace("&", "|");
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "state的值： " + state);
-                string url = wxll.Wx_Auth_Code(Wx_config.appid, "http://wx.ndll800.com/Home/Wx_Auth_Code", "snsapi_base", state);
-                return Redirect(url);
+                if (Request["ctype"] == null || Request["issue"] == null)
+                {
+                    return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+                }
+                string ctype = Request["ctype"].ToString(); string issue = Request["issue"].ToString();
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "参数非空 ctype: " + ctype + "issue: " + issue);
+                T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
+                if (dto != null)
+                {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate为空");
+                    //snsapi_base,snsapi_userinfo
+                    string state = Request.Url.AbsoluteUri.Replace("&", "|");
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "state的值： " + state);
+                    string url = wxll.Wx_Auth_Code(dto.wx_appid, "http://wx.ndll800.com/Home/Wx_Auth_Code", "snsapi_base", state);
+                    return Redirect(url);
+                }
+                else
+                {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "未进行客户信息配置： ctype: " + ctype + "issue: " + issue);
+                    return JsonFormat(new ExtJson { success = false, msg = "配置为空" });
+                }
             }
-            else {
+            else
+            {
                 string gz = Request["gzstate"].ToString();
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate：" + gz);
                 ViewBag.Gz = gz;
@@ -94,6 +137,34 @@ namespace WebNdQn.Controllers
             ViewBag.timestamp = timestamp;
             ViewBag.noncestr = noncestr;
             ViewBag.signatrue = signatrue;
+            if (cooper == 2) {
+                ViewBag.bg = "../Content/Img/bg_oppo.png";
+                ViewBag.btn = "../Content/Img/btn_oppo.png";
+            }
+            if (dto != null)
+            {
+                ViewBag.title = dto.title;              //标题
+                ViewBag.desc = dto.descride;            //描述
+                ViewBag.imgurl = dto.imgurl;            //图片地址
+                ViewBag.linkurl = dto.linkurl;          //链接地址
+            }
+            return View();
+        }
+        public ActionResult OppoIndex() {
+            int ctype = 0, issue = 1;
+            if (Request.QueryString["ctype"] != null)
+            {
+                ctype = Convert.ToInt32(Request.QueryString["ctype"]);
+                issue = Convert.ToInt32(Request.QueryString["issue"]);
+            }
+            T_CooperConfig dto = wxll.Get_CooperConfig(ctype, issue);                              //取得配置
+            long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
+            string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
+            string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
+            ViewBag.appid = Wx_config.appid;
+            ViewBag.timestamp = timestamp;
+            ViewBag.noncestr = noncestr;
+            ViewBag.signatrue = signatrue;
             if (dto != null)
             {
                 ViewBag.title = dto.title;              //标题
@@ -122,7 +193,7 @@ namespace WebNdQn.Controllers
                 }
                 else {
                     //产生Session状态
-                    bll.SendLoginMsgCode(Convert.ToInt32(ctype), Convert.ToInt32(issue));  //调用发送流量充值，这个方法里面判断一下登入状态是否已经存在，如果存在直接调用，否则先调用登入的短信,做到这里，考虑到一个问题，充值的流量是不是一个固定值???
+                    //bll.SendLoginMsgCode(Convert.ToInt32(ctype), Convert.ToInt32(issue));  //调用发送流量充值，这个方法里面判断一下登入状态是否已经存在，如果存在直接调用，否则先调用登入的短信,做到这里，考虑到一个问题，充值的流量是不是一个固定值???
                 }
                 return JsonFormat(new ExtJson { success = true, msg = "验证通过允许充值" });
             }

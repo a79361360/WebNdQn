@@ -10,6 +10,10 @@ namespace Model.WxModel
     {
 
     }
+    public class Wx_kf_Config{
+        public string appid { get; set; }
+        public string appsecret { get; set; }
+    }
     public static class Wx_config {
         public static string appid = "wx0d8924c9bc2c6e11";
         public static string appsecret = "9c0125be80b710c17e09124f13c82b24";

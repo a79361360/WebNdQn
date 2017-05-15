@@ -173,9 +173,11 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Img\bg_1.png" />
+    <Content Include="Content\Img\bg_oppo.png" />
     <Content Include="Content\Img\btn_1.png" />
+    <Content Include="Content\Img\btn_oppo.png" />
     <Content Include="Content\Img\guide1.png" />
-    <Content Include="Content\Img\wx_gzh.png" />
+    <Content Include="Content\Img\wx_share_oppo.png" />
     <Content Include="Content\Txt\pwebconfig.txt" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -224,6 +226,7 @@
     <Content Include="Views\Home\TestShare.cshtml" />
     <Content Include="Views\Home\SendLoginPost.cshtml" />
     <Content Include="Views\Home\Default.cshtml" />
+    <Content Include="Views\Home\OppoIndex.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
