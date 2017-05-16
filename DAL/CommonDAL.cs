@@ -20,7 +20,7 @@ namespace DAL
         /// <returns></returns>
         public DataTable GetCooperConfig(int ctype,int issue)
         {
-            string sql = "SELECT [id],[ctype],[issue],[title],[descride],[imgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state=1";
+            string sql = "SELECT [id],[ctype],[issue],[title],[descride],[imgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state=1";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),

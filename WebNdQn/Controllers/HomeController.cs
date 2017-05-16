@@ -35,17 +35,23 @@ namespace WebNdQn.Controllers
             }
 
             T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
-            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "code：" + code + " state: " + state);
-            WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(dto.wx_appid, dto.wx_secret, code);
-            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "取得token值：" + dto1.access_token + " 取得Openid值: " + dto1.openid);
-            //取得CGI的token值
-            string cgi_token = wxll.Get_Cgi_Taoke(dto.wx_appid, dto.wx_secret);
-            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "cgi_token：" + cgi_token);
-            Wx_UserInfo dto2 = wxll.Get_Cgi_UserInfo(dto1.openid, cgi_token);
-            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "subscribe：" + dto2.subscribe + "openid: " + dto2.openid);
-            string url = state.Replace("|","&")+ "&gzstate=" + dto2.subscribe;
-            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "url：" + url);
-            return Redirect(url);
+            if (dto != null)
+            {
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "code：" + code + " state: " + state);
+                WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(dto.wx_appid, dto.wx_secret, code);
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "取得token值：" + dto1.access_token + " 取得Openid值: " + dto1.openid);
+                //取得CGI的token值
+                string cgi_token = wxll.Get_Cgi_Taoke(dto.wx_appid, dto.wx_secret);
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "cgi_token：" + cgi_token);
+                Wx_UserInfo dto2 = wxll.Get_Cgi_UserInfo(dto1.openid, cgi_token);
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "subscribe：" + dto2.subscribe + "openid: " + dto2.openid);
+                string url = state.Replace("|", "&") + "&gzstate=" + dto2.subscribe;
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "url：" + url);
+                return Redirect(url);
+            }
+            else {
+                return Content("缺少配置");
+            }
         }
         //转换成数组
         public Dictionary<string, string> ParmToDic(string url) {
@@ -62,6 +68,7 @@ namespace WebNdQn.Controllers
             //ParmToDic(lll);
             return dic;
         }
+        //关注公众号
         public ActionResult Default() {
             if (Request["gzstate"] == null)
             {
@@ -89,9 +96,24 @@ namespace WebNdQn.Controllers
             }
             else
             {
+                if (Request["ctype"] == null || Request["issue"] == null || Request["gzstate"] == null) {
+                    return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+                }
+                string ctype = Request["ctype"].ToString();
+                string issue = Request["issue"].ToString();
                 string gz = Request["gzstate"].ToString();
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate：" + gz);
-                ViewBag.Gz = gz;
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "ctype：" + ctype+ "issue：" + issue + "gzstate：" + gz);
+                T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
+                if (dto != null)
+                {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate：" + gz);
+                    ViewBag.qrcode = dto.qrcode_url;
+                    ViewBag.Gz = gz;
+                }
+                else {
+                    return JsonFormat(new ExtJson { success = false, msg = "配置为空" });
+                }
+                
             }
             return View();
         }
@@ -122,6 +144,7 @@ namespace WebNdQn.Controllers
             else
                 return JsonFormat(new ExtJson { success = false, msg = "活动仅限宁德移动手机用户参与" });
         }
+        //分享到朋友或者朋友圈
         public ActionResult Index()
         {
             int cooper = 0, issue = 1;

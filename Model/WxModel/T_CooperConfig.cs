@@ -21,6 +21,7 @@ namespace Model.WxModel
         public string signphone { get; set; }
         public string wx_appid { get; set; }
         public string wx_secret { get; set; }
+        public string qrcode_url { get; set; }
         public int state { get; set; }
         public DateTime addtime {get;set;}
     }

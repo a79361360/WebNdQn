@@ -177,6 +177,8 @@
     <Content Include="Content\Img\btn_1.png" />
     <Content Include="Content\Img\btn_oppo.png" />
     <Content Include="Content\Img\guide1.png" />
+    <Content Include="Content\Img\qrcode_for_gh_cb6992e9a18c_430.jpg" />
+    <Content Include="Content\Img\wx_gzh.png" />
     <Content Include="Content\Img\wx_share_oppo.png" />
     <Content Include="Content\Txt\pwebconfig.txt" />
     <Content Include="favicon.ico" />
