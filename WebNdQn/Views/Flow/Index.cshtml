@@ -1,0 +1,171 @@
+﻿
+@{
+    Layout = null;
+}
+@using Model.WxModel
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <script type="text/javascript" src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#search").click(function () {
+                var field = $("#field").attr("v_val");  //title
+                var fieldv = $("#fieldv").val();        //phone
+                var url = "/Flow/FindFlowSearch";
+                var data = { ctype: field, phone: fieldv };
+                searchlist(url, data);
+            })
+            $('.dropdown-menu a').click(function () {
+                var txt = $(this).text(); var val = $(this).attr("v_val");
+                var objdrop = $(this).parent().parent().siblings("button").eq(0);
+                objdrop.text(txt); objdrop.attr("v_val", val);
+            })
+        })
+        //tips
+        tips = function (content, timeout) {
+            var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
+            var obj = $(BootDialog);obj.modal('show');
+            setTimeout(function () { obj.modal('hide') }, timeout * 1000);
+        }
+        //查询返回列晴
+        searchlist = function (url, data) {
+            $.getJSON(url, data, function (ret) {
+                if (ret.code == 1000) {
+                    var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:45px;\">序号</th><th style=\"width:119px;\">Ctype</th><th style=\"width:118px;\">手机号码</th><th style=\"width:118px;\">充值状态</th><th style=\"width:118px;\">添加时间</th></tr></thead>";
+                    $.each(ret.jsonresult, function (i, o) {
+                        str += "<tr><td>" + i + "</td><td>" + o.ctype + "</td><td>" + o.phone + "</td><td>" + BoolText(o.state) + "</td><td>" + o.addtime + "</td></tr>";
+                    })
+                    str += "</table>";
+                    $("#ulist").html(str);
+                }else
+                    tips("查询失败.", 1);
+            })
+        }
+        pagelist = function (url, data) {
+            var isInited = $("#page").pagination();
+            if (isInited) $("#page").pagination('destroy');
+            var text = $("#text").val();
+            var type = $("#sel").val();
+            $("#page").pagination({
+                firstBtnText: '首页',
+                lastBtnText: '尾页',
+                prevBtnText: '上一页',
+                nextBtnText: '下一页',
+                showInfo: true,
+                showJump: true,
+                jumpBtnText: '跳转',
+                showPageSizes: true,
+                infoFormat: '{start} ~ {end}条，共{total}条',
+                debug: true,
+                pageElementSort: ['$page', '$size', '$jump', '$info'],
+                remote: {
+                    url: url,  //请求地址
+                    params: data,       //自定义请求参数
+                    success: function (data) {
+                        //console.log(data)
+                        if (data.code == 1000) {
+                            var caption = "<caption><div class=\"btn-toolbar\" role=\"toolbar\">";
+                            caption += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-default\">新增</button></div>";
+                            caption += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-default\">编辑</button></div>";
+                            caption += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-default\">删除</button></div>";
+                            caption += "</div></caption>";
+                            var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:119px;\">用户ID</th><th style=\"width:118px;\">用户昵称</th><th style=\"width:118px;\">用户金币</th><th style=\"width:118px;\">用户类型</th><th style=\"width:118px;\">用户封号</th><th style=\"width:118px;\">最后登入IP</th><th style=\"width:118px;\">AI</th><th style=\"width:118px;\">操作</th></tr></thead>";
+                            $.each(data.data, function (i, o) {
+                                var btnstr = "暂停"; var utype = 2;
+                                if (o.State == "2") { btnstr = "开启"; utype = 3; }
+                                str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\"></td><td>" + o.Userid + "</td><td>" + o.NickName + "</td><td>" + o.UserJb + "</td><td>" + ReUname(o.UserType) + "</td><td>" + BoolText(o.UserDisable) + "</td><td>" + o.UserLoginIp + "</td><td>" + BoolText(o.IsRobot) + "</td><td><button onclick=\"CloseAutoTz(" + o.Userid + ",this)\">停止投注</button></td></tr>";
+                            })
+                            str += "</table>";
+                            $("#ulist").html(str);
+                            $("#allqx").click(function () {togglechg();})
+                        }
+                    },
+                    totalName: 'total'              //指定返回数据的总数据量的字段名
+                }
+            });
+        }
+        //返回是否
+        BoolText = function (v) {
+            if (v == 0) return "待充值";
+            else if (v == 1) return "充值完成";
+            else if (v == 2) return "充值失败";
+
+        }
+        //试玩名称
+        function ReUname(utype) {
+            if (utype == "1") return "PC蛋蛋";
+            if (utype == "2") return "聚享游";
+            if (utype == "3") return "易瑞特";
+            if (utype == "4") return "蹦蹦网";
+            if (utype == "5") return "快乐赚";
+            if (utype == "9") return "趣吧24";
+            if (utype == "60") return "天天钻";
+            if (utype == "145") return "稻米网";
+            if (utype == "146") return "集趣";
+            if (utype == "147") return "聚聚玩";
+            if (utype == "148") return "乐豆玩";
+            if (utype == "149") return "七Ux";
+            return "闽乐游";
+        }
+        //仅取消自动投注
+        CloseAutoTz = function (userid, e) {
+            $.ajax({
+                type: 'post',
+                url: 'UserList.aspx',
+                dataType: 'json',
+                data: { action: "stopautotz", userid: userid, gameid: 1 },
+                success: function (ret) {
+                    if (ret.code == 1000) {
+                        tips(ret.tips, 2);
+                    } else {
+                        tips(ret.tips, 2);
+                    }
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+    <div class="container" style="margin-left:0px; padding-left:0px">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <form action="" class="bs-example bs-example-form" role="form">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="input-group" style="float:left;">
+                                <div class="btn-group" style="float: left;">
+                                    <button id="field" type="button" v_val="-1" class="btn btn-default">默认</button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">切换下拉菜单</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" v_val="-1">默认</a></li>
+                                        @foreach (var item in (List<T_CooperConfig>)ViewBag.CooperDrop)
+                                        {
+                                            <li><a href="#" v_val="@item.ctype">@item.title</a></li>
+                                        }
+                                    </ul>
+                                </div>
+                                <input id="fieldv" type="text" class="form-control" style="width: 220px;margin:0 5px" />
+                            </div><!-- /input-group -->
+                            <button id="search" type="button" style="float:left; margin-left:5px;" class="btn btn-default">查询</button>
+                        </div><!-- /.col-lg-6 -->
+                    </div><!-- /.row -->
+                </form>
+            </div>
+            <div class="panel-body">
+                <div id="ulist"></div>
+                <div id="page" class="m-pagination"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

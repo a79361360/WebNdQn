@@ -7,11 +7,12 @@
     $(function () {
         $("#btn").bind("click", function () {
             var phone = $("#phone").val();   //手机号码
+            
             if (!telRuleCheck2(phone)) { alert("请输入正确的手机号码"); return }
             if (parseInt(sharenum)<1) { alert("您需要先关注一下我们的微信众公号");_system._guide(true); return }
             var ctype = $(this).getUrlParam("ctype");
             var issue = $(this).getUrlParam("issue");
-            $.getJSON("/Home/SignPhoneFilter", { phone: phone,ctype:ctype,issue:issue }, function (ret) {
+            $.getJSON("/Home/SignPhoneFilter_gz", { phone: phone,ctype:ctype,issue:issue }, function (ret) {
                 alert(ret.msg);
             })
         })
@@ -85,7 +86,9 @@
     #guide {
         display: none;
         position: absolute;
-        right: 18px;
+        right: 0;
+        left:0;
+        text-align:center;
         top: 5px;
         z-index: 19999;
     }

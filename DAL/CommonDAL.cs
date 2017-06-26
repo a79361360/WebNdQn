@@ -47,6 +47,21 @@ namespace DAL
             return dt;
         }
         /// <summary>
+        /// 取得公司的活动配置信息，下拉列表
+        /// </summary>
+        /// <param name="state">状态</param>
+        /// <returns></returns>
+        public DataTable GetCooperConfigDrop(int state) {
+            string sql = "SELECT [ctype],[issue],[title],state FROM [dbo].[T_CooperConfig] WHERE state=@state order by id desc";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@state",SqlDbType.Int)
+            };
+            parameter[0].Value = state;
+            DataTable dt = dal.ExtSql(sql, parameter);
+            return dt;
+        }
+        /// <summary>
         /// 当前手机是否已经添加过这个公司的这一期活动
         /// </summary>
         /// <param name="phone">用户手机号码</param>
@@ -73,15 +88,17 @@ namespace DAL
         /// <param name="ctype">公司类型</param>
         /// <param name="phone">手机号码</param>
         /// <returns>返回影响行数</returns>
-        public int TakeFlowLog(int ctype,string phone) {
-            string sql = "INSERT INTO [T_TakeFlowLog]([ctype],[phone])VALUES(@ctype,@phone)";
+        public int TakeFlowLog(int ctype, int issue, string phone) {
+            string sql = "INSERT INTO [T_TakeFlowLog]([ctype],[issue],[phone])VALUES(@ctype,@issue,@phone)";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
-                new SqlParameter("@phone",SqlDbType.Int)
+                new SqlParameter("@issue",SqlDbType.Int),
+                new SqlParameter("@phone", SqlDbType.NVarChar, 50)
             };
             parameter[0].Value = ctype;
-            parameter[1].Value = phone;
+            parameter[1].Value = issue;
+            parameter[2].Value = phone;
             return dal.IntExtSql(sql, parameter);
         }
         /// <summary>
@@ -91,17 +108,19 @@ namespace DAL
         /// <param name="phone">手机号码</param>
         /// <param name="code">验证码</param>
         /// <returns></returns>
-        public int TakeMsgCode(int type,string phone,int code) {
-            string sql = "INSERT INTO [T_MsgCode]([type],[phone],[code])VALUES(@type,@phone,@code)";
+        public int TakeMsgCode(int type,string phone,int code,string content) {
+            string sql = "INSERT INTO [T_MsgCode]([type],[phone],[code],[text])VALUES(@type,@phone,@code,@text)";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@type",SqlDbType.Int),
                 new SqlParameter("@phone",SqlDbType.NVarChar,20),
-                new SqlParameter("@code",SqlDbType.Int)
+                new SqlParameter("@code",SqlDbType.Int),
+                new SqlParameter("@text",SqlDbType.NVarChar,250)
             };
             parameter[0].Value = type;
             parameter[1].Value = phone;
             parameter[2].Value = code;
+            parameter[3].Value = content;
             return dal.IntExtSql(sql, parameter);
         }
     }

@@ -125,7 +125,6 @@ namespace WebNdQn.Controllers
             string phone = Request["phone"].ToString();     //用户手机号码
             string ctype = Request["ctype"].ToString();     //公司类型
             string issue = Request["issue"].ToString();     //活动期号
-            phone = phone.Substring(0, 7);
             string path = Server.MapPath(@"/Content/Txt/pwebconfig.txt");
             bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
             if (result)
@@ -136,10 +135,14 @@ namespace WebNdQn.Controllers
                     return JsonFormat(new ExtJson { success = false, msg = "当前手机号已经添加过活动" });
                 }
                 else {
+                    int result_f = bll.TakeFlowLog(Convert.ToInt32(ctype), Convert.ToInt32(issue), phone);
+                    if (result_f == 1)
+                        return JsonFormat(new ExtJson { success = true, msg = "验证通过允许充值" });
+                    else
+                        return JsonFormat(new ExtJson { success = false, msg = "写入充值记录失败，请重新尝试." });
                     //产生Session状态
                     //bll.SendLoginMsgCode(Convert.ToInt32(ctype), Convert.ToInt32(issue));  //调用发送流量充值，这个方法里面判断一下登入状态是否已经存在，如果存在直接调用，否则先调用登入的短信,做到这里，考虑到一个问题，充值的流量是不是一个固定值???
                 }
-                return JsonFormat(new ExtJson { success = true, msg = "验证通过允许充值" });
             }
             else
                 return JsonFormat(new ExtJson { success = false, msg = "活动仅限宁德移动手机用户参与" });
@@ -170,8 +173,9 @@ namespace WebNdQn.Controllers
                 ViewBag.desc = dto.descride;            //描述
                 ViewBag.imgurl = dto.imgurl;            //图片地址
                 ViewBag.linkurl = dto.linkurl;          //链接地址
+                //ViewBag.dto = dto;                      //实体类
             }
-            return View();
+            return View(dto);
         }
         public ActionResult OppoIndex() {
             int ctype = 0, issue = 1;
@@ -204,7 +208,6 @@ namespace WebNdQn.Controllers
             string phone = Request["phone"].ToString();     //用户手机号码
             string ctype = Request["ctype"].ToString();     //公司类型
             string issue = Request["issue"].ToString();     //活动期号
-            phone = phone.Substring(0, 7);
             string path = Server.MapPath(@"/Content/Txt/pwebconfig.txt");
             bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
             if (result)
@@ -215,10 +218,14 @@ namespace WebNdQn.Controllers
                     return JsonFormat(new ExtJson { success = false, msg = "当前手机号已经添加过活动" });
                 }
                 else {
+                    int result_f = bll.TakeFlowLog(Convert.ToInt32(ctype), Convert.ToInt32(issue), phone);
+                    if (result_f == 1)
+                        return JsonFormat(new ExtJson { success = true, msg = "验证通过允许充值" });
+                    else
+                        return JsonFormat(new ExtJson { success = false, msg = "写入充值记录失败，请重新尝试." });
                     //产生Session状态
                     //bll.SendLoginMsgCode(Convert.ToInt32(ctype), Convert.ToInt32(issue));  //调用发送流量充值，这个方法里面判断一下登入状态是否已经存在，如果存在直接调用，否则先调用登入的短信,做到这里，考虑到一个问题，充值的流量是不是一个固定值???
                 }
-                return JsonFormat(new ExtJson { success = true, msg = "验证通过允许充值" });
             }
             else
                 return JsonFormat(new ExtJson { success = false, msg = "活动仅限宁德移动手机用户参与" });
@@ -249,8 +256,31 @@ namespace WebNdQn.Controllers
             if (type == 1) {
                 bll.SaveLoginState(phone, code);
             }
-            int result = bll.TakeMsgCode(type, phone, code);    //将收到的验证码保存
+            int result = bll.TakeMsgCode(type, phone, code,"");    //将收到的验证码保存
             if (result > 0) {
+                return JsonFormat(new ExtJson { success = true, msg = "保存验证码成功" });
+            }
+            return JsonFormat(new ExtJson { success = false, msg = "保存验证码失败" });
+        }
+        public ActionResult TakeMobileCode()
+        {
+            if (Request["mobile"] == null || Request["content"] == null)
+            {
+                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            }
+            string phone = Request["mobile"].ToString();        //哪个手机号码接收到的
+            //int type = Convert.ToInt32(Request["type"]);      //1为登入2为充值
+            //int code = Convert.ToInt32(Request["code"]);        //验证码
+            int type = Convert.ToInt32("2");                    //1为登入2为充值
+            int code = 0;        //验证码
+            string content = Request["content"];     //短信内容
+            if (type == 1)
+            {
+                bll.SaveLoginState(phone, code);
+            }
+            int result = bll.TakeMsgCode(type, phone, code, content);    //将收到的验证码保存
+            if (result > 0)
+            {
                 return JsonFormat(new ExtJson { success = true, msg = "保存验证码成功" });
             }
             return JsonFormat(new ExtJson { success = false, msg = "保存验证码失败" });
@@ -275,6 +305,9 @@ namespace WebNdQn.Controllers
         public ActionResult SendLoginPost() {
             string url = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t";
             bll.SendLoginPost(url);
+            return View();
+        }
+        public ActionResult TestShare() {
             return View();
         }
     }

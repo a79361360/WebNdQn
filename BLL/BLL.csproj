@@ -45,6 +45,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AdminBLL.cs" />
     <Compile Include="CommonBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeiXinBLL.cs" />

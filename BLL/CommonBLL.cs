@@ -21,6 +21,7 @@ namespace BLL
     {
         CommonDAL dal = new CommonDAL();
         public bool ReadPhoneFliter(string phone, string path) {
+            phone = phone.Substring(0, 7);
             List<string> list = (List<string>)FJSZ.OA.Common.CacheAccess.GetFromCache("MoneyList");
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/ExtProc_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "开始时间:" + DateTime.Now.ToString("yyyy-MM-dd hh:mm:ss fffff"));
             if (list == null)
@@ -59,8 +60,8 @@ namespace BLL
         /// <param name="ctype">公司类型</param>
         /// <param name="phone">手机号码</param>
         /// <returns>返回影响行数</returns>
-        public int TakeFlowLog(int ctype,string phone) {
-            return dal.TakeFlowLog(ctype, phone);
+        public int TakeFlowLog(int ctype, int issue, string phone) {
+            return dal.TakeFlowLog(ctype, issue, phone);
         }
         /// <summary>
         /// 取得传送过来的验证码信息
@@ -68,9 +69,10 @@ namespace BLL
         /// <param name="type">1登入验证码，2充值验证码</param>
         /// <param name="phone">手机号码</param>
         /// <param name="code">验证码</param>
+        /// <param name="content">短信内容</param>
         /// <returns></returns>
-        public int TakeMsgCode(int type,string phone, int code) {
-            return dal.TakeMsgCode(type, phone, code);
+        public int TakeMsgCode(int type,string phone, int code,string content) {
+            return dal.TakeMsgCode(type, phone, code, content);
         }
         /// <summary>
         /// 发送登入短信验证码
@@ -141,8 +143,15 @@ namespace BLL
             }
             return 1;
         }
-
-
+        /// <summary>
+        /// 取得公司的活动配置信息，下拉列表
+        /// </summary>
+        /// <param name="state">状态</param>
+        /// <returns></returns>
+        public IList<T_CooperConfig> GetCooperConfigDrop(int state) {
+            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfigDrop(state));
+            return list;
+        }
 
 
 
