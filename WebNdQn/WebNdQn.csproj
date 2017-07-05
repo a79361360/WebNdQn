@@ -163,6 +163,7 @@
     <Compile Include="Controllers\CooperController.cs" />
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\MobileController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -180,6 +181,7 @@
     <Content Include="Content\Img\btn_oppo.png" />
     <Content Include="Content\Img\guide1.png" />
     <Content Include="Content\Img\qrcode_for_gh_cb6992e9a18c_430.jpg" />
+    <Content Include="Content\Img\top_up.png" />
     <Content Include="Content\Img\wx_gzh.png" />
     <Content Include="Content\Img\wx_share_oppo.png" />
     <Content Include="Content\Txt\pwebconfig.txt" />
@@ -236,6 +238,7 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Cooper\" />
+    <Folder Include="Views\Mobile\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

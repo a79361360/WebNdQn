@@ -3,11 +3,10 @@
 <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 <script src="~/Scripts/jquery-1.10.2.min.js"></script>
 <script type="text/javascript">
-    var sharenum = @ViewBag.Gz;       //分享次数
+    var sharenum = @ViewBag.Gz;       //原本用来区别分享次数的字段，用来表示是否关注公众号
     $(function () {
         $("#btn").bind("click", function () {
             var phone = $("#phone").val();   //手机号码
-            
             if (!telRuleCheck2(phone)) { alert("请输入正确的手机号码"); return }
             if (parseInt(sharenum)<1) { alert("您需要先关注一下我们的微信众公号");_system._guide(true); return }
             var ctype = $(this).getUrlParam("ctype");
@@ -29,6 +28,16 @@
             _system.$("cover").style.display="none";
             _system.$("guide").style.display="none"; _system.$("cover").onclick=null; window.onresize=null;
         }
+        //改变背景
+        chg_bg = function(){
+            var bgurl = '@ViewBag.bg';
+            var btnurl = '@ViewBag.btn';
+            if(bgurl!=""){
+                $(".bg")[0].style.backgroundImage="url("+bgurl+")";
+                $(".btn_1")[0].style.backgroundImage="url("+btnurl+")";
+            }
+        }
+        chg_bg();   //初始调用，改变背景图
     })
 </script>
 <style type="text/css">

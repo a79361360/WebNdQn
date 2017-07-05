@@ -26,7 +26,23 @@
                 var objdrop = $(this).parent().parent().siblings("button").eq(0);
                 objdrop.text(txt); objdrop.attr("v_val", val);
             })
+            showup();
         })
+        //回到顶部
+        //当滚动条的位置处于距顶部100像素以下时，跳转链接出现，否则消失
+        showup = function () {
+            $(window).scroll(function () {
+                if ($(window).scrollTop() > 100) 
+                    $("#back-to-top").fadeIn(1500);
+                else 
+                    $("#back-to-top").fadeOut(1500);
+            });
+            //当点击跳转链接后，回到页面顶部位置
+            $("#back-to-top").click(function () {
+                $('body,html').animate({ scrollTop: 0 }, 100);
+                return false;
+            });
+        }
         //tips
         tips = function (content, timeout) {
             var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
@@ -40,7 +56,7 @@
                 if (ret.code == 1000) {
                     var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:45px;\">序号</th><th style=\"width:119px;\">Ctype</th><th style=\"width:118px;\">手机号码</th><th style=\"width:118px;\">充值状态</th><th style=\"width:118px;\">添加时间</th></tr></thead>";
                     $.each(ret.jsonresult, function (i, o) {
-                        str += "<tr><td>" + i + "</td><td>" + o.ctype + "</td><td>" + o.phone + "</td><td>" + BoolText(o.state) + "</td><td>" + o.addtime + "</td></tr>";
+                        str += "<tr><td>" + (parseInt(i) + 1) + "</td><td>" + o.ctype + "</td><td>" + o.phone + "</td><td>" + BoolText(o.state) + "</td><td>" + o.addtime + "</td></tr>";
                     })
                     str += "</table>";
                     $("#ulist").html(str);
@@ -131,8 +147,47 @@
             })
         }
     </script>
+    <style type="text/css">
+    /*returnTop*/
+    p#back-to-top{
+        position:fixed;
+        display:none;
+        bottom:100px;
+        right:80px;
+    }
+    p#back-to-top a{
+        text-align:center;
+        text-decoration:none;
+        color:#979797;
+        display:block;
+        width:64px;
+        /*使用CSS3中的transition属性给跳转链接中的文字添加渐变效果*/
+        -moz-transition:color 1s;
+        -webkit-transition:color 1s;
+        -o-transition:color 1s;
+    }
+    p#back-to-top a:hover{
+        color:#979797;
+    }
+    p#back-to-top a span{
+        background:transparent url(../../Content/Img/top_up.png) no-repeat; /*-25px -290px*/
+        border-radius:6px;
+        display:block;
+        height:40px;
+        width:100px;
+        margin-bottom:5px;
+        /*使用CSS3中的transition属性给<span>标签背景颜色添加渐变效果*/
+        -moz-transition:background 1s;
+        -webkit-transition:background 1s;
+        -o-transition:background 1s;
+    }
+    #back-to-top a:hover span{
+        background:transparent url(../../Content/Img/top_up.png) no-repeat;
+    }
+    </style>
 </head>
 <body>
+    <p id="back-to-top"><a href="#top"><span></span></a></p>
     <div class="container" style="margin-left:0px; padding-left:0px">
         <div class="panel panel-primary">
             <div class="panel-heading">

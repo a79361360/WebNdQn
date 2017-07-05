@@ -33,13 +33,14 @@
         }
         //改变背景
         chg_bg = function(){
-            
             var bgurl = '@ViewBag.bg';
+            var btnurl = '@ViewBag.btn';
             if(bgurl!=""){
-                $(".bg")[0].style.backgroundImage="url(../Content/Img/bg_oppo.png)";
+                $(".bg")[0].style.backgroundImage="url("+bgurl+")";
+                $(".btn_1")[0].style.backgroundImage="url("+btnurl+")";
             }
         }
-        chg_bg();   //初始调用
+        chg_bg();   //初始调用，改变背景图
     })
 </script>
 <style type="text/css">

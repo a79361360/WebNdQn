@@ -109,6 +109,11 @@ namespace WebNdQn.Controllers
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate：" + gz);
                     ViewBag.qrcode = dto.qrcode_url;
                     ViewBag.Gz = gz;
+                    if (!string.IsNullOrEmpty(dto.bgurl))
+                    {
+                        ViewBag.bg = dto.bgurl;             //背景图
+                        ViewBag.btn = dto.btnurl;           //背景按钮图
+                    }
                 }
                 else {
                     return JsonFormat(new ExtJson { success = false, msg = "配置为空" });
@@ -135,6 +140,15 @@ namespace WebNdQn.Controllers
                     return JsonFormat(new ExtJson { success = false, msg = "当前手机号已经添加过活动" });
                 }
                 else {
+                    T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
+                    if (dto != null)
+                    {
+                        int limitnum = dto.uplimit;     //活动人数上限
+                        if (limitnum != 0 && bll.CtypeCount(Convert.ToInt32(ctype), Convert.ToInt32(issue)) >= limitnum)
+                        {
+                            return JsonFormat(new ExtJson { success = false, msg = "已经超过活动人数上限." });
+                        }
+                    }
                     int result_f = bll.TakeFlowLog(Convert.ToInt32(ctype), Convert.ToInt32(issue), phone);
                     if (result_f == 1)
                         return JsonFormat(new ExtJson { success = true, msg = "验证通过允许充值" });
@@ -163,16 +177,17 @@ namespace WebNdQn.Controllers
             ViewBag.timestamp = timestamp;
             ViewBag.noncestr = noncestr;
             ViewBag.signatrue = signatrue;
-            if (cooper == 2) {
-                ViewBag.bg = "../Content/Img/bg_oppo.png";
-                ViewBag.btn = "../Content/Img/btn_oppo.png";
-            }
             if (dto != null)
             {
                 ViewBag.title = dto.title;              //标题
                 ViewBag.desc = dto.descride;            //描述
                 ViewBag.imgurl = dto.imgurl;            //图片地址
                 ViewBag.linkurl = dto.linkurl;          //链接地址
+                if (!string.IsNullOrEmpty(dto.bgurl))
+                {
+                    ViewBag.bg = dto.bgurl;             //背景图
+                    ViewBag.btn = dto.btnurl;           //背景按钮图
+                }
                 //ViewBag.dto = dto;                      //实体类
             }
             return View(dto);
@@ -252,9 +267,9 @@ namespace WebNdQn.Controllers
             }
             string phone = Request["phone"].ToString();     //哪个手机号码接收到的
             int type = Convert.ToInt32(Request["type"]);    //1为登入2为充值
-            int code = Convert.ToInt32(Request["code"]);    //验证码
+            string code = Request["code"];    //验证码
             if (type == 1) {
-                bll.SaveLoginState(phone, code);
+                bll.SaveLoginState(phone, Convert.ToInt32(code));
             }
             int result = bll.TakeMsgCode(type, phone, code,"");    //将收到的验证码保存
             if (result > 0) {
@@ -272,13 +287,16 @@ namespace WebNdQn.Controllers
             //int type = Convert.ToInt32(Request["type"]);      //1为登入2为充值
             //int code = Convert.ToInt32(Request["code"]);        //验证码
             int type = Convert.ToInt32("2");                    //1为登入2为充值
-            int code = 0;        //验证码
+            
             string content = Request["content"];     //短信内容
+            if (content.Length < 15) return JsonFormat(new ExtJson { success = false, msg = "太短了不用保存" });
             if (type == 1)
             {
-                bll.SaveLoginState(phone, code);
+                bll.SaveLoginState(phone, 0);
             }
-            int result = bll.TakeMsgCode(type, phone, code, content);    //将收到的验证码保存
+            string code = bll.FilterMobileCode(phone, content);   //将短信里面的验证码解析出来
+            if (!code.IsInt()) return JsonFormat(new ExtJson { success = false, msg = "验证码取值错误" });
+            int result = bll.TakeMsgCode(type, phone, code, content);       //将收到的验证码保存
             if (result > 0)
             {
                 return JsonFormat(new ExtJson { success = true, msg = "保存验证码成功" });
@@ -308,6 +326,21 @@ namespace WebNdQn.Controllers
             return View();
         }
         public ActionResult TestShare() {
+            return View();
+        }
+        /// <summary>
+        /// 发送验证码
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SendMobileCode() {
+            bll.SendLoginMsgCode(21, 1);
+            //bll.HelpWebSend(21, 1);
+            return View();
+        }
+        public ActionResult LoginByMobileCode()
+        {
+            bll.LoginByMobileCode(21, 1);
+            //bll.HelpWebLogin(21, 1);
             return View();
         }
     }

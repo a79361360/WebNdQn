@@ -180,6 +180,100 @@ namespace FJSZ.OA.Common.Web
             //用完要记得释放
             httpClient.Dispose();
         }
+        /// <summary>
+        /// 发送登入的短信验证码
+        /// </summary>
+        /// <param name="corpid">企业代码</param>
+        /// <param name="username">企业账号</param>
+        public void SendLoginMobileCode(string corpid,string username) {
+            HttpClient httpClient = new HttpClient();
+            httpClient.MaxResponseContentBufferSize = 256000;
+            httpClient.DefaultRequestHeaders.ExpectContinue = false;
+            httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
+            String url = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t";
+            //HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
+            //String result = response.Content.ReadAsStringAsync().Result;
+
+            //String __EVENTTARGET = new Regex("id=\"__EVENTTARGET\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            //String __EVENTARGUMENT = new Regex("id=\"__EVENTARGUMENT\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            //String __LASTFOCUS = new Regex("id=\"__LASTFOCUS\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            //String __VIEWSTATE = new Regex("id=\"__VIEWSTATE\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            //String __VIEWSTATEGENERATOR = new Regex("id=\"__VIEWSTATEGENERATOR\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+            //String __VIEWSTATEENCRYPTED = new Regex("id=\"__VIEWSTATEENCRYPTED\" value=\"(.*?)\"").Match(result).Groups[1].Value;
+
+            List<KeyValuePair<String, String>> paramList = new List<KeyValuePair<String, String>>();
+            //paramList.Add(new KeyValuePair<string, string>("__EVENTTARGET", __EVENTTARGET));
+            //paramList.Add(new KeyValuePair<string, string>("__EVENTARGUMENT", __EVENTARGUMENT));
+            //paramList.Add(new KeyValuePair<string, string>("__LASTFOCUS", __LASTFOCUS));
+            //paramList.Add(new KeyValuePair<string, string>("__VIEWSTATE", __VIEWSTATE));
+            //paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEGENERATOR", __VIEWSTATEGENERATOR));
+            //paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEENCRYPTED", __VIEWSTATEENCRYPTED));
+            paramList.Add(new KeyValuePair<string, string>("__EVENTTARGET", "lbtn_GetSMS"));
+            paramList.Add(new KeyValuePair<string, string>("__EVENTARGUMENT", ""));
+            paramList.Add(new KeyValuePair<string, string>("__LASTFOCUS", ""));
+            paramList.Add(new KeyValuePair<string, string>("__VIEWSTATE", ""));
+            paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEGENERATOR", "CC3279BD"));
+            paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEENCRYPTED", ""));
+            
+
+            paramList.Add(new KeyValuePair<string, string>("LoginType", "1"));
+            paramList.Add(new KeyValuePair<string, string>("SMSTimes", "90"));
+            paramList.Add(new KeyValuePair<string, string>("SMSAliasTimes", "90"));
+            paramList.Add(new KeyValuePair<string, string>("txtCorpCode", corpid));
+            paramList.Add(new KeyValuePair<string, string>("txtUserName", username));
+            paramList.Add(new KeyValuePair<string, string>("rbl_PType", "2"));
+            paramList.Add(new KeyValuePair<string, string>("SMSP", ""));
+            paramList.Add(new KeyValuePair<string, string>("txtCheckCode", ""));
+            paramList.Add(new KeyValuePair<string, string>("txtQDLRegisterUrl", "/ADCQDLPortal/Production/ProductOrderControl.aspx"));
+            HttpResponseMessage response = httpClient.PostAsync(new Uri(url), new FormUrlEncodedContent(paramList)).Result;
+            string result = response.Content.ReadAsStringAsync().Result;
+            string[] strCookies = (string[])response.Headers.GetValues("Set-Cookie");
+            FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(corpid+"_cookie", strCookies, 3600);
+            FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(corpid + "_httpclient", httpClient, 3600);
+        }
+        /// <summary>
+        /// 根据企业代码，企业账号，短信验证码登入
+        /// </summary>
+        /// <param name="corpid">企业代码</param>
+        /// <param name="username">企业账号</param>
+        /// <param name="code">短信验证码</param>
+        public void LoginByMobileCode(string corpid, string username, string code) {
+            //HttpClient httpClient = new HttpClient();
+            HttpClient httpClient = (HttpClient)FJSZ.OA.Common.CacheAccess.GetFromCache(corpid + "_httpclient");
+            //httpClient.MaxResponseContentBufferSize = 256000;
+            //httpClient.DefaultRequestHeaders.ExpectContinue = false;
+            //httpClient.DefaultRequestHeaders.Add("user-agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36");
+            //下面的设置cookie无法成功
+            //string[] strCookies = (string[])FJSZ.OA.Common.CacheAccess.GetFromCache(corpid + "_cookie");
+            //httpClient.DefaultRequestHeaders.Add("Cookie", strCookies);
+            
+
+            String url = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t";
+            
+            List<KeyValuePair<String, String>> paramList = new List<KeyValuePair<String, String>>();
+            paramList.Add(new KeyValuePair<string, string>("__EVENTTARGET", ""));
+            paramList.Add(new KeyValuePair<string, string>("__EVENTARGUMENT", ""));
+            paramList.Add(new KeyValuePair<string, string>("__LASTFOCUS", ""));
+            paramList.Add(new KeyValuePair<string, string>("__VIEWSTATE", ""));
+            paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEGENERATOR", "CC3279BD"));
+            paramList.Add(new KeyValuePair<string, string>("__VIEWSTATEENCRYPTED", ""));
+
+            paramList.Add(new KeyValuePair<string, string>("LoginType", "1"));
+            paramList.Add(new KeyValuePair<string, string>("SMSTimes", "0"));
+            paramList.Add(new KeyValuePair<string, string>("SMSAliasTimes", "90"));
+            paramList.Add(new KeyValuePair<string, string>("txtCorpCode", corpid));
+            paramList.Add(new KeyValuePair<string, string>("txtUserName", username));
+            paramList.Add(new KeyValuePair<string, string>("rbl_PType", "2"));
+            paramList.Add(new KeyValuePair<string, string>("SMSP", code.ToString()));
+            paramList.Add(new KeyValuePair<string, string>("txtCheckCode", ""));
+            paramList.Add(new KeyValuePair<string, string>("button3", "登录"));
+            paramList.Add(new KeyValuePair<string, string>("txtQDLRegisterUrl", "/ADCQDLPortal/Production/ProductOrderControl.aspx"));
+
+            HttpResponseMessage response = httpClient.PostAsync(new Uri(url), new FormUrlEncodedContent(paramList)).Result;
+            string result = response.Content.ReadAsStringAsync().Result;
+            ECLogin(httpClient, 21, 1);
+        }
+
 
         /// <summary>
         /// 生成登入cache
@@ -244,7 +338,8 @@ namespace FJSZ.OA.Common.Web
         /// <param name="httpClient"></param>
         public void ECLogin(HttpClient httpClient,int ctype,int issue)
         {
-            string url = "http://www.fj.10086.cn/power/ADCECPortal/EC/ECUserLoginProcess.aspx?loginType=1&SMSCheck=0&Ref=%2fpower%2fNewGroupPortal%2fMYPower100%2fIndex.html";
+            //string url = "http://www.fj.10086.cn/power/ADCECPortal/EC/ECUserLoginProcess.aspx?loginType=1&SMSCheck=0&Ref=%2fpower%2fNewGroupPortal%2fMYPower100%2fIndex.html";
+              string url = "http://www.fj.10086.cn/power/ADCECPortal/EC/ECUserLoginProcess.aspx?loginType=1&SMSCheck=1&Ref=%2fpower%2fNewGroupPortal%2fMYPower100%2fIndex.html";
             HttpResponseMessage response = httpClient.GetAsync(new Uri(url)).Result;
             string result = response.Content.ReadAsStringAsync().Result;
             FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(ctype.ToString() + "login_cache" + issue.ToString() + "str", result, 300);   //20分钟

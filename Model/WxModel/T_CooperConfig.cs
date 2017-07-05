@@ -14,6 +14,8 @@ namespace Model.WxModel
         public string title {get;set;}
         public string descride {get;set;}
         public string imgurl {get;set;}
+        public string btnurl { get; set; }
+        public string bgurl { get; set; }
         public string linkurl {get;set;}
         public string corpid { get; set; }
         public string username { get; set; }
@@ -22,6 +24,7 @@ namespace Model.WxModel
         public string wx_appid { get; set; }
         public string wx_secret { get; set; }
         public string qrcode_url { get; set; }
+        public int uplimit { get; set; }
         public int state { get; set; }
         public DateTime addtime {get;set;}
     }

@@ -20,7 +20,7 @@ namespace DAL
         /// <returns></returns>
         public DataTable GetCooperConfig(int ctype,int issue)
         {
-            string sql = "SELECT [id],[ctype],[issue],[title],[descride],[imgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state=1";
+            string sql = "SELECT [id],[ctype],[issue],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[uplimit],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state=1";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
@@ -83,6 +83,24 @@ namespace DAL
             return result;
         }
         /// <summary>
+        /// 取得公司活动的号码收集数
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int CtypeInt(int ctype,int issue) {
+            string sql = "SELECT COUNT(*) FROM [dbo].[T_TakeFlowLog] where ctype=@ctype and issue=@issue";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int)
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            int result = Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
+            return result;
+        }
+        /// <summary>
         /// 添加领取流量的记录
         /// </summary>
         /// <param name="ctype">公司类型</param>
@@ -108,13 +126,13 @@ namespace DAL
         /// <param name="phone">手机号码</param>
         /// <param name="code">验证码</param>
         /// <returns></returns>
-        public int TakeMsgCode(int type,string phone,int code,string content) {
+        public int TakeMsgCode(int type,string phone,string code,string content) {
             string sql = "INSERT INTO [T_MsgCode]([type],[phone],[code],[text])VALUES(@type,@phone,@code,@text)";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@type",SqlDbType.Int),
                 new SqlParameter("@phone",SqlDbType.NVarChar,20),
-                new SqlParameter("@code",SqlDbType.Int),
+                new SqlParameter("@code",SqlDbType.NVarChar,6),
                 new SqlParameter("@text",SqlDbType.NVarChar,250)
             };
             parameter[0].Value = type;
@@ -122,6 +140,25 @@ namespace DAL
             parameter[2].Value = code;
             parameter[3].Value = content;
             return dal.IntExtSql(sql, parameter);
+        }
+        /// <summary>
+        /// 取得登入缓存的cookie
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public DataTable GetLoginCache(int ctype, int issue)
+        {
+            string sql = "SELECT [id],[ctype],[issue],[cookie],[lasttime] FROM [dbo].[T_LoginLogCache] WHERE ctype=@ctype";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int)
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            DataTable dt = dal.ExtSql(sql, parameter);
+            return dt;
         }
     }
 }

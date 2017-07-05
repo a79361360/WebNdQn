@@ -177,18 +177,6 @@ namespace System
         }
 
         /// <summary>
-        /// 判定是否是整数
-        /// </summary>
-        /// <param name="str"></param>
-        /// <returns></returns>
-        public static bool IsInt(this string str)
-        {
-            int num;
-            var result = int.TryParse(str ?? "", out num);
-            return result;
-        }
-
-        /// <summary>
         /// 转换为数字
         /// </summary>
         /// <param name="str"></param>
