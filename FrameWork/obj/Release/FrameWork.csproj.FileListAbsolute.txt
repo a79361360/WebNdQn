@@ -4,3 +4,9 @@ G:\ZongQiu\C#\Test\NdQn\WebNdQn\FrameWork\bin\Release\Newtonsoft.Json.dll
 G:\ZongQiu\C#\Test\NdQn\WebNdQn\FrameWork\obj\Release\FrameWork.csprojResolveAssemblyReference.cache
 G:\ZongQiu\C#\Test\NdQn\WebNdQn\FrameWork\obj\Release\FrameWork.dll
 G:\ZongQiu\C#\Test\NdQn\WebNdQn\FrameWork\obj\Release\FrameWork.pdb
+G:\NetWorkPace\WebNdQn\FrameWork\bin\Release\FrameWork.dll
+G:\NetWorkPace\WebNdQn\FrameWork\bin\Release\FrameWork.pdb
+G:\NetWorkPace\WebNdQn\FrameWork\bin\Release\System.Web.Mvc.dll
+G:\NetWorkPace\WebNdQn\FrameWork\obj\Release\FrameWork.dll
+G:\NetWorkPace\WebNdQn\FrameWork\obj\Release\FrameWork.pdb
+G:\NetWorkPace\WebNdQn\FrameWork\obj\Release\FrameWork.csprojResolveAssemblyReference.cache

@@ -2,3 +2,17 @@ G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\bin\Release\Common.dll
 G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\bin\Release\Common.pdb
 G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\obj\Release\Common.dll
 G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\obj\Release\Common.pdb
+G:\NetWorkPace\WebNdQn\Common\obj\Release\Common.dll
+G:\NetWorkPace\WebNdQn\Common\obj\Release\Common.pdb
+G:\NetWorkPace\WebNdQn\Common\bin\Release\Common.dll
+G:\NetWorkPace\WebNdQn\Common\bin\Release\Common.pdb
+G:\NetWorkPace\WebNdQn\Common\bin\Release\System.Web.Mvc.dll
+G:\NetWorkPace\WebNdQn\Common\bin\Release\System.Web.WebPages.dll
+G:\NetWorkPace\WebNdQn\Common\bin\Release\System.Web.WebPages.Deployment.dll
+G:\NetWorkPace\WebNdQn\Common\bin\Release\System.Web.Mvc.xml
+G:\NetWorkPace\WebNdQn\Common\bin\Release\System.Web.WebPages.xml
+G:\NetWorkPace\WebNdQn\Common\bin\Release\System.Web.WebPages.Deployment.xml
+G:\NetWorkPace\WebNdQn\Common\bin\Release\zh-Hans\System.Web.Mvc.resources.dll
+G:\NetWorkPace\WebNdQn\Common\bin\Release\zh-Hans\System.Web.WebPages.resources.dll
+G:\NetWorkPace\WebNdQn\Common\bin\Release\zh-Hans\System.Web.WebPages.Deployment.resources.dll
+G:\NetWorkPace\WebNdQn\Common\obj\Release\Common.csprojResolveAssemblyReference.cache

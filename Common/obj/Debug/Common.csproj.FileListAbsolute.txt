@@ -4,3 +4,17 @@ G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\obj\Debug\Common.dll
 G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\obj\Debug\Common.pdb
 G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\bin\Debug\MySql.Data.dll
 G:\ZongQiu\C#\Test\NdQn\WebNdQn\Common\obj\Debug\Common.csprojResolveAssemblyReference.cache
+G:\NetWorkPace\WebNdQn\Common\bin\Debug\Common.dll
+G:\NetWorkPace\WebNdQn\Common\bin\Debug\Common.pdb
+G:\NetWorkPace\WebNdQn\Common\bin\Debug\System.Web.Mvc.dll
+G:\NetWorkPace\WebNdQn\Common\bin\Debug\System.Web.WebPages.dll
+G:\NetWorkPace\WebNdQn\Common\bin\Debug\System.Web.WebPages.Deployment.dll
+G:\NetWorkPace\WebNdQn\Common\bin\Debug\System.Web.Mvc.xml
+G:\NetWorkPace\WebNdQn\Common\bin\Debug\System.Web.WebPages.xml
+G:\NetWorkPace\WebNdQn\Common\bin\Debug\System.Web.WebPages.Deployment.xml
+G:\NetWorkPace\WebNdQn\Common\bin\Debug\zh-Hans\System.Web.Mvc.resources.dll
+G:\NetWorkPace\WebNdQn\Common\bin\Debug\zh-Hans\System.Web.WebPages.resources.dll
+G:\NetWorkPace\WebNdQn\Common\bin\Debug\zh-Hans\System.Web.WebPages.Deployment.resources.dll
+G:\NetWorkPace\WebNdQn\Common\obj\Debug\Common.dll
+G:\NetWorkPace\WebNdQn\Common\obj\Debug\Common.pdb
+G:\NetWorkPace\WebNdQn\Common\obj\Debug\Common.csprojResolveAssemblyReference.cache

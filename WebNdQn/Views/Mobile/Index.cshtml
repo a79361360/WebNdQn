@@ -1,0 +1,281 @@
+﻿
+@{
+    Layout = null;
+}
+@using Model.WxModel
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Session状态管理</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#search").click(function () {
+                var field = $("#field").attr("v_val");  //title
+                var fieldv = $("#fieldv").val();        //phone
+                var url = "/Mobile/FindCacheList";
+                var data = { ctype: field, phone: fieldv };
+                searchlist(url, data);
+            })
+            $('.dropdown-menu a').click(function () {
+                var txt = $(this).text(); var val = $(this).attr("v_val");
+                var objdrop = $(this).parent().parent().siblings("button").eq(0);
+                objdrop.text(txt); objdrop.attr("v_val", val);
+            })
+        })
+        //查询返回列晴
+        searchlist = function (url, data) {
+            $.getJSON(url, data, function (ret) {
+                if (ret.code == 1000) {
+                    var caption = "<caption><div class=\"btn-toolbar\" role=\"toolbar\">";
+                    caption += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-default\" onclick=\"SignSession(1)\">验证登录Session</button></div>";
+                    caption += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-default\" onclick=\"SignSession(2)\">验证充值Session</button></div>";
+                    caption += "</div></caption>";
+
+                    var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:45px;\">序号</th><th style=\"width:45px;\">Ctype</th><th style=\"width:45px;\">期号</th><th style=\"width:118px;\">登入Cookie</th><th style=\"width:118px;\">充值Cookie</th><th style=\"width:118px;\">URL</th><th style=\"width:118px;\">Param</th><th style=\"width:118px;\">操作</th></tr></thead>" + caption;
+                    $.each(ret.jsonresult, function (i, o) {
+                        str += "<tr><td>" + (parseInt(i) + 1) + "</td><td>" + o.ctype + "</td><td>" + o.issue + "</td><td onclick=\"setdlcookie(" + o.ctype + "," + o.issue + ")\" title=\"" + o.dlcookie + "\">" + autoAddEllipsis(o.dlcookie, 15) + "</td><td title=\"" + o.cookie + "\">" + autoAddEllipsis(o.cookie, 10) + "</td><td title=\"" + o.czurl + "\">" + autoAddEllipsis(o.czurl, 10) + "</td><td title=\"" + o.czparam + "\">" + autoAddEllipsis(o.czparam, 10) + "</td><td><button class=\"btn btn-default\" onclick=\"SendToExecl(" + o.ctype + "," + o.issue + ",this)\">手动充值</button></td></tr>";
+                    })
+                    str += "</table>";
+                    $("#ulist").html(str);
+                } else
+                    tips("查询失败.", 1);
+            })
+        }
+        //设置登入cookie
+        setdlcookie = function (ctype, issue) {
+            var strhtml = "<form action=\"\" class=\"bs-example bs-example-form\" role=\"form\"><div class=\"row\"><div class=\"col-lg-12\"><div class=\"input-group\" style=\"float:left;\">";
+            strhtml += "<textarea id=\"dltext\" class=\"form-control\" rows=\"3\" style=\"width: 540px;margin:0 5px\" />";
+            strhtml += "</div></div></div></form>";
+            qiu_confirm("" + ctype, "添加登入Cookie", strhtml, 600, 120);
+        }
+        //验证登录/充值
+        SignSession = function (lx) {
+            if (lx == "1") keepzsession();
+            if (lx == "2") fivesend();
+        }
+        //手动充值
+        SendToExecl = function (ctype, issue, obj) {
+            var url = "/Mobile/SingleSendToExecl";
+            $.getJSON(url, { ctype: ctype, issue: issue }, function (ret) {
+                if (ret.code == 1000) {
+                    var content = "充值完成.";
+                    if (ret.jsonresult == "2")
+                        content = "充值完成,没有需要充值的用户!";
+                    if (ret.jsonresult != "1" && ret.jsonresult != "2")
+                        content = "充值失败，查询异常日志!";
+                    tips(content, 1);
+                } else
+                    tips("异常情况.", 1);
+            })
+        }
+        //截取字符串开始
+        function autoAddEllipsis(pStr, pLen) {
+            if (pStr == null) { pStr = ""; }
+            var _ret = cutString(pStr, pLen);
+            var _cutFlag = _ret.cutflag;
+            var _cutStringn = _ret.cutstring;
+
+            if ("1" == _cutFlag) {
+                return _cutStringn + "..";
+            } else {
+                return _cutStringn;
+            }
+        }
+        /* 
+        * 判断是否为全角 
+        *  
+        * pChar:长度为1的字符串 
+        * return: true:全角 
+        *          false:半角 
+        */
+        function isChar(pChar) {
+            if ((pChar.charCodeAt(0) > 128)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+        /* 
+        * 取得指定长度的字符串 
+        * 注：半角长度为1，全角长度为2 
+        *  
+        * pStr:字符串 
+        * pLen:截取长度 
+        *  
+        * return: 截取后的字符串 
+        */
+        function cutString(pStr, pLen) {
+            console.log(pStr)
+            // 原字符串长度  
+            var _strLen = pStr.length;
+
+            var _tmpCode;
+
+            var _cutString;
+
+            // 默认情况下，返回的字符串是原字符串的一部分  
+            var _cutFlag = "1";
+
+            var _lenCount = 0;
+
+            var _ret = false;
+
+            if (_strLen <= pLen / 2) {
+                _cutString = pStr;
+                _ret = true;
+            }
+
+            if (!_ret) {
+                for (var i = 0; i < _strLen; i++) {
+                    if (isChar(pStr.charAt(i))) {
+                        _lenCount += 2;
+                    } else {
+                        _lenCount += 1;
+                    }
+                    if (_lenCount > pLen) {
+                        _cutString = pStr.substring(0, i);
+                        _ret = true;
+                        break;
+                    } else if (_lenCount == pLen) {
+                        _cutString = pStr.substring(0, i + 1);
+                        _ret = true;
+                        break;
+                    }
+                }
+            }
+            if (!_ret) {
+                _cutString = pStr;
+                _ret = true;
+            }
+            if (_cutString.length == _strLen) {
+                _cutFlag = "0";
+            }
+            return { "cutstring": _cutString, "cutflag": _cutFlag };
+        }
+        //截取字符串结束
+        //tips
+        tips = function (content, timeout) {
+                var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+                BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
+                var obj = $(BootDialog); obj.modal('show');
+                setTimeout(function () { obj.modal('hide'); }, timeout * 1000);
+                //setTimeout(function () { obj.remove(); }, timeout * 1000);
+            }
+        //弹出窗体
+        //弹窗ID，标题，文字内容，宽度，高度
+        qiu_confirm = function (id, title, content, width, height) {
+            var iframe = $("#" + id);
+            if (iframe.length > 0) {
+                iframe.modal('show');
+                return;
+            }
+            if (width != null) {
+                width = "style=\"width:" + width + "px\"";
+            }
+            if (height != null) {
+                height = "style=\"height:" + height + "px;overflow:auto\"";
+            }
+            var header = "<div class=\"modal-header\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\" id=\"myModalLabel\">" + title + "</h4></div>"
+            var footer = "<div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">取消</button><button id=\"Tj\" type=\"button\" class=\"btn btn-primary\">确定</button></div>";
+            var BootDialog = "<div class=\"modal fade\" id=\"" + id + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"" + width + ">" + header + "<div class=\"modal-body\"" + height + ">" + content + "</div>" + footer + "</div></div></div>";
+            var obj = $(BootDialog); obj.modal('show');
+            obj.find("#Tj").click(function () {
+                var url = "/Mobile/UpdateDlCookie";
+                var dlcookie = $("#dltext").val();
+                if (dlcookie == "") { tips("登入的Cookie值不能为空.", 1); return; }
+                $.post(url, { ctype: id, issue: 1, dlcookie: dlcookie }, function (ret) {
+                    if (ret.code == "1000")
+                    {
+                        tips("更新成功.", 1);
+                    }
+                });
+                obj.modal('hide');
+            })
+        }
+        window.setInterval(function () { timedown() }, 1000);
+        //登录Session
+        keepzsession = function () {
+            var url = "/Mobile/KeepSessionEd?pl=1&lx=1"
+            $.getJSON(url, {}, function (ret) {
+                if (ret.code == 1000) {
+                    var data = ret.jsonresult.split('|');
+                    console.log("成功" + data[0] + "次，总共" + data[1] + "次");
+                    tips("成功" + data[0] + "次，总共" + data[1] + "次", 1);
+                }
+            })
+        }
+        //充值Session
+        fivesend = function () {
+            var url = "/Mobile/ToExeclSendMsgCode"
+            $.getJSON(url, {}, function (ret) {
+                if (ret.code == 1000) {
+                    console.log("成功");
+                    tips("命令已经执行", 1);
+                }
+            })
+        }
+        //每秒减1
+        timedown = function () {
+            var ztimes = $("#btn_ztimes").val();
+            var curtimes1 = parseFloat(ztimes) - 1;
+            $("#btn_ztimes").val(curtimes1);
+            $("#btn_ztimes").text(curtimes1 + '秒');
+            if (parseFloat(curtimes1) < 0) {
+                $("#btn_ztimes").val(1500);
+                keepzsession();
+            }
+
+            var ctimes = $("#btn_ctimes").val();
+            curtimes1 = parseFloat(ctimes) - 1;
+            $("#btn_ctimes").val(curtimes1);
+            $("#btn_ctimes").text(curtimes1 + '秒');
+            if (parseFloat(curtimes1) < 0) {
+                $("#btn_ctimes").val(250);
+                fivesend();
+            }
+        }
+    </script>
+</head>
+<body>
+    <p id="back-to-top"><a href="#top"><span></span></a></p>
+    <div class="container" style="margin-left:0px; padding-left:0px">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <form action="" class="bs-example bs-example-form" role="form">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="input-group" style="float:left;">
+                                <div class="btn-group" style="float: left;">
+                                    <button id="field" type="button" v_val="-1" class="btn btn-default">默认</button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">切换下拉菜单</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" v_val="-1">默认</a></li>
+                                        <li><a href="#" v_val="1">2</a></li>
+                                    </ul>
+                                </div>
+                                <input id="fieldv" type="text" class="form-control" style="width: 220px;margin:0 5px" />
+                            </div><!-- /input-group -->
+                            <button id="search" type="button" style="float:left; margin-left:5px;" class="btn btn-default">查询</button>
+                            <button id="btn_ztimes" value="1500" style="float:left; margin-left:5px;" type="button" class="btn btn-info">1500秒</button>
+                            <button id="btn_ctimes" value="250" style="float:left; margin-left:5px;" type="button" class="btn btn-info">250秒</button>
+                        </div><!-- /.col-lg-6 -->
+                    </div><!-- /.row -->
+                </form>
+            </div>
+            <div class="panel-body">
+                <div id="ulist"></div>
+                <div id="page" class="m-pagination"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
