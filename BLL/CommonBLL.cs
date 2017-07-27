@@ -74,8 +74,8 @@ namespace BLL
         /// <param name="code">验证码</param>
         /// <param name="content">短信内容</param>
         /// <returns></returns>
-        public int TakeMsgCode(int type,string phone, string code,string content) {
-            return dal.TakeMsgCode(type, phone, code, content);
+        public int TakeMsgCode(int type,string phone, string xh, string code,string content) {
+            return dal.TakeMsgCode(type, phone, xh, code, content);
         }
         /// <summary>
         /// 提取短信里面的验证码，并返回
@@ -83,12 +83,27 @@ namespace BLL
         /// <param name="mobile">哪个号码发送的短信</param>
         /// <param name="contnet">短信的内容</param>
         /// <returns></returns>
-        public string FilterMobileCode(string mobile,string contnet) {
+        public string FilterMobileCode(string mobile, string content)
+        {
             string pstr = "短信数字随机码为：";
             if (mobile == "10657532190000624") pstr = "下发的短信验证码是";
-            if (contnet.IndexOf(pstr) != -1)
+            if (content.IndexOf(pstr) != -1)
             {
-                string yzm = contnet.Substring(contnet.LastIndexOf(pstr) + 9, 6);
+                string yzm = content.Substring(content.LastIndexOf(pstr) + 9, 6);
+                return yzm;
+            }
+            return "0";
+        }
+        public string FilterMobileXh(string mobile,string content) {
+            string pstr = "序号为：";int len = 2;
+            if (mobile == "10657532190000624")
+            {
+                pstr = "信序列号";
+                len = content.Length - (content.LastIndexOf(pstr) + 4);
+            }
+            if (content.IndexOf(pstr) != -1)
+            {
+                string yzm = content.Substring(content.LastIndexOf(pstr) + 4, len);
                 return yzm;
             }
             return "0";
@@ -225,6 +240,7 @@ namespace BLL
                     ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
                     Postdata = "__EVENTTARGET=lbtn_GetSMS&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=&__VIEWSTATEGENERATOR=CC3279BD&__VIEWSTATEENCRYPTED=&LoginType=1&SMSTimes=90&SMSAliasTimes=90&txtCorpCode=" + dto.corpid + "&txtUserName=" + dto.username + "&rbl_PType=2&SMSP=&txtCheckCode=&txtQDLRegisterUrl=%2FADCQDLPortal%2FProduction%2FProductOrderControl.aspx"
                 };
+                result = helpweb.GetHtml(item);
                 //获取请请求的Html
                 string html = result.Html;
                 //获取请求的Cookie

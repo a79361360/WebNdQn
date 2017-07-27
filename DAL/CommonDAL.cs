@@ -20,7 +20,7 @@ namespace DAL
         /// <returns></returns>
         public DataTable GetCooperConfig(int ctype,int issue)
         {
-            string sql = "SELECT [id],[ctype],[issue],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[uplimit],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state=1";
+            string sql = "SELECT [id],[ctype],[issue],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state=1";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
@@ -119,6 +119,18 @@ namespace DAL
             parameter[2].Value = phone;
             return dal.IntExtSql(sql, parameter);
         }
+        public DataTable FindFlowLogByCtype(int ctype, int issue)
+        {
+            string sql = "SELECT [ctype],[issue],[phone],[state],[addtime] FROM [T_TakeFlowLog] Where ctype=@ctype and issue=@issue and state=0";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int)
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            return dal.ExtSql(sql, parameter);
+        }
         /// <summary>
         /// 取得传送过来的验证码信息
         /// </summary>
@@ -126,19 +138,21 @@ namespace DAL
         /// <param name="phone">手机号码</param>
         /// <param name="code">验证码</param>
         /// <returns></returns>
-        public int TakeMsgCode(int type,string phone,string code,string content) {
-            string sql = "INSERT INTO [T_MsgCode]([type],[phone],[code],[text])VALUES(@type,@phone,@code,@text)";
+        public int TakeMsgCode(int type,string phone,string xh,string code,string content) {
+            string sql = "INSERT INTO [T_MsgCode]([type],[phone],[xh],[code],[text])VALUES(@type,@phone,@xh,@code,@text)";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@type",SqlDbType.Int),
                 new SqlParameter("@phone",SqlDbType.NVarChar,20),
+                new SqlParameter("@xh",SqlDbType.NVarChar,4),
                 new SqlParameter("@code",SqlDbType.NVarChar,6),
                 new SqlParameter("@text",SqlDbType.NVarChar,250)
             };
             parameter[0].Value = type;
             parameter[1].Value = phone;
-            parameter[2].Value = code;
-            parameter[3].Value = content;
+            parameter[2].Value = xh;
+            parameter[3].Value = code;
+            parameter[4].Value = content;
             return dal.IntExtSql(sql, parameter);
         }
         /// <summary>
@@ -149,7 +163,7 @@ namespace DAL
         /// <returns></returns>
         public DataTable GetLoginCache(int ctype, int issue)
         {
-            string sql = "SELECT [id],[ctype],[issue],[cookie],[lasttime] FROM [dbo].[T_LoginLogCache] WHERE ctype=@ctype";
+            string sql = "SELECT [id],[ctype],[issue],[cookie],[lasttime] FROM [dbo].[T_LoginLogCache] WHERE ctype=@ctype and issue=@issue";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),

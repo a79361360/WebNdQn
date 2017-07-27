@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="AdminDAL.cs" />
     <Compile Include="CommonDAL.cs" />
+    <Compile Include="MobileDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

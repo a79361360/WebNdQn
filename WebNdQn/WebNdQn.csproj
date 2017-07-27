@@ -160,6 +160,7 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\AccountController.cs" />
+    <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\CooperController.cs" />
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
@@ -173,6 +174,27 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\Activity\Dzp\awardRotate.js" />
+    <Content Include="Content\Activity\Dzp\images\1.png" />
+    <Content Include="Content\Activity\Dzp\images\10.png" />
+    <Content Include="Content\Activity\Dzp\images\11.png" />
+    <Content Include="Content\Activity\Dzp\images\2.png" />
+    <Content Include="Content\Activity\Dzp\images\3.png" />
+    <Content Include="Content\Activity\Dzp\images\4.png" />
+    <Content Include="Content\Activity\Dzp\images\5.png" />
+    <Content Include="Content\Activity\Dzp\images\6.png" />
+    <Content Include="Content\Activity\Dzp\images\7.png" />
+    <Content Include="Content\Activity\Dzp\images\9.png" />
+    <Content Include="Content\Activity\Dzp\images\body_bg.jpg" />
+    <Content Include="Content\Activity\Dzp\images\body_bg2.jpg" />
+    <Content Include="Content\Activity\Dzp\images\cj_bg.png" />
+    <Content Include="Content\Activity\Dzp\images\eventDetails.jpg" />
+    <Content Include="Content\Activity\Dzp\images\jt.png" />
+    <Content Include="Content\Activity\Dzp\images\jt2.png" />
+    <Content Include="Content\Activity\Dzp\images\red5.png" />
+    <Content Include="Content\Activity\Dzp\images\red6.png" />
+    <Content Include="Content\Activity\Dzp\images\turnplate-bg.png" />
+    <Content Include="Content\Activity\Dzp\images\turnplate-pointer.png" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Img\bg_1.png" />
@@ -184,6 +206,7 @@
     <Content Include="Content\Img\top_up.png" />
     <Content Include="Content\Img\wx_gzh.png" />
     <Content Include="Content\Img\wx_share_oppo.png" />
+    <Content Include="Content\Txt\prob.txt" />
     <Content Include="Content\Txt\pwebconfig.txt" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
@@ -191,6 +214,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Content\Txt\flowPoolExcel.xls" />
     <None Include="Properties\PublishProfiles\WebNdQn.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
@@ -234,11 +258,12 @@
     <Content Include="Views\Home\Default.cshtml" />
     <Content Include="Views\Home\OppoIndex.cshtml" />
     <Content Include="Views\Flow\Index.cshtml" />
+    <Content Include="Views\Activity\Dzp.cshtml" />
+    <Content Include="Views\Mobile\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Views\Cooper\" />
-    <Folder Include="Views\Mobile\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />
