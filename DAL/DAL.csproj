@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ActivityDAL.cs" />
     <Compile Include="AdminDAL.cs" />
     <Compile Include="CommonDAL.cs" />
     <Compile Include="MobileDAL.cs" />
