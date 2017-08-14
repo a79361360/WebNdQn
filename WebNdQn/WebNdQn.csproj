@@ -260,6 +260,7 @@
     <Content Include="Views\Flow\Index.cshtml" />
     <Content Include="Views\Activity\Dzp.cshtml" />
     <Content Include="Views\Mobile\Index.cshtml" />
+    <Content Include="Views\Activity\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
