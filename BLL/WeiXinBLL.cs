@@ -128,5 +128,22 @@ namespace BLL
             }
             return null;
         }
+        public Dictionary<string, string> ParmToDic(string url)
+        {
+            string[] str = url.Split('?');
+            Dictionary<string, string> dic = new Dictionary<string, string>();
+            if (str.Length > 1)
+            {
+                string[] str1 = str[1].Split('|');
+                foreach (string item in str1)
+                {
+                    string[] str2 = item.Split('=');
+                    dic.Add(str2[0], str2[1]);
+                }
+            }
+            //string lll = "http://wx.ndll800.com/home/default?ctype=1&issue=1";
+            //ParmToDic(lll);
+            return dic;
+        }
     }
 }
