@@ -30,8 +30,38 @@ namespace BLL
                 else
                     filter += " phone=@phone";
             }
-            filter = "where" + filter;
+            if (!string.IsNullOrEmpty(filter))
+                filter = "where" + filter;
             IList<T_TakeFlowLog> list = DataTableToList.ModelConvertHelper<T_TakeFlowLog>.ConvertToModel(dal.FlowList(filter, ctype, issue, phone));
+            return list;
+        }
+        public IList<T_CooperConfig> GetCooper_Page(string name, string value, int state,int pageSize,int pageIndex, ref int Total)
+        {
+            string filter = "";
+            if (name != "-1")
+            {
+                filter += name + " like '%" + value + "%'";
+            }
+            if (state != -1)
+            {
+                if (!string.IsNullOrEmpty(filter))
+                    filter += " and state=" + state;
+                else
+                    filter += " state=" + state;
+            }
+            if (!string.IsNullOrEmpty(filter))
+                filter = "where" + filter;
+
+            SqlPageParam param = new SqlPageParam();
+            param.TableName = "T_CooperConfig";
+            param.PrimaryKey = "id";
+            param.Fields = "id,ctype,issue,title,eachflow,uplimit,state";
+            param.PageSize = pageSize;
+            param.PageIndex = pageIndex;
+            param.Filter = filter;
+            param.Group = "";
+            param.Order = "id";
+            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.PageResult(ref Total, param));
             return list;
         }
     }
