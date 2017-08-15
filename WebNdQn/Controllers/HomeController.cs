@@ -348,5 +348,12 @@ namespace WebNdQn.Controllers
             //bll.HelpWebLogin(21, 1);
             return View();
         }
+
+
+
+
+        public ActionResult CooperIndex() {
+            return View();
+        }
     }
 }
