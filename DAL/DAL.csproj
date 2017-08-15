@@ -44,6 +44,7 @@
     <Compile Include="CommonDAL.cs" />
     <Compile Include="MobileDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SqlPageParam.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">

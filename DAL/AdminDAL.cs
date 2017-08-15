@@ -12,6 +12,11 @@ namespace DAL
     public class AdminDAL
     {
         SqlDal dal = new SqlDal();
+        public DataTable PageResult(ref int Total, SqlPageParam Param)
+        {
+            DataTable dt = dal.PageResult(Param.TableName, Param.PrimaryKey, Param.Fields, Param.PageSize, Param.PageIndex, Param.Filter, Param.Group, Param.Order, ref Total);
+            return dt;
+        }
         /// <summary>
         /// 执行语句
         /// </summary>
@@ -31,6 +36,19 @@ namespace DAL
             parameter[0].Value = ctype;
             parameter[1].Value = issue;
             parameter[2].Value = phone;
+            return dal.ExtSql(sql, parameter);
+        }
+        public DataTable FindCooperList(string filter,string name,string value,int state) {
+            string sql = "SELECT id,ctype,issue,title,eachflow,uplimit,state FROM dbo.T_CooperConfig " + filter;
+            SqlParameter[] parameter = new[]
+                                    {
+                new SqlParameter("@name",SqlDbType.NVarChar,20),
+                new SqlParameter("@value",SqlDbType.NVarChar,50),
+                new SqlParameter("@state",SqlDbType.Int)
+            };
+            parameter[0].Value = name;
+            parameter[1].Value = value;
+            parameter[2].Value = state;
             return dal.ExtSql(sql, parameter);
         }
     }
