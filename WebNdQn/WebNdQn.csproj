@@ -197,6 +197,7 @@
     <Content Include="Content\Activity\Dzp\images\turnplate-pointer.png" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\Img\app_ico5.png" />
     <Content Include="Content\Img\bg_1.png" />
     <Content Include="Content\Img\bg_oppo.png" />
     <Content Include="Content\Img\btn_1.png" />
@@ -206,6 +207,8 @@
     <Content Include="Content\Img\top_up.png" />
     <Content Include="Content\Img\wx_gzh.png" />
     <Content Include="Content\Img\wx_share_oppo.png" />
+    <Content Include="Content\mricode.pagination.css" />
+    <Content Include="Content\mricode.pagination.js" />
     <Content Include="Content\Txt\prob.txt" />
     <Content Include="Content\Txt\pwebconfig.txt" />
     <Content Include="favicon.ico" />
@@ -262,6 +265,7 @@
     <Content Include="Views\Mobile\Index.cshtml" />
     <Content Include="Views\Activity\Index.cshtml" />
     <Content Include="Views\Home\CooperIndex.cshtml" />
+    <Content Include="Views\Home\Navigation.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

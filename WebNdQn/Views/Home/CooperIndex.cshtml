@@ -9,9 +9,129 @@
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>CooperIndex</title>
+    <link rel="stylesheet" href="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/css/bootstrap.min.css" />
+    <script type="text/javascript" src="http://cdn.static.runoob.com/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script type="text/javascript" src="http://cdn.static.runoob.com/libs/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="/Content/mricode.pagination.css" rel="stylesheet" />
+    <script src="/Content/mricode.pagination.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#search").click(function () {
+                var field = $("#field").attr("v_val");  //条件类型
+                var fieldv = $("#fieldv").val();        //输入框
+                var field1 = $("#field1").attr("v_val");  //state
+                var url = "/Cooper/GetCooperList";
+                var data = { name: field, value: fieldv, state: field1 };
+                pagelist(url, data);
+            })
+            $('.dropdown-menu a').click(function () {
+                var txt = $(this).text(); var val = $(this).attr("v_val");
+                var objdrop = $(this).parent().parent().siblings("button").eq(0);
+                objdrop.text(txt); objdrop.attr("v_val", val);
+            })
+        })
+        pagelist = function (url, data) {
+            var isInited = $("#page").pagination();
+            if (isInited) $("#page").pagination('destroy');
+            var text = $("#text").val();
+            var type = $("#sel").val();
+            $("#page").pagination({
+                firstBtnText: '首页',
+                lastBtnText: '尾页',
+                prevBtnText: '上一页',
+                nextBtnText: '下一页',
+                showInfo: true,
+                showJump: true,
+                jumpBtnText: '跳转',
+                showPageSizes: true,
+                infoFormat: '{start} ~ {end}条，共{total}条',
+                debug: true,
+                pageElementSort: ['$page', '$size', '$jump', '$info'],
+                remote: {
+                    url: url,  //请求地址
+                    params: data,       //自定义请求参数
+                    success: function (data) {
+                        if (data.code == 1000) {
+                            var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:119px;\">CType</th><th style=\"width:118px;\">标题</th><th style=\"width:118px;\">充值多少</th><th style=\"width:118px;\">上限人数</th><th style=\"width:45px;\">状态</th></tr></thead>";
+                            $.each(data.list, function (i, o) {
+                                //var btnstr = "暂停"; var utype = 2;
+                                //if (o.State == "2") { btnstr = "开启"; utype = 3; }
+                                str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td>" + o.ctype + "</td><td>" + o.title + "</td><td>" + o.eachflow + "</td><td>" + o.uplimit + "</td><td>" + o.state + "</td></tr>";
+                            })
+                            str += "</table>";
+                            $("#ulist").html(str);
+                            $("#allqx").click(function () { togglechg(); })
+                        }
+                    },
+                    totalName: 'total'              //指定返回数据的总数据量的字段名
+                }
+            });
+        }
+        //点击全选
+        togglechg = function () {
+            var qx = $("#allqx");
+            var tr = $("#ulist tbody tr")
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (qx.prop("checked")) eachobj.prop("checked", true); else eachobj.prop("checked", false);
+            })
+        }
+    </script>
 </head>
 <body>
-    <div> 
+    <div class="container" style="margin-left:0px; padding-left:0px">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <form action="" class="bs-example bs-example-form" role="form">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="input-group" style="float:left;">
+                                <div class="btn-group" style="float: left;">
+                                    <button id="field" type="button" v_val="-1" class="btn btn-default">默认</button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">切换下拉菜单</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" v_val="-1">默认</a></li>
+                                        <li><a href="#" v_val="id">CooperID</a></li>
+                                        <li><a href="#" v_val="title">标题</a></li>
+                                        <li><a href="#" v_val="descride">描述</a></li>
+                                    </ul>
+                                </div>
+                                <input id="fieldv" type="text" class="form-control" style="width: 220px;margin:0 5px" />
+                                <div class="btn-group" style="float: left;">
+                                    <button id="field1" type="button" v_val="-1" class="btn btn-default">默认</button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">切换下拉菜单</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" v_val="-1">默认</a></li>
+                                        <li><a href="#" v_val="0">未开启</a></li>
+                                        <li><a href="#" v_val="1">进行中</a></li>
+                                        <li><a href="#" v_val="2">已结束</a></li>
+                                    </ul>
+                                </div>
+                            </div><!-- /input-group -->
+                            <button id="search" type="button" style="float:left; margin-left:5px;" class="btn btn-default">查询</button>
+                        </div><!-- /.col-lg-6 -->
+                    </div><!-- /.row -->
+                </form>
+            </div>
+            <div class="panel-body">
+                    <div class="btn-toolbar" role="toolbar">
+                        <div class="btn-group"><button type="button" class="btn btn-default">新增</button></div>
+                        <div class="btn-group"><button type="button" class="btn btn-default">编辑</button></div>
+                        <div class="btn-group"><button type="button" class="btn btn-default">删除</button></div>
+                        <div class="btn-group"><button type="button" class="btn btn-default">设置大转盘</button></div>
+                    </div>
+                <div id="ulist">
+
+                </div>
+                <div id="page" class="m-pagination"></div>
+            </div>
+        </div>
     </div>
 </body>
 </html>

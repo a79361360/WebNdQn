@@ -351,7 +351,9 @@ namespace WebNdQn.Controllers
 
 
 
-
+        public ActionResult Navigation() {
+            return View();
+        }
         public ActionResult CooperIndex() {
             return View();
         }
