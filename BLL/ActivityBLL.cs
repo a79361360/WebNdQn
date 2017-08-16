@@ -1,5 +1,7 @@
 ﻿using Common;
 using DAL;
+using Fgly.Common.Expand;
+using FJSZ.OA.Common.Web;
 using Model.WxModel;
 using System;
 using System.Collections.Generic;
@@ -280,6 +282,42 @@ namespace BLL
         {
             int result = adal.HandleActivity(4, cooperid, type, openid, "", sharetype);
             return result;
+        }
+        public T_ActivityConfig FindActivityConfigByCooperid(int cooperid) {
+            IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(adal.GetActivityZb(cooperid));
+            if (list.Count > 0){
+                T_ActivityConfig dto = list[0];
+                return dto;
+            }
+            return null;
+        }
+        /// <summary>
+        /// 更新背景图片
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="fileid">前端file的文件名</param>
+        /// <returns></returns>
+        public string DzpUploadBgUrl(int cooperid,string fileid) {
+            string pathx = "/Content/Activity/Dzp/images/";                                        //图片地址
+            string filename = "body_bg"+ cooperid + ".jpg";                 //图片名称 
+            string vtime = "?v=" + DateTime.Now.ToUnixTimeStamp().ToString();           //用时间戳来做版本号
+            string path = WebHelp.HttpUploadFile(pathx, filename, fileid); //返回完整的上传地址 
+            if (!string.IsNullOrEmpty(path))
+            {
+                int result = adal.UpdateDzpBgUrlByCooperid(cooperid, pathx + filename+ vtime);
+                if (result > 0) return pathx + filename + vtime;
+            }
+            return "";
+        }
+        /// <summary>
+        /// 取得配置对象列表
+        /// </summary>
+        /// <param name="configid"></param>
+        /// <returns></returns>
+        public IList<T_ActivityConfigList> FindConfigList(int configid)
+        {
+            IList<T_ActivityConfigList> list = DataTableToList.ModelConvertHelper<T_ActivityConfigList>.ConvertToModel(adal.GetActivityConfigList(configid));
+            return list;
         }
     }
 

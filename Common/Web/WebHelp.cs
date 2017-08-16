@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace FJSZ.OA.Common.Web
 {
@@ -37,6 +39,58 @@ namespace FJSZ.OA.Common.Web
         public static string GetUrl() {
             string url = System.Web.HttpContext.Current.Request.Url.ToString();
             return url;
+        }
+        public static string HttpUploadFile(string virtualpath, string filename)
+        {
+            string path = "", suffix = "";
+            if (HttpContext.Current.Request.Files.AllKeys.Length > 0)
+            {
+                try
+                {
+                    string filePath = HttpContext.Current.Server.MapPath(virtualpath);
+                    if (!Directory.Exists(filePath)) Directory.CreateDirectory(filePath);
+                    string fname = HttpContext.Current.Request.Files[0].FileName;
+                    suffix = fname.Substring(fname.LastIndexOf(".") + 1, fname.Length - (fname.LastIndexOf(".") + 1));
+                    if (string.IsNullOrEmpty(filename))
+                    {
+                        filename = HttpContext.Current.Request.Files[0].FileName;
+                    }
+                    //这里我直接用索引来获取第一个文件，如果上传了多个文件，可以通过遍历HttpContext.Current.Request.Files.AllKeys取“key值”，再通过HttpContext.Current.Request.Files[“key值”]获取文件
+                    path = Path.Combine(filePath, filename);
+                    HttpContext.Current.Request.Files[0].SaveAs(path);
+                }
+                catch
+                {
+
+                }
+            }
+            return path;
+        }
+        public static string HttpUploadFile(string virtualpath, string filename,string fileid)
+        {
+            string path = "", suffix = "";
+            if (HttpContext.Current.Request.Files.AllKeys.Length > 0)
+            {
+                try
+                {
+                    string filePath = HttpContext.Current.Server.MapPath(virtualpath);
+                    if (!Directory.Exists(filePath)) Directory.CreateDirectory(filePath);
+                    string fname = HttpContext.Current.Request.Files[fileid].FileName;
+                    suffix = fname.Substring(fname.LastIndexOf(".") + 1, fname.Length - (fname.LastIndexOf(".") + 1));
+                    if (string.IsNullOrEmpty(filename))
+                    {
+                        filename = HttpContext.Current.Request.Files[fileid].FileName;
+                    }
+                    //这里我直接用索引来获取第一个文件，如果上传了多个文件，可以通过遍历HttpContext.Current.Request.Files.AllKeys取“key值”，再通过HttpContext.Current.Request.Files[“key值”]获取文件
+                    path = Path.Combine(filePath, filename);
+                    HttpContext.Current.Request.Files[fileid].SaveAs(path);
+                }
+                catch
+                {
+
+                }
+            }
+            return path;
         }
     }
 }

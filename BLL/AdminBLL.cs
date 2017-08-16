@@ -12,6 +12,7 @@ namespace BLL
     public class AdminBLL
     {
         AdminDAL dal = new AdminDAL();
+        ActivityDAL adal = new ActivityDAL();
         public IList<T_TakeFlowLog> GetFlowList_Search(int ctype,int issue,string phone) {
             string filter = "";
             if (ctype != -1)

@@ -42,6 +42,8 @@
     <Compile Include="CommonModel\LoginSession.cs" />
     <Compile Include="CommonModel\Parameter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="WxModel\T_ActivityConfig.cs" />
+    <Compile Include="WxModel\T_ActivityConfigList.cs" />
     <Compile Include="WxModel\T_CooperConfig.cs" />
     <Compile Include="WxModel\T_LoginLogCache.cs" />
     <Compile Include="WxModel\T_TakeFlowLog.cs" />

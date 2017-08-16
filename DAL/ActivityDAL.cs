@@ -70,5 +70,33 @@ namespace DAL
             dal.ExtProc(sql, parameter, str, out list);
             return Convert.ToInt32(list["@ReturnValue"]);
         }
+        public DataTable GetActivityZb(int cooperid) {
+            string sql = "SELECT id,cooperid,type,title,share,explain,bgurl FROM T_ActivityConfig where cooperid=@cooperid";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@cooperid",SqlDbType.Int)
+            };
+            parameter[0].Value = cooperid;
+            DataTable dt = dal.ExtSql(sql, parameter);
+            return dt;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="virtualpath"></param>
+        /// <returns></returns>
+        public int UpdateDzpBgUrlByCooperid(int cooperid,string virtualpath) {
+            string sql = "UPDATE T_ActivityConfig SET bgurl=@bgurl WHERE cooperid=@cooperid";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@bgurl",SqlDbType.NVarChar,250),
+                new SqlParameter("@cooperid",SqlDbType.Int)
+            };
+            parameter[0].Value = virtualpath;
+            parameter[1].Value = cooperid;
+            int result = dal.IntExtSql(sql, parameter);
+            return result;
+        }
     }
 }

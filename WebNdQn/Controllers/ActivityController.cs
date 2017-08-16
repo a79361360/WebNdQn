@@ -133,5 +133,40 @@ namespace WebNdQn.Controllers
             }
             return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败." });
         }
+        /// <summary>
+        /// 设置大转盘的页面
+        /// </summary>
+        /// <param name="cooperid">T_CooperConfig的ID值</param>
+        /// <returns></returns>
+        public ActionResult SetDzpPortal(int cooperid) {
+            if (cooperid != 0) {
+                T_ActivityConfig dto = Abll.FindActivityConfigByCooperid(cooperid);
+                return View(dto);
+            }
+            return View();
+        }
+        /// <summary>
+        /// 更新背景图片
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UpdateBgUrl() {
+            int cooperid = Convert.ToInt32(Request.Form["cooperid"]);
+            string url = Abll.DzpUploadBgUrl(cooperid, "myfile");
+            if (!string.IsNullOrEmpty(url))
+                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功.", jsonresult = url });
+            else
+                return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败." });
+        }
+        //根据主表的ID，取得附表的列表
+        public ActionResult ConfigListByCId() {
+            if (Request.Form["configid"] != null)
+            {
+                int Configid = Convert.ToInt32(Request.Form["configid"]);
+                var list = Abll.FindConfigList(Configid);
+                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功.", jsonresult = list });
+            }
+            return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败." });
+        }
+
     }
 }

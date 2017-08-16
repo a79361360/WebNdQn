@@ -701,7 +701,24 @@ namespace Common
                 return tables;
             }
         }
-
+        public DataTable PageResult(string tableName, string pk, string fields, int pagesize, int pageindex, string filter, string group, string order, ref int rowcount)
+        {
+            SqlParameter[] parameter = new[]{
+                    new SqlParameter("@TableNames", SqlDbType.VarChar,1000){Value=tableName},
+                    new SqlParameter("@PrimaryKey", SqlDbType.VarChar,100){Value=pk},
+                    new SqlParameter("@Fields", SqlDbType.VarChar,1000){Value=fields},
+                    new SqlParameter("@PageSize", SqlDbType.Int){Value=pagesize},
+                    new SqlParameter("@CurrentPage", SqlDbType.Int){Value=pageindex},
+                    new SqlParameter("@Filter", SqlDbType.VarChar,1000){Value=filter},
+                    new SqlParameter("@Group", SqlDbType.VarChar,1000){Value=group},
+                    new SqlParameter("@Order", SqlDbType.VarChar,200){Value=order},
+                    new SqlParameter("@RecordCount", SqlDbType.Int){Direction=ParameterDirection.Output}};
+            string spName = "usp_PagingLarge";
+            //var ds = ExecuteDataset(connectionString, CommandType.StoredProcedure, spName, parameter);
+            DataTable dt = ExtProcRe(spName, parameter);
+            rowcount = Convert.ToInt32(parameter[8].Value);
+            return dt;
+        }
         //通用存储过程
         public DataTable Select(string tablename, string Field, string Condition)
         {
