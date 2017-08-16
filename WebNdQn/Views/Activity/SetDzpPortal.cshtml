@@ -1,0 +1,185 @@
+﻿@model Model.WxModel.T_ActivityConfig
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>SetDzpPortal</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#showtx").click(function () {
+                var img = $(this).attr("v");
+                showtx(img);
+            })
+            $("#path").change(function () {
+                $("#docPath").val($(":file").val());
+            });
+        })
+
+        showtx = function (img) {
+            var content = "<img src='" + img + "' style=\"width:320px;height:586px;\"/>";
+            qiu_confirm("q_showtx", "查看头像", content, 420, 630);
+        }
+        //弹于信息tips
+        tips = function (content, timeout) {
+            var tipsobj = $("#myModal");
+            if (tipsobj.length > 0)
+                tipsobj.remove();
+            var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
+            tipsobj = $(BootDialog); tipsobj.modal('show');
+            if (timeout > 0) { setTimeout(function () { tipsobj.modal('hide') }, timeout * 1000); }
+        }
+        //弹出窗体
+        qiu_confirm = function (id, title, content, width, height) {
+            var iframe = $("#" + id);
+            if (iframe.length > 0) 
+                iframe.remove();
+            if (width != null) 
+                width = "style=\"width:" + width + "px\"";
+            if (height != null) 
+                height = "style=\"height:" + height + "px;overflow:auto;text-align: center;\"";
+            var header = "<div class=\"modal-header\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\" id=\"myModalLabel\">" + title + "</h4></div>"
+            var footer = "<div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">关闭</button><button id=\"Tj\" type=\"button\" class=\"btn btn-primary\">修改</button></div>";
+            var BootDialog = "<div class=\"modal fade\" id=\"" + id + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"" + width + ">" + header + "<div class=\"modal-body\"" + height + ">" + content + "</div>" + footer + "</div></div></div>";
+            var obj = $(BootDialog); obj.modal('show');
+            obj.find("#Tj").click(function () {
+                edittx();
+            })
+        }
+        $(function () {
+            $("#qdxgtx").click(function () {
+                var formData = new FormData();
+                formData.append("myfile", document.getElementById("path").files[0]);
+                formData.append("cooperid", '@Model.cooperid');
+                $.ajax({
+                    url: "/Activity/UpdateBgUrl",
+                    type: "POST",
+                    data: formData,
+                    /**
+                    *必须false才会自动加上正确的Content-Type
+                    */
+                    contentType: false,
+                    /**
+                    * 必须false才会避开jQuery对 formdata 的默认处理
+                    * XMLHttpRequest会对 formdata 进行正确的处理
+                    */
+                    processData: false,
+                    success: function (data) {
+                        if (data.success) {
+                            tips("背景图片更新成功", 1);
+                            $("#showtx").attr("v",data.jsonresult);
+                        }
+                    },
+                    error: function () {
+                        alert("上传失败！");
+                    }
+                });
+            });
+        });
+        //取得配置列表的数据
+        configlist = function (obj) {
+            var v = $(obj).val();
+            var divobj = $("#div1");
+            if (v == "展开") {
+                divobj.show();
+                $(obj).val("收缩");
+            } else {
+                divobj.hide();
+                $(obj).val("展开");
+            }
+            var configid = '@Model.id';
+            $.ajax({
+                type: "post",
+                url: "/Activity/ConfigListByCId",
+                data: { configid: configid },
+                success: function (ret) {
+                    if (ret.success) {
+                        var str = "";
+                        $.each(ret.jsonresult, function (i, o) {
+                            str += "<label class=\"col-sm-2 control-label\">" + o.id + "</label>";
+                            str += "<div class=\"col-sm-10\">";
+                            str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" value=\"" + o.prizename + "\"></div>";
+                            str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" value=\"" + o.count + "\"></div>";
+                            str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" value=\"" + o.number + "\"></div>";
+                            str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" value=\"" + o.winprob + "\"></div>";
+                            str += "</div>";
+                        })
+                        divobj.html(str);
+                    }
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <form class="form-horizontal" role="form" action="/TUser/EditTUser" method="post">
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">标题</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_title" name="txt_title" value="@Model.title" placeholder="请输入标题,最多20个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">分享</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_share" name="txt_share" value="@Model.share" placeholder="成功分享之前当前用户增加几次摇奖机会">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">说明</label>
+                <div class="col-sm-10">
+                    <textarea type="text" rows="3" class="form-control" id="txt_explain" name="txt_explain" value="@Model.explain" placeholder="说明备注"></textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">背景图片</label>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <input id="docPath" type="text" class="form-control">
+                        <span id="scan" style="position: relative" class="btn btn-primary input-group-addon">浏览<input id="path" style="width: 60px;height:40px; position: absolute;top:-6px;left: -4px;opacity: 0; filter:alpha(opacity=0)" class="form-control" type="file"></span>
+                    </div>
+                </div>
+                <div class="col-sm-1">
+                    <input id="qdxgtx" type="button" class="btn btn-default" value="确定" />
+                </div>
+                <div class="col-sm-3">
+                    <input id="showtx" v="@Model.bgurl" type="button" class="btn btn-default" value="查看" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">奖品设置</label>
+                <div class="col-sm-10">
+                    <label for="lastname" class="col-sm-2 control-label">将品名称</label>
+                    <label for="lastname" class="col-sm-2 control-label">将品数量</label>
+                    <label for="lastname" class="col-sm-2 control-label">流量大小</label>
+                    <label for="lastname" class="col-sm-2 control-label">中奖概率</label>
+                    <div class="col-sm-2"><input onclick="configlist(this)" type="button" class="btn btn-default" value="展开" /></div>
+                </div>
+                <div id="div1">
+                    <label for="lastname" class="col-sm-2 control-label">1</label>
+                    <div class="col-sm-10">
+                        <div class="col-sm-2"><input type="text" class="form-control"></div>
+                        <div class="col-sm-2"><input type="text" class="form-control"></div>
+                        <div class="col-sm-2"><input type="text" class="form-control"></div>
+                        <div class="col-sm-2"><input type="text" class="form-control"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <button type="submit" class="btn btn-default">确认修改</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
