@@ -141,6 +141,7 @@ namespace WebNdQn.Controllers
         public ActionResult SetDzpPortal(int cooperid) {
             if (cooperid != 0) {
                 T_ActivityConfig dto = Abll.FindActivityConfigByCooperid(cooperid);
+                ViewBag.cooperid = cooperid;
                 return View(dto);
             }
             return View();
