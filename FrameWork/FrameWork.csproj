@@ -49,6 +49,7 @@
   <ItemGroup>
     <Compile Include="BaseController.cs" />
     <Compile Include="Common\Convertor.cs" />
+    <Compile Include="Common\SerializeJson.cs" />
     <Compile Include="Common\UIDataGrid.cs" />
     <Compile Include="Common\Utils.cs" />
     <Compile Include="Common\Verifier.cs" />
