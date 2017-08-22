@@ -1,0 +1,226 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>大转盘管理</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <link href="/Content/mricode.pagination.css" rel="stylesheet" />
+    <script src="/Content/mricode.pagination.js"></script>
+    <script src="~/Scripts/commonaction.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#search").click(function () {
+                var field = $("#field").attr("v_val");  //条件类型
+                var fieldv = $("#fieldv").val();        //输入框
+                var url = "/Activity/ActicityListSearch";
+                var data = { name: field, value: fieldv };
+                pagelist(url, data);
+            })
+            $('.dropdown-menu a').click(function () {
+                var txt = $(this).text(); var val = $(this).attr("v_val");
+                var objdrop = $(this).parent().parent().siblings("button").eq(0);
+                objdrop.text(txt); objdrop.attr("v_val", val);
+            })
+        })
+        pagelist = function (url, data) {
+            var isInited = $("#page").pagination();
+            if (isInited) $("#page").pagination('destroy');
+            $("#ulist").html(""); //清空
+            $("#page").pagination({
+                firstBtnText: '首页',
+                lastBtnText: '尾页',
+                prevBtnText: '上一页',
+                nextBtnText: '下一页',
+                showInfo: true,
+                showJump: true,
+                jumpBtnText: '跳转',
+                showPageSizes: true,
+                infoFormat: '{start} ~ {end}条，共{total}条',
+                debug: true,
+                pageElementSort: ['$page', '$size', '$jump', '$info'],
+                remote: {
+                    url: url,  //请求地址
+                    params: data,       //自定义请求参数
+                    success: function (data) {
+                        if (data.code == 1000) {
+                            var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:119px;\">Cooperid</th><th style=\"width:118px;\">类型</th><th style=\"width:118px;\">标题</th><th style=\"width:118px;\">分享</th><th style=\"width:118px;\">说明备注</th><th style=\"width:118px;\">背景URL</th></tr></thead>";
+                            $.each(data.list, function (i, o) {
+                                var typestr = "大转盘";
+                                if (o.type == "1") typestr = "大转盘";
+                                str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\" v=\"" + o.cooperid + "\"></td><td>" + o.cooperid + "</td><td>" + typestr + "</td><td>" + o.title + "</td><td>" + o.share + "</td><td title=\"" + o.explain + "\">" + autoAddEllipsis(o.explain, 10) + "</td><td onclick=\"showtx('" + o.bgurl + "')\">" + autoAddEllipsis(o.bgurl, 10) + "</td></tr>";
+                            })
+                            str += "</table>";
+                            $("#ulist").html(str);
+                            $("#allqx").click(function () { togglechg(); })
+                        }
+                    },
+                    totalName: 'total'              //指定返回数据的总数据量的字段名
+                }
+            });
+        }
+        //点击全选
+        togglechg = function () {
+            var qx = $("#allqx");
+            var tr = $("#ulist tbody tr")
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (qx.prop("checked")) eachobj.prop("checked", true); else eachobj.prop("checked", false);
+            })
+        }
+        //活动链接
+        LinkByCooperId = function () {
+            var tr = $("#ulist tbody tr");
+            var checknum = 0; var cooperid = 0;
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (eachobj.prop("checked")) {
+                    checknum++;
+                    cooperid = eachobj.attr("v");   //cooperid
+                }
+            })
+            if (checknum > 1 || checknum == 0) {
+                tips("只能选择一行", 2);
+                return;
+            }
+            $.getJSON("/Cooper/GetConfigById", { cooperid: cooperid }, function (ret) {
+                if (ret.success) {
+                    var data = ret.jsonresult.split('|');
+                    var url = "http://wx.ndll800.com/Activity/Index?ctype=" + data[0] + "&issue=" + data[1];
+                    var str = "<input type=\"text\" class=\"form-control\" style=\"width: 420px;margin:0 5px\" value=\"" + url + "\" />";
+                    qiu_confirm("q_showtx", "查看链接", str, 600, 80);
+                }
+            })
+        }
+        //新增
+        NewRedrit = function (url) {
+            window.location.href = url;
+        }
+        //编辑
+        EditRedrit = function () {
+            var tr = $("#ulist tbody tr");
+            var checknum = 0; var cooperid = 0;
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (eachobj.prop("checked")) {
+                    checknum++;
+                    cooperid = eachobj.attr("v");   //cooperid
+                }
+            })
+            if (checknum > 1 || checknum == 0) {
+                tips("只能选择一行", 2);
+                return;
+            }
+            window.open("/Activity/SetDzpPortal?cooperid=" + cooperid, "_blank");
+        }
+        //删除大转盘
+        RemoveById = function () {
+            if (confirm("确定要清空数据吗?")) {
+                var list = [];      //数组对象，将
+                var data;           //元素对象
+                var tr = $("#ulist tbody tr");
+                $.each(tr, function (i, e) {
+                    var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                    if (eachobj.prop("checked")) {
+                        data = new Object();    //元素对象实例
+                        data.id = eachobj.val();
+                        list.push(data);
+                    }
+                })
+                $.ajax({
+                    type: "POST",
+                    url: '/Activity/RemoveActivity',
+                    data: { data: JSON.stringify(list) },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.success) {
+                            tips(data.msg, 2);
+                        } else {
+                            tips(data.msg, 2);
+                        }
+                    }
+                });
+            }
+        }
+        //弹于信息tips
+        tips = function (content, timeout) {
+            var tipsobj = $("#myModal");
+            if (tipsobj.length > 0)
+                tipsobj.remove();
+            var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
+            tipsobj = $(BootDialog); tipsobj.modal('show');
+            if (timeout > 0) { setTimeout(function () { tipsobj.modal('hide') }, timeout * 1000); }
+        }
+        showtx = function (img) {
+            var content = "<img src='" + img + "' style=\"width:320px;height:586px;\"/>";
+            qiu_confirm("q_showtx", "查看头像", content, 420, 630);
+        }
+        //弹出窗体
+        qiu_confirm = function (id, title, content, width, height) {
+            var iframe = $("#" + id);
+            if (iframe.length > 0)
+                iframe.remove();
+            if (width != null)
+                width = "style=\"width:" + width + "px\"";
+            if (height != null)
+                height = "style=\"height:" + height + "px;overflow:auto;text-align: center;\"";
+            var header = "<div class=\"modal-header\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\" id=\"myModalLabel\">" + title + "</h4></div>"
+            var footer = "<div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">关闭</button></div>";
+            var BootDialog = "<div class=\"modal fade\" id=\"" + id + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"" + width + ">" + header + "<div class=\"modal-body\"" + height + ">" + content + "</div>" + footer + "</div></div></div>";
+            var obj = $(BootDialog); obj.modal('show');
+        }
+    </script>
+</head>
+<body>
+    <div class="container" style="margin-left:0px; padding-left:0px">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <form action="" class="bs-example bs-example-form" role="form">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="input-group" style="float:left;">
+                                <div class="btn-group" style="float: left;">
+                                    <button id="field" type="button" v_val="-1" class="btn btn-default">默认</button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">切换下拉菜单</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" v_val="-1">默认</a></li>
+                                        <li><a href="#" v_val="cooperid">CooperID</a></li>
+                                        <li><a href="#" v_val="title">标题</a></li>
+                                        <li><a href="#" v_val="explain">说明</a></li>
+                                    </ul>
+                                </div>
+                                <input id="fieldv" type="text" class="form-control" style="width: 220px;margin:0 5px" />
+                            </div><!-- /input-group -->
+                            <button id="search" type="button" style="float:left; margin-left:5px;" class="btn btn-default">查询</button>
+                        </div><!-- /.col-lg-6 -->
+                    </div><!-- /.row -->
+                </form>
+            </div>
+            <div class="panel-body">
+                <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="NewRedrit('/Home/CooperIndex')">新增</button></div>
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="EditRedrit()">编辑</button></div>
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="RemoveById()">删除</button></div>
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="LinkByCooperId()">活动链接</button></div>
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="NewRedrit('/Activity/ActivityDrawPortal')">中奖查询</button></div>
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="NewRedrit('/Activity/ActivitySharePortal')">分享查询</button></div>
+                </div>
+                <div id="ulist"></div>
+                <div id="page" class="m-pagination"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

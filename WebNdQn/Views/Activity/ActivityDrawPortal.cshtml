@@ -1,0 +1,122 @@
+﻿
+@{
+    Layout = null;
+}
+@using Model.WxModel
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>活动中奖查询</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#search").click(function () {
+                var field = $("#field").attr("v_val");  //ctype
+                var fieldv = $("#fieldv").val();        //phone
+                var field1 = $("#field1").attr("v_val");  //state
+                var url = "/Activity/FindActivityDrawSearch";
+                var data = { cooperid: field, phone: fieldv, state: field1 };
+                searchlist(url, data);
+            })
+            $('.dropdown-menu a').click(function () {
+                var txt = $(this).text(); var val = $(this).attr("v_val");
+                var objdrop = $(this).parent().parent().siblings("button").eq(0);
+                objdrop.text(txt); objdrop.attr("v_val", val);
+            })
+            showup();
+        })
+        //回到顶部
+        //当滚动条的位置处于距顶部100像素以下时，跳转链接出现，否则消失
+        showup = function () {
+            $(window).scroll(function () {
+                if ($(window).scrollTop() > 100)
+                    $("#back-to-top").fadeIn(1500);
+                else
+                    $("#back-to-top").fadeOut(1500);
+            });
+            //当点击跳转链接后，回到页面顶部位置
+            $("#back-to-top").click(function () {
+                $('body,html').animate({ scrollTop: 0 }, 100);
+                return false;
+            });
+        }
+        //查询返回列列
+        searchlist = function (url, data) {
+            $.getJSON(url, data, function (ret) {
+                if (ret.code == 1000) {
+                    var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:45px;\">序号</th><th style=\"width:119px;\">活动类型</th><th style=\"width:119px;\">OpenID</th><th style=\"width:118px;\">手机号码</th><th style=\"width:119px;\">奖品名称</th><th style=\"width:118px;\">充值状态</th><th style=\"width:118px;\">添加时间</th></tr></thead>";
+                    $.each(ret.jsonresult, function (i, o) {
+                        str += "<tr><td>" + (parseInt(i) + 1) + "</td><td>" + TypeText(o.type) + "</td><td>" + o.openid + "</td><td>" + o.phone + "</td><td>" + o.prizename + "</td><td>" + StateText(o.state) + "</td><td>" + o.addtime + "</td></tr>";
+                    })
+                    str += "</table>";
+                    $("#ulist").html(str);
+                } else
+                    tips("查询失败.", 1);
+            })
+        }
+        //返回是否
+        StateText = function (v) {
+            if (v == 0) return "待兑奖";
+            else if (v == 1) return "已兑奖";
+        }
+        //活动类型
+        TypeText = function (v) {
+            if (v == 1) return "大转盘";
+            else return "其他";
+        }
+    </script>
+</head>
+<body>
+    <p id="back-to-top"><a href="#top"><span></span></a></p>
+    <div class="container" style="margin-left:0px; padding-left:0px">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <form action="" class="bs-example bs-example-form" role="form">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="input-group" style="float:left;">
+                                <div class="btn-group" style="float: left;">
+                                    <button id="field" type="button" v_val="-1" class="btn btn-default">默认</button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">切换下拉菜单</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" v_val="-1">默认</a></li>
+                                        @foreach (var item in (List<T_CooperConfig>)ViewBag.CooperDrop)
+                                        {
+                                            <li><a href="#" v_val="@item.id">@item.title</a></li>
+                                        }
+                                    </ul>
+                                </div>
+                                <input id="fieldv" type="text" class="form-control" style="width: 220px;margin:0 5px" placeholder="请输入你要查询的手机号码" />
+                            </div><!-- /input-group -->
+                            <div class="btn-group" style="float: left;">
+                                <button id="field1" type="button" v_val="-1" class="btn btn-default">默认</button>
+                                <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+                                    <span class="caret"></span>
+                                    <span class="sr-only">切换下拉菜单</span>
+                                </button>
+                                <ul class="dropdown-menu" role="menu">
+                                    <li><a href="#" v_val="-1">默认</a></li>
+                                    <li><a href="#" v_val="0">未兑奖</a></li>
+                                    <li><a href="#" v_val="1">已兑奖</a></li>
+                                </ul>
+                            </div>
+                            <button id="search" type="button" style="float:left; margin-left:5px;" class="btn btn-default">查询</button>
+                        </div><!-- /.col-lg-6 -->
+                    </div><!-- /.row -->
+                </form>
+            </div>
+            <div class="panel-body">
+                <div id="ulist"></div>
+                <div id="page" class="m-pagination"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

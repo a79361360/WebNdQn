@@ -1,0 +1,341 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>SetCooperPortal</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Content/My97DatePicker/WdatePicker.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#bg_showtx,#fx_showtx,#gzh_showtx").click(function () {
+                var img = $(this).attr("v");
+                if (img == null || img == "") tips("没有可以查看的图片", 1);
+                showtx(img);
+            })
+            $("#bg_docPath_file").change(function () {
+                $("#bg_docPath_txt").val($(this).val());
+            });
+            $("#fx_Path_file").change(function () {
+                $("#fx_Path_txt").val($(this).val());
+            });
+            $("#gzh_Path_file").change(function () {
+                $("#gzh_Path_txt").val($(this).val());
+            });
+            InitSet();
+        })
+        //Init
+        InitSet = function () {
+            //状态形成文字
+            if ('@Model.id' != "0") {
+                var statestr = "未开启";
+                if ('@Model.state' == "1") statestr = "进行中";
+                if ('@Model.state' == "2") statestr = "已结束";
+                $("#field").text(statestr);
+            } else {
+                $("#field").text("未开启"); $("#field").val("0");
+            }
+            $('.dropdown-menu a').click(function () {
+                var txt = $(this).text(); var val = $(this).attr("v_val");
+                var objdrop = $(this).parent().parent().siblings("button").eq(0);
+                objdrop.text(txt); objdrop.attr("v_val", val);
+            })
+        }
+        updateimg = function (type, fileid, showid) {
+            var vurl = $("#" + showid).attr("v");
+            if (vurl == null) vurl = "";
+            else vurl = getfilename(vurl);
+            var formData = new FormData();
+            formData.append(fileid, document.getElementById(fileid).files[0]);
+            formData.append("myfile", fileid);
+            formData.append("type", type);
+            formData.append("vurl", vurl);
+            $.ajax({
+                url: "/Cooper/UpdateImg",
+                type: "POST",
+                data: formData,
+                /**
+                *必须false才会自动加上正确的Content-Type
+                */
+                contentType: false,
+                /**
+                * 必须false才会避开jQuery对 formdata 的默认处理
+                * XMLHttpRequest会对 formdata 进行正确的处理
+                */
+                processData: false,
+                success: function (data) {
+                    if (data.success) {
+                        tips("背景图片更新成功", 1);
+                        $("#" + showid).attr("v", data.jsonresult);
+                    }
+                },
+                error: function () {
+                    alert("上传失败！");
+                }
+            });
+        }
+        //取得图片地址的名称与后缀名
+        getfilename = function (url) {
+            var str = url.substring(url.lastIndexOf("/") + 1, url.length);
+            if (str.lastIndexOf(".") == -1) return "";
+            //var str1 = url.substr(url.lastIndexOf("/") + 1, url.length - url.lastIndexOf("/"));
+            return str;
+        }
+        //弹于信息tips
+        tips = function (content, timeout) {
+            var tipsobj = $("#myModal");
+            if (tipsobj.length > 0)
+                tipsobj.remove();
+            var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
+            tipsobj = $(BootDialog); tipsobj.modal('show');
+            if (timeout > 0) { setTimeout(function () { tipsobj.modal('hide') }, timeout * 1000); }
+        }
+        //展示图片
+        showtx = function (img) {
+            var content = "<img src='" + img + "'/>";
+            var imgSrc = $(content).attr("src");
+            getImageWidth(imgSrc, function (w, h) {
+                qiu_confirm("q_showtx", "查看头像", content, w + 50, h + 50);
+            });
+        }
+        //弹出窗体
+        qiu_confirm = function (id, title, content, width, height) {
+            var iframe = $("#" + id);
+            if (iframe.length > 0)
+                iframe.remove();
+            if (width != null)
+                width = "style=\"width:" + width + "px\"";
+            if (height != null)
+                height = "style=\"height:" + height + "px;overflow:auto;text-align: center;\"";
+            var header = "<div class=\"modal-header\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\" id=\"myModalLabel\">" + title + "</h4></div>"
+            var footer = "<div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">关闭</button></div>";
+            var BootDialog = "<div class=\"modal fade\" id=\"" + id + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"" + width + ">" + header + "<div class=\"modal-body\"" + height + ">" + content + "</div>" + footer + "</div></div></div>";
+            var obj = $(BootDialog); obj.modal('show');
+        }
+        //取得图片长宽
+        function getImageWidth(url,callback){
+            var img = new Image();
+            img.src = url;
+
+            // 如果图片被缓存，则直接返回缓存数据
+            if(img.complete){
+                callback(img.width, img.height);
+            }else{
+                // 完全加载完毕的事件
+                img.onload = function(){
+                    callback(img.width, img.height);
+                }
+            }
+
+        }
+
+        tj = function () {
+            var cooperid = '@Model.id'; //如果这个为0就为新增
+            var ctype = $("#txt_ctype").val();
+            var title = $("#txt_title").val();
+            var descride = $("#txt_descride").val();
+            var bgurl = $("#bg_showtx").attr("v");
+            if (bgurl == null) bgurl = "";
+            var imgurl = $("#fx_showtx").attr("v");
+            if (imgurl == null) imgurl = "";
+            var linkurl = $("#txt_linkurl").val();
+            var corpid = $("#txt_corpid").val();
+            var username = $("#txt_username").val();
+            var signphone = $("#txt_signphone").val();
+            var appid = $("#txt_appid").val();
+            var secret = $("#txt_secret").val();
+            var qrcode_url = $("#gzh_showtx").attr("v");
+            if (qrcode_url == null) qrcode_url = "";
+            var eachflow = $("#txt_eachflow").val();
+            var uplimit = $("#txt_uplimit").val();
+            var cutdate = $("#txt_cutdate").val();
+            var state = $("#field").attr("v_val");
+
+            var data = {
+                cooperid: cooperid,
+                ctype:ctype,
+                title: title,
+                descride: descride,
+                bgurl: bgurl,
+                imgurl: imgurl,
+                linkurl: linkurl,
+                corpid: corpid,
+                username: username,
+                signphone: signphone,
+                appid: appid,
+                secret: secret,
+                qrcode_url: qrcode_url,
+                eachflow: eachflow,
+                uplimit: uplimit,
+                cutdate: cutdate,
+                state: state
+            }
+            $.ajax({
+                type: "post",
+                url: "/Cooper/SetCooper",
+                data: data,
+                success: function (ret) {
+                    if (ret.success)
+                        tips("提交成功", 1);
+                    else
+                        tips("提交失败", 1);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <form class="form-horizontal" role="form" action="/TUser/EditTUser" method="post">
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">Ctype</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_ctype" name="txt_ctype" value="@Model.ctype" placeholder="类型">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">标题</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_title" name="txt_title" value="@Model.title" placeholder="请输入标题,最多20个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">描述</label>
+                <div class="col-sm-10">
+                    <textarea type="text" rows="3" class="form-control" id="txt_descride" name="txt_descride" value="@Model.descride" placeholder="说明备注">@Model.descride</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">背景图</label>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <input id="bg_docPath_txt" type="text" class="form-control">
+                        <span style="position: relative" class="btn btn-primary input-group-addon">浏览<input id="bg_docPath_file" style="width: 60px;height:40px; position: absolute;top:-6px;left: -4px;opacity: 0; filter:alpha(opacity=0)" class="form-control" type="file"></span>
+                    </div>
+                </div>
+                <div class="col-sm-1">
+                    <input id="bg_qd" onclick="updateimg(1, 'bg_docPath_file', 'bg_showtx')" type="button" class="btn btn-default" value="确定" />
+                </div>
+                <div class="col-sm-3">
+                    <input id="bg_showtx" v="@Model.bgurl" type="button" class="btn btn-default" value="查看" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">微信分享小图标</label>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <input id="fx_Path_txt" type="text" class="form-control">
+                        <span style="position: relative" class="btn btn-primary input-group-addon">浏览<input id="fx_Path_file" style="width: 60px;height:40px; position: absolute;top:-6px;left: -4px;opacity: 0; filter:alpha(opacity=0)" class="form-control" type="file"></span>
+                    </div>
+                </div>
+                <div class="col-sm-1">
+                    <input id="fx_qd" onclick="updateimg(2, 'fx_Path_file', 'fx_showtx')" type="button" class="btn btn-default" value="确定" />
+                </div>
+                <div class="col-sm-3">
+                    <input id="fx_showtx" v="@Model.imgurl" type="button" class="btn btn-default" value="查看" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">微信分享链接</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_linkurl" name="txt_linkurl" value="@Model.linkurl" placeholder="请输入在微信分享时需要分享的链接">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">企业代码</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_corpid" name="txt_corpid" value="@Model.corpid" placeholder="移动充值平台的企业代码">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">用户名</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_username" name="txt_username" value="@Model.username" placeholder="用户名">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">接收短信手机号码</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_signphone" name="txt_signphone" value="@Model.signphone" placeholder="接收短信手机号码">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">微信APPID</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_appid" name="txt_appid" value="@Model.wx_appid" placeholder="判断用户是否关注了公众号,必须知道用户的appid">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">微信Secret</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_secret" name="txt_secret" value="@Model.wx_secret" placeholder="判断用户是否关注了公众号,必须知道用户的Secret">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">公众号二维码</label>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <input id="gzh_Path_txt" type="text" class="form-control">
+                        <span style="position: relative" class="btn btn-primary input-group-addon">浏览<input id="gzh_Path_file" style="width: 60px;height:40px; position: absolute;top:-6px;left: -4px;opacity: 0; filter:alpha(opacity=0)" class="form-control" type="file"></span>
+                    </div>
+                </div>
+                <div class="col-sm-1">
+                    <input id="gzh_qd" onclick="updateimg(3, 'gzh_Path_file', 'gzh_showtx')" type="button" class="btn btn-default" value="确定" />
+                </div>
+                <div class="col-sm-3">
+                    <input id="gzh_showtx" v="@Model.qrcode_url" type="button" class="btn btn-default" value="查看" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">标准流量</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_eachflow" name="txt_eachflow" value="@Model.eachflow" placeholder="每个用户自动充值流量时的流量多少">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">上限人数</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_uplimit" name="txt_uplimit" value="@Model.uplimit" placeholder="活动的人数上限">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">截止时间</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_cutdate" name="txt_cutdate" onclick="WdatePicker({ dateFmt: 'yyyyMMdd', readOnly: true })" value="@Model.cutdate" placeholder="后台充值需要提供这个截止时间">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">状态</label>
+                <div class="col-sm-10">
+                    <div class="btn-group" style="float: left;">
+                        <button id="field" type="button" v_val="@Model.state" class="btn btn-default"></button>
+                        <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+                            <span class="caret"></span>
+                            <span class="sr-only">切换下拉菜单</span>
+                        </button>
+                        <ul class="dropdown-menu" role="menu">
+                            <li><a href="#" v_val="0">未开启</a></li>
+                            <li><a href="#" v_val="1">进行中</a></li>
+                            <li><a href="#" v_val="2">已结束</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input type="button" onclick="tj()" class="btn btn-default" value="确认提交">
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

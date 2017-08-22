@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>SetDzpPortal</title>
+    <title>大转盘设置</title>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
     <script src="~/Scripts/bootstrap.min.js"></script>
@@ -39,11 +39,11 @@
         //弹出窗体
         qiu_confirm = function (id, title, content, width, height) {
             var iframe = $("#" + id);
-            if (iframe.length > 0) 
+            if (iframe.length > 0)
                 iframe.remove();
-            if (width != null) 
+            if (width != null)
                 width = "style=\"width:" + width + "px\"";
-            if (height != null) 
+            if (height != null)
                 height = "style=\"height:" + height + "px;overflow:auto;text-align: center;\"";
             var header = "<div class=\"modal-header\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\" id=\"myModalLabel\">" + title + "</h4></div>"
             var footer = "<div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">关闭</button><button id=\"Tj\" type=\"button\" class=\"btn btn-primary\">修改</button></div>";
@@ -54,11 +54,15 @@
                 edittx();
             })
         }
+        //点击选中txt里面的内容
+        txtselect = function (obj) {
+            $(obj).select();
+        }
         $(function () {
             $("#qdxgtx").click(function () {
                 var formData = new FormData();
                 formData.append("myfile", document.getElementById("path").files[0]);
-                formData.append("cooperid", '@Model.cooperid');
+                formData.append("cooperid", '@ViewBag.cooperid');
                 $.ajax({
                     url: "/Activity/UpdateBgUrl",
                     type: "POST",
@@ -97,6 +101,20 @@
             }
             if (divobj.html() != "") return;
             var configid = '@Model.id';
+            if (configid == 0) {
+                var str = "";
+                for (var i = 0; i < 10; i++) {
+                    str += "<label class=\"col-sm-2 control-label\">0</label>";
+                    str += "<div class=\"col-sm-10\">";
+                    str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
+                    str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" value=\"1\"></div>";
+                    str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
+                    str += "<div class=\"col-sm-2\"><input onclick=\"txtselect(this)\" type=\"text\" class=\"form-control\"></div>";
+                    str += "</div>";
+                }
+                divobj.html(str);
+                return;
+            }
             $.ajax({
                 type: "post",
                 url: "/Activity/ConfigListByCId",
@@ -111,21 +129,70 @@
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" value=\"" + o.prizename + "\"></div>";
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" value=\"" + o.count + "\"></div>";
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" value=\"" + o.number + "\"></div>";
-                            str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" value=\"" + o.winprob + "\"></div>";
+                            str += "<div class=\"col-sm-2\"><input onclick=\"txtselect(this)\" type=\"text\" class=\"form-control\" value=\"" + o.winprob + "\"></div>";
                             str += "</div>";
                             cnum++;
                         })
                         for (var i = 0; i < 10 - cnum; i++) {
-                            str += "<label class=\"col-sm-2 control-label\"></label>";
+                            str += "<label class=\"col-sm-2 control-label\">0</label>";
                             str += "<div class=\"col-sm-10\">";
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
-                            str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
+                            str += "<div class=\"col-sm-2\"><input onclick=\"txtselect(this)\" type=\"text\" class=\"form-control\"></div>";
                             str += "</div>";
                         }
                         divobj.html(str);
                     }
+                }
+            });
+        }
+        tj = function () {
+            var configid = '@Model.id'; //如果这个为0就为新增
+            var cooperid = '@ViewBag.cooperid'; //
+            var title = $("#txt_title").val();
+            var share = $("#txt_share").val();
+            var explain = $("#txt_explain").val();
+            var bgurl = $("#showtx").attr("v");
+            var _datalist = [];
+            var labelobj = $("#div1").find("label");
+            var inputobj = $("#div1").find("input");
+            if (labelobj.length == 10 & inputobj.length == 40) {
+                var aprob = 0;
+                for (var i = 0; i < 10; i++) {
+                    var obj = new Object();
+                    obj.id = $(labelobj[i]).text();
+                    obj.prizename = $(inputobj[i * 4]).val();
+                    obj.count = $(inputobj[i * 4 + 1]).val();
+                    obj.number = $(inputobj[i * 4 + 2]).val();
+                    obj.winprob = $(inputobj[i * 4 + 3]).val();
+                    aprob = parseFloat(aprob) + parseFloat(obj.winprob);
+                    _datalist.push(obj);  //添加
+                }
+                if (parseFloat(aprob).toFixed(2) != parseFloat(0.99)) {
+                    alert("机率配置不对"); return;
+                }
+            }
+            //console.log(_datalist)
+            var list = JSON.stringify(_datalist);       //会员列表
+            var data = {
+                configid: configid,
+                cooperid:cooperid,
+                title: title,
+                share: share,
+                explain: explain,
+                bgurl: bgurl,
+                list: list
+            }
+            $.ajax({
+                type: "post",
+                url: "/Activity/SetDzpConfig",
+                data: data,
+                success: function (ret) {
+                    if (ret.success) 
+                        tips("提交成功", 1);
+                    else 
+                        tips("提交失败", 1);
                 }
             });
         }
@@ -149,7 +216,7 @@
             <div class="form-group">
                 <label for="lastname" class="col-sm-2 control-label">说明</label>
                 <div class="col-sm-10">
-                    <textarea type="text" rows="3" class="form-control" id="txt_explain" name="txt_explain" value="@Model.explain" placeholder="说明备注"></textarea>
+                    <textarea type="text" rows="3" class="form-control" id="txt_explain" name="txt_explain" value="@Model.explain" placeholder="说明备注">@Model.explain</textarea>
                 </div>
             </div>
             <div class="form-group">
@@ -180,7 +247,7 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-2 col-sm-10">
-                    <button type="submit" class="btn btn-default">确认修改</button>
+                    <input type="button" onclick="tj()" class="btn btn-default" value="确认提交">
                 </div>
             </div>
         </form>
