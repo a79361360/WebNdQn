@@ -50,8 +50,6 @@ namespace BLL
                 else
                     filter += " state=" + state;
             }
-            if (!string.IsNullOrEmpty(filter))
-                filter = "where" + filter;
 
             SqlPageParam param = new SqlPageParam();
             param.TableName = "T_CooperConfig";
@@ -63,6 +61,74 @@ namespace BLL
             param.Group = "";
             param.Order = "id";
             IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.PageResult(ref Total, param));
+            return list;
+        }
+        public IList<T_ActivityConfig> GetActivity_Page(int type, string name, string value, int pageSize, int pageIndex, ref int Total)
+        {
+            string filter = "";
+            if (name != "-1")
+            {
+                filter += name + " like '%" + value + "%'";
+            }
+            //if (!string.IsNullOrEmpty(filter))
+            //    filter = " where " + filter;
+            SqlPageParam param = new SqlPageParam();
+            param.TableName = "T_ActivityConfig";
+            param.PrimaryKey = "id";
+            param.Fields = "id,cooperid,type,title,share,explain,bgurl";
+            param.PageSize = pageSize;
+            param.PageIndex = pageIndex;
+            param.Filter = filter;
+            param.Group = "";
+            param.Order = "id";
+            IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(dal.PageResult(ref Total, param));
+            return list;
+        }
+        public IList<T_ActivityDrawLog> GetActivityDrawList_Search(int cooperid, string phone, int state)
+        {
+            string filter = "";
+            if (cooperid != -1)
+                filter += " cooperid=@cooperid";
+            if (!string.IsNullOrEmpty(phone))
+            {
+                if (!string.IsNullOrEmpty(filter))
+                    filter += " and phone=@phone";
+                else
+                    filter += " phone=@phone";
+            }
+            if (state != -1)
+            {
+                if (!string.IsNullOrEmpty(filter))
+                    filter += " and state=@state";
+                else
+                    filter += " state=@state";
+            }
+            if (!string.IsNullOrEmpty(filter))
+                filter = "where" + filter;
+            IList<T_ActivityDrawLog> list = DataTableToList.ModelConvertHelper<T_ActivityDrawLog>.ConvertToModel(dal.ActivityDrawList(filter, cooperid, phone, state));
+            return list;
+        }
+        public IList<T_ShareLog> GetActivityShareList_Search(int cooperid, int atype, int sharetype) {
+            string filter = "";
+            if (cooperid != -1)
+                filter += " cooperid=@cooperid";
+            if (atype != -1)
+            {
+                if (!string.IsNullOrEmpty(filter))
+                    filter += " and atype=@atype";
+                else
+                    filter += " atype=@atype";
+            }
+            if (sharetype != -1)
+            {
+                if (!string.IsNullOrEmpty(filter))
+                    filter += " and sharetype=@sharetype";
+                else
+                    filter += " sharetype=@sharetype";
+            }
+            if (!string.IsNullOrEmpty(filter))
+                filter = "where" + filter;
+            IList<T_ShareLog> list = DataTableToList.ModelConvertHelper<T_ShareLog>.ConvertToModel(dal.ActivityShareList(filter, cooperid, atype, sharetype));
             return list;
         }
     }

@@ -2,6 +2,7 @@
 using DAL;
 using Fgly.Common.Expand;
 using FJSZ.OA.Common.Web;
+using Model.ViewModel;
 using Model.WxModel;
 using System;
 using System.Collections.Generic;
@@ -88,88 +89,100 @@ namespace BLL
             return list;
         }
 
+        /// <summary>
+        /// 获取概率的基数
+        /// </summary>
+        /// <param name="array"></param>
+        /// <returns></returns>
         private long GetBaseNumber(double[] array)
         {
-            long result = 0L;
-            long result2;
+            long result = 0;
+
             try
             {
                 if (array == null || array.Length == 0)
                 {
-                    result2 = result;
-                    return result2;
+                    return result;
                 }
+
                 string targetNumber = string.Empty;
-                for (int i = 0; i < array.Length; i++)
+
+                foreach (double item in array)
                 {
-                    string temp = array[i].ToString();
-                    if (temp.Contains('.'))
+                    string temp = item.ToString();
+
+                    if (!temp.Contains('.'))
                     {
-                        temp = temp.Substring(temp.IndexOf('.')).Replace(".", "");
-                        if (targetNumber.Length < temp.Length)
-                        {
-                            targetNumber = temp;
-                        }
+                        continue;
+                    }
+
+                    temp = temp.Substring(temp.IndexOf('.')).Replace(".", "");
+
+                    if (targetNumber.Length < temp.Length)
+                    {
+                        targetNumber = temp;
                     }
                 }
+
                 if (!string.IsNullOrEmpty(targetNumber))
                 {
                     int ep = targetNumber.Length;
-                    result = (long)Math.Pow(10.0, (double)ep);
+
+                    result = (long)Math.Pow(10, ep);
                 }
             }
-            catch
-            {
-            }
-            result2 = result;
-            return result2;
+            catch { }
+
+            return result;
         }
         private long GetRandomNumber(Random random, long min, long max)
         {
             byte[] minArr = BitConverter.GetBytes(min);
+
             int hMin = BitConverter.ToInt32(minArr, 4);
-            int lMin = BitConverter.ToInt32(new byte[]
-            {
-        minArr[0],
-        minArr[1],
-        minArr[2],
-        minArr[3]
-            }, 0);
+
+            int lMin = BitConverter.ToInt32(new byte[] { minArr[0], minArr[1], minArr[2], minArr[3] }, 0);
+
             byte[] maxArr = BitConverter.GetBytes(max);
+
             int hMax = BitConverter.ToInt32(maxArr, 4);
-            int lMax = BitConverter.ToInt32(new byte[]
-            {
-        maxArr[0],
-        maxArr[1],
-        maxArr[2],
-        maxArr[3]
-            }, 0);
+
+            int lMax = BitConverter.ToInt32(new byte[] { maxArr[0], maxArr[1], maxArr[2], maxArr[3] }, 0);
+
             if (random == null)
             {
                 random = new Random();
             }
+
             int h = random.Next(hMin, hMax);
-            int i;
+
+            int l = 0;
+
             if (h == hMin)
             {
-                i = random.Next(Math.Min(lMin, lMax), Math.Max(lMin, lMax));
+                l = random.Next(Math.Min(lMin, lMax), Math.Max(lMin, lMax));
             }
             else
             {
-                i = random.Next(0, 2147483647);
+                l = random.Next(0, Int32.MaxValue);
             }
-            byte[] lArr = BitConverter.GetBytes(i);
+
+            byte[] lArr = BitConverter.GetBytes(l);
+
             byte[] hArr = BitConverter.GetBytes(h);
+
             byte[] result = new byte[8];
-            for (int j = 0; j < lArr.Length; j++)
+
+            for (int i = 0; i < lArr.Length; i++)
             {
-                result[j] = lArr[j];
-                result[j + 4] = hArr[j];
+                result[i] = lArr[i];
+                result[i + 4] = hArr[i];
             }
+
             return BitConverter.ToInt64(result, 0);
         }
 
-        public int Getprob(int cooperid,string openid)
+        public int Getprob(int cooperid,string openid,string phone)
         {
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "方法Getprob开始：" + " cooperid=" + cooperid + " openid" + openid);
             Dictionary<string, string> prize = (Dictionary<string, string>)GetProbData(cooperid);
@@ -182,8 +195,8 @@ namespace BLL
                 resultnum++;
                 if (item.Key == list[0])
                 {
-                    int result = adal.HandleActivity(1, cooperid, 1, openid, "", Convert.ToInt32(item.Key));
-                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "方法Getprob，插入大转盘中奖记录:result=" + result.ToString()+ " cooperid="+ cooperid+ " openid"+ openid);
+                    int result = adal.HandleActivity(1, cooperid, 1, openid, phone, Convert.ToInt32(item.Key));
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "方法Getprob，插入大转盘中奖记录:result=" + result.ToString() + " cooperid=" + cooperid + " openid" + openid + " phone" + phone);
                     break;
                 }
             }
@@ -254,7 +267,7 @@ namespace BLL
             return list;
         }
         /// <summary>
-        /// 取得当前用户
+        /// 取得当前用户可摇奖次数
         /// </summary>
         /// <param name="cooperid">T_CooperConfig的ID值</param>
         /// <param name="type">1为大转盘</param>
@@ -285,11 +298,11 @@ namespace BLL
         }
         public T_ActivityConfig FindActivityConfigByCooperid(int cooperid) {
             IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(adal.GetActivityZb(cooperid));
+            T_ActivityConfig dto = new T_ActivityConfig();
             if (list.Count > 0){
-                T_ActivityConfig dto = list[0];
-                return dto;
+                dto = list[0];
             }
-            return null;
+            return dto;
         }
         /// <summary>
         /// 更新背景图片
@@ -304,8 +317,9 @@ namespace BLL
             string path = WebHelp.HttpUploadFile(pathx, filename, fileid); //返回完整的上传地址 
             if (!string.IsNullOrEmpty(path))
             {
-                int result = adal.UpdateDzpBgUrlByCooperid(cooperid, pathx + filename+ vtime);
-                if (result > 0) return pathx + filename + vtime;
+                return pathx + filename + vtime;
+                //int result = adal.UpdateDzpBgUrlByCooperid(cooperid, pathx + filename+ vtime);
+                //if (result > 0) return pathx + filename + vtime;
             }
             return "";
         }
@@ -318,6 +332,69 @@ namespace BLL
         {
             IList<T_ActivityConfigList> list = DataTableToList.ModelConvertHelper<T_ActivityConfigList>.ConvertToModel(adal.GetActivityConfigList(configid));
             return list;
+        }
+        public int SetDzpConfig(int configid,int cooperid,string title,int share,string explain,string bgurl,IList<T_ActivityConfigList> list) {
+            int result = 0;
+            int resultnum = 0;
+            //新增
+            if (configid == 0)
+            {
+                configid = adal.AddConfig(cooperid, 1, title, share, explain, bgurl); //主表ID
+                result = configid;
+            }
+            else
+                result = adal.UpdateConfig(configid, cooperid, 1, title, share, explain, bgurl);
+            foreach (var item in list)
+            {
+                result = adal.SetConfigList(item.id, configid, item.prizename, item.count, item.number, item.winprob);
+                if (result > 0)
+                    resultnum++;
+            }
+            return result;
+        }
+        public int RemoveActivitys(IList<IdListDto> ids)
+        {
+            int sresult = 0;    //成功的数量
+            if (ids.Count == 0)
+                throw new ArgumentNullException();
+            else
+            {
+                try
+                {
+                    foreach (var item in ids)
+                    {
+                        int gid = item.id;        //ID
+                        int result = adal.ActivityRemoveById(gid);
+                        sresult = sresult + result;
+                    }
+                }
+                catch
+                {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "方法 RemoveActivitys 异常：" + " 成功执行=" + sresult);
+                    return -1000;
+                }
+            }
+            return sresult;
+        }
+        /// <summary>
+        /// 取得大转盘机率合值
+        /// </summary>
+        /// <param name="configid"></param>
+        /// <returns></returns>
+        public float GetWinProb(int configid) {
+            float result = adal.GetWinProb(configid);
+            return result;
+        }
+        /// <summary>
+        /// 当前这个用户中奖信息中是否有号码
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="type"></param>
+        /// <param name="openid"></param>
+        /// <returns></returns>
+        public string GetActivityPhone(int cooperid, int type, string openid) {
+            string phone = adal.GetActivityPhone(cooperid, type, openid);
+            return phone;
         }
     }
 

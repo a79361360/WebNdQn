@@ -14,6 +14,8 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using Fgly.Common.Expand;
+using Model.ViewModel;
 
 namespace BLL
 {
@@ -187,9 +189,81 @@ namespace BLL
             IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfigDrop(state));
             return list;
         }
-
-
-
+        public T_CooperConfig GetCooperConfigById(int id)
+        {
+            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfigById(id));
+            if (list.Count > 0)
+            {
+                return list[0];
+            }
+            return new T_CooperConfig();
+        }
+        /// <summary>
+        /// 上传图片
+        /// </summary>
+        /// <param name="type">1背景图，2微信小图标，3公众号二维码</param>
+        /// <param name="fileid">上传控件的名称</param>
+        /// <param name="filename">文件名称</param>
+        /// <returns></returns>
+        public string DzpUploadBgUrl(int type, string fileid,string filename)
+        {
+            string pathx = "";                                        //图片地址
+            string fname = "";
+            if (type == 1){
+                pathx = "/Content/Img/bg/";
+                fname = "bg_";
+            }
+            if (type == 2)
+            {
+                pathx = "/Content/Img/wxico/";
+                fname = "wxico_";
+            }
+            if (type == 3)
+            {
+                pathx = "/Content/Img/gzh/";
+                fname = "gzh_";
+            }
+            if(string.IsNullOrEmpty(filename))
+                filename = fname + DateTime.Now.ToUnixTimeStamp().ToString() + ".png";                 //图片名称 
+            string vtime = "?v=" + DateTime.Now.ToUnixTimeStamp().ToString();           //用时间戳来做版本号
+            string path = WebHelp.HttpUploadFile(pathx, filename, fileid); //返回完整的上传地址 
+            if (!string.IsNullOrEmpty(path))
+            {
+                return pathx + filename + vtime;
+                //int result = adal.UpdateDzpBgUrlByCooperid(cooperid, pathx + filename+ vtime);
+                //if (result > 0) return pathx + filename + vtime;
+            }
+            return "";
+        }
+        public int SetCooper(T_CooperConfig dto) {
+            int result = dal.SetCooper(dto.id, dto.ctype, dto.issue, dto.title, dto.descride, dto.imgurl, dto.btnurl, dto.bgurl, dto.linkurl,
+               dto.corpid, dto.username, dto.userpwd, dto.signphone, dto.wx_appid, dto.wx_secret, dto.qrcode_url, dto.eachflow, dto.uplimit, dto.cutdate, dto.state);
+            return result;
+        }
+        public int RemoveCoopers(IList<IdListDto> ids)
+        {
+            int sresult = 0;    //成功的数量
+            if (ids.Count == 0)
+                throw new ArgumentNullException();
+            else
+            {
+                try
+                {
+                    foreach (var item in ids)
+                    {
+                        int gid = item.id;        //ID
+                        int result = dal.CooperRemoveById(gid);
+                        sresult = sresult + result;
+                    }
+                }
+                catch
+                {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "方法 RemoveActivitys 异常：" + " 成功执行=" + sresult);
+                    return -1000;
+                }
+            }
+            return sresult;
+        }
 
 
 
