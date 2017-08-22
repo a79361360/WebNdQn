@@ -98,5 +98,145 @@ namespace DAL
             int result = dal.IntExtSql(sql, parameter);
             return result;
         }
+        public int AddConfig(int cooperid,int type,string title,int share,string explain,string bgurl) {
+            string sql = "INSERT INTO [T_ActivityConfig]([cooperid],[type],[title],[share],[explain],[bgurl])";
+            sql += "VALUES(@cooperid,@type,@title,@share,@explain,@bgurl) select SCOPE_IDENTITY() as id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@cooperid",SqlDbType.Int),
+                new SqlParameter("@type",SqlDbType.Int),
+                new SqlParameter("@title",SqlDbType.NVarChar,20),
+                new SqlParameter("@share",SqlDbType.Int),
+                new SqlParameter("@explain",SqlDbType.NVarChar,400),
+                new SqlParameter("@bgurl",SqlDbType.NVarChar,250),
+            };
+            parameter[0].Value = cooperid;
+            parameter[1].Value = type;
+            parameter[2].Value = title;
+            parameter[3].Value = share;
+            parameter[4].Value = explain;
+            parameter[5].Value = bgurl;
+            int result = 0;
+            try {
+                result = Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
+            }
+            catch (Exception er) {
+                return -1;
+            }
+            return result;
+        }
+        public int UpdateConfig(int configid, int cooperid, int type, string title, int share, string explain, string bgurl) {
+            string sql = "UPDATE [T_ActivityConfig] SET [cooperid] = @cooperid,[type] = @type,[title] = @title,[share] = @share,[explain] = @explain,[bgurl] = @bgurl where id=@configid";
+            SqlParameter[] parameter = new[]
+              {
+                new SqlParameter("@cooperid",SqlDbType.Int),
+                new SqlParameter("@type",SqlDbType.Int),
+                new SqlParameter("@title",SqlDbType.NVarChar,20),
+                new SqlParameter("@share",SqlDbType.Int),
+                new SqlParameter("@explain",SqlDbType.NVarChar,400),
+                new SqlParameter("@bgurl",SqlDbType.NVarChar,250),
+                new SqlParameter("@configid",SqlDbType.Int),
+            };
+            parameter[0].Value = cooperid;
+            parameter[1].Value = type;
+            parameter[2].Value = title;
+            parameter[3].Value = share;
+            parameter[4].Value = explain;
+            parameter[5].Value = bgurl;
+            parameter[6].Value = configid;
+            int result = Convert.ToInt32(dal.IntExtSql(sql, parameter));
+            return result;
+        }
+        /// <summary>
+        /// 不管是插入还是更新，都可以用。主要是用configid是否为0来进行判断
+        /// </summary>
+        /// <param name="configid">主表的ID值</param>
+        /// <param name="prizename"></param>
+        /// <param name="count"></param>
+        /// <param name="number"></param>
+        /// <param name="winprob"></param>
+        /// <returns></returns>
+        public int SetConfigList(int id,int configid,string prizename,int count,int number,string winprob) {
+            string sql = "INSERT INTO [T_ActivityConfigList]([configid],[prizename],[count],[number],[winprob])";
+            sql += "VALUES(@configid,@prizename,@count,@number,@winprob)";
+            if (id != 0)
+                sql = "UPDATE [T_ActivityConfigList] SET [configid] = @configid,[prizename] = @prizename,[count] = @count,[number] = @number,[winprob] = @winprob where id=@id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@configid",SqlDbType.Int),
+                new SqlParameter("@prizename",SqlDbType.NVarChar,50),
+                new SqlParameter("@count",SqlDbType.Int),
+                new SqlParameter("@number",SqlDbType.Int),
+                new SqlParameter("@winprob",SqlDbType.NVarChar,10),
+                new SqlParameter("@id",SqlDbType.Int)
+            };
+            parameter[0].Value = configid;
+            parameter[1].Value = prizename;
+            parameter[2].Value = count;
+            parameter[3].Value = number;
+            parameter[4].Value = winprob;
+            parameter[5].Value = id;
+            int result = Convert.ToInt32(dal.IntExtSql(sql, parameter));
+            return result;
+        }
+        public int ActivityRemoveById(int id) {
+            string sql = "DELETE FROM [T_ActivityConfig] WHERE id=@id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@id",SqlDbType.Int)
+            };
+            parameter[0].Value = id;
+            int result = dal.IntExtSql(sql, parameter);
+            if (result > 0) ActivityListRemoveById(id);
+            return result;
+        }
+        private int ActivityListRemoveById(int configid)
+        {
+            string sql = "DELETE FROM [T_ActivityConfigList] WHERE configid=@configid";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@configid",SqlDbType.Int)
+            };
+            parameter[0].Value = configid;
+            int result = dal.IntExtSql(sql, parameter);
+            return result;
+        }
+        /// <summary>
+        /// 取得大转盘配置的机率
+        /// </summary>
+        /// <param name="configid"></param>
+        /// <returns></returns>
+        public float GetWinProb(int configid) {
+            string sql = "select SUM(CAST(winprob AS FLOAT)) FROM [T_ActivityConfigList] WHERE configid=@configid";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@configid",SqlDbType.Int)
+            };
+            parameter[0].Value = configid;
+            float result = Convert.ToSingle(dal.ExtScalarSql(sql, parameter));
+            return result;
+        }
+        /// <summary>
+        /// 取得中奖信息中已经存在的手机号码
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="type"></param>
+        /// <param name="openid"></param>
+        /// <returns></returns>
+        public string GetActivityPhone(int cooperid, int type, string openid) {
+            string sql = "SELECT top 1 phone FROM T_ActivityDrawLog WHERE cooperid=@cooperid AND type=@type AND openid=@openid and phone<>''";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@cooperid",SqlDbType.Int),
+                new SqlParameter("@type",SqlDbType.Int),
+                new SqlParameter("@openid",SqlDbType.NVarChar,50)
+            };
+            parameter[0].Value = cooperid;
+            parameter[1].Value = type;
+            parameter[2].Value = openid;
+            var result = dal.ExtScalarSql(sql, parameter);
+            if (result == null|| result.ToString() == "") return "";
+            return result.ToString();
+        }
     }
 }

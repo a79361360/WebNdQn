@@ -52,7 +52,7 @@ namespace DAL
         /// <param name="state">状态</param>
         /// <returns></returns>
         public DataTable GetCooperConfigDrop(int state) {
-            string sql = "SELECT [ctype],[issue],[title],state FROM [dbo].[T_CooperConfig] WHERE state=@state order by id desc";
+            string sql = "SELECT id,[ctype],[issue],[title],state FROM [dbo].[T_CooperConfig] WHERE state=@state order by id desc";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@state",SqlDbType.Int)
@@ -60,6 +60,96 @@ namespace DAL
             parameter[0].Value = state;
             DataTable dt = dal.ExtSql(sql, parameter);
             return dt;
+        }
+        /// <summary>
+        /// 用公司的ID取得公司的信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public DataTable GetCooperConfigById(int id) {
+            string sql = "SELECT [id],[ctype],[issue],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE id=@id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@id",SqlDbType.Int)
+            };
+            parameter[0].Value = id;
+            DataTable dt = dal.ExtSql(sql, parameter);
+            return dt;
+        }
+        public int SetCooper(int id,int ctype,int issue,string title,string descride,string imgurl,string btnurl,string bgurl,string linkurl,
+            string corpid,string username,string userpwd,string signphone,string wx_appid,string wx_secret,string qrcode_url,
+            int eachflow,int uplimit,string cutdate,int state) {
+
+            string sql = "INSERT INTO [T_CooperConfig]([ctype],[issue],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state])";
+            sql += "VALUES(@ctype,@issue,@title,@descride,@imgurl,@btnurl,@bgurl,@linkurl,@corpid,@username,@userpwd,@signphone,@wx_appid,@wx_secret,@qrcode_url,@eachflow,@uplimit,@cutdate,@state)";
+            if (id != 0)
+            {
+                sql = "UPDATE [T_CooperConfig] SET [ctype] = @ctype,[title] = @title,[descride] = @descride,[imgurl] = @imgurl,[btnurl] = @btnurl,[bgurl] = @bgurl,[linkurl] = @linkurl,[corpid] = @corpid,[username] = @username,[userpwd] = @userpwd";
+                sql += ",[signphone] = @signphone,[wx_appid] = @wx_appid,[wx_secret] = @wx_secret,[qrcode_url] = @qrcode_url,[eachflow] = @eachflow,[uplimit] = @uplimit,[cutdate] = @cutdate,[state] = @state";
+                sql += " where id=@id";
+            }
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@id",SqlDbType.Int),
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int),
+                new SqlParameter("@title",SqlDbType.NVarChar,50),
+                new SqlParameter("@descride",SqlDbType.NVarChar,250),
+                new SqlParameter("@imgurl",SqlDbType.NVarChar,250),
+                new SqlParameter("@btnurl",SqlDbType.NVarChar,250),
+                new SqlParameter("@bgurl",SqlDbType.NVarChar,250),
+                new SqlParameter("@linkurl",SqlDbType.NVarChar,250),
+                new SqlParameter("@corpid",SqlDbType.NVarChar,20),
+                new SqlParameter("@username",SqlDbType.NVarChar,50),
+                new SqlParameter("@userpwd",SqlDbType.NVarChar,50),
+                new SqlParameter("@signphone",SqlDbType.NVarChar,20),
+                new SqlParameter("@wx_appid",SqlDbType.NVarChar,50),
+                new SqlParameter("@wx_secret",SqlDbType.NVarChar,50),
+                new SqlParameter("@qrcode_url",SqlDbType.NVarChar,150),
+                new SqlParameter("@eachflow",SqlDbType.Int),
+                new SqlParameter("@uplimit",SqlDbType.Int),
+                new SqlParameter("@cutdate",SqlDbType.NVarChar,10),
+                new SqlParameter("@state",SqlDbType.Int),
+            };
+            parameter[0].Value = id;
+            parameter[1].Value = ctype;
+            parameter[2].Value = issue;
+            parameter[3].Value = title;
+            parameter[4].Value = descride;
+            parameter[5].Value = imgurl;
+            parameter[6].Value = btnurl;
+            parameter[7].Value = bgurl;
+            parameter[8].Value = linkurl;
+            parameter[9].Value = corpid;
+            parameter[10].Value = username;
+            parameter[11].Value = userpwd;
+            parameter[12].Value = signphone;
+            parameter[13].Value = wx_appid;
+            parameter[14].Value = wx_secret;
+            parameter[15].Value = qrcode_url;
+            parameter[16].Value = eachflow;
+            parameter[17].Value = uplimit;
+            parameter[18].Value = cutdate;
+            parameter[19].Value = state;
+            int result = Convert.ToInt32(dal.IntExtSql(sql, parameter));
+            return result;
+
+        }
+        /// <summary>
+        /// 删除Cooper信息
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int CooperRemoveById(int id)
+        {
+            string sql = "DELETE FROM [T_CooperConfig] WHERE id=@id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@id",SqlDbType.Int)
+            };
+            parameter[0].Value = id;
+            int result = dal.IntExtSql(sql, parameter);
+            return result;
         }
         /// <summary>
         /// 当前手机是否已经添加过这个公司的这一期活动

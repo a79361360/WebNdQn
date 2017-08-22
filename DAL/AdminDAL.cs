@@ -51,5 +51,33 @@ namespace DAL
             parameter[2].Value = state;
             return dal.ExtSql(sql, parameter);
         }
+        public DataTable ActivityDrawList(string filter, int cooperid, string phone, int state)
+        {
+            string sql = "SELECT a.id,a.cooperid,a.type,a.openid,a.phone,a.configlistid,b.prizename,a.state,Convert(nvarchar(19),a.addtime,120) addtime FROM T_ActivityDrawLog a INNER JOIN T_ActivityConfigList b ON a.configlistid=b.id " + filter;
+            SqlParameter[] parameter = new[]
+                        {
+                new SqlParameter("@cooperid",SqlDbType.Int),
+                new SqlParameter("@phone",SqlDbType.NVarChar,20),
+                new SqlParameter("@state",SqlDbType.Int)
+            };
+            parameter[0].Value = cooperid;
+            parameter[1].Value = phone;
+            parameter[2].Value = state;
+            return dal.ExtSql(sql, parameter);
+        }
+        public DataTable ActivityShareList(string filter, int cooperid, int atype, int sharetype)
+        {
+            string sql = "SELECT id,cooperid,atype,openid,sharetype,Convert(nvarchar(19),addtime,120) addtime FROM T_ShareLog " + filter;
+            SqlParameter[] parameter = new[]
+                        {
+                new SqlParameter("@cooperid",SqlDbType.Int),
+                new SqlParameter("@atype",SqlDbType.Int),
+                new SqlParameter("@sharetype",SqlDbType.Int)
+            };
+            parameter[0].Value = cooperid;
+            parameter[1].Value = atype;
+            parameter[2].Value = sharetype;
+            return dal.ExtSql(sql, parameter);
+        }
     }
 }
