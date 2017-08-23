@@ -104,7 +104,7 @@ namespace BLL
         public string FilterMobileCode(string mobile, string content)
         {
             string pstr = "短信数字随机码为：";
-            if (mobile == "10657532190000624") pstr = "下发的短信验证码是";
+            if (mobile == "10657532190000761") pstr = "下发的短信验证码是";
             if (content.IndexOf(pstr) != -1)
             {
                 string yzm = content.Substring(content.LastIndexOf(pstr) + 9, 6);
@@ -114,7 +114,7 @@ namespace BLL
         }
         public string FilterMobileXh(string mobile,string content) {
             string pstr = "序号为：";int len = 2;
-            if (mobile == "10657532190000624")
+            if (mobile == "10657532190000761")
             {
                 pstr = "信序列号";
                 len = content.Length - (content.LastIndexOf(pstr) + 4);

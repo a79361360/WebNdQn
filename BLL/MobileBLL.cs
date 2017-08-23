@@ -191,6 +191,18 @@ namespace BLL
                     {
                         IMPORT_CODE = dto.model_2;  //重新附值---只有导入成功以后才会有值
                         string paramstr = "abc=" + abc2 + "&IMPORT_CODE=" + IMPORT_CODE + "&PACKTYPE=" + PACKTYPE + "&DISCOUNT=" + DISCOUNT + "&ECORDERID=" + ECORDERID + "&dealId=" + dealId + "&grid=" + grid;
+                        
+                        url = "http://" + czhost + "/payflow/msgCode/getReTime.do";   //发送短信前
+                        item = new HttpItem()
+                        {
+                            URL = url,//URL     必需项    
+                            Method = "GET",//URL     可选项 默认为Get   
+                            ProxyIp = "ieproxy",
+                            Cookie = cookie,
+                            ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
+                        };
+                        result = helpweb.GetHtml(item);
+
                         url = "http://" + czhost + "/payflow/msgCode/get.do";   //发送短信
                         item = new HttpItem()
                         {
@@ -204,7 +216,7 @@ namespace BLL
                         msgdto msgdto = JsonConvert.DeserializeObject<msgdto>(result.Html);
                         if (msgdto != null && msgdto.status == 0)
                         {
-                            int xhresult = mdal.UpdateLogCacheXh(ctype, issue, "10657532190000624", msgdto.seq, paramstr);    //将短信的序号更新到数据库
+                            int xhresult = mdal.UpdateLogCacheXh(ctype, issue, "10657532190000761", msgdto.seq, paramstr);    //将短信的序号更新到数据库
                             return 1;
                         }
                         else {
@@ -252,63 +264,70 @@ namespace BLL
             webRequest.Timeout = timeOut;
             webRequest.CookieContainer = container;
             webRequest.ContentType = "multipart/form-data; boundary=" + boundary;
-
-            // 写入文件
-            const string filePartHeader =
-                "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"\r\n" +
-                 "Content-Type: application/vnd.ms-excel\r\n\r\n";
-            var header = string.Format(filePartHeader, fileKeyName, "flowPoolExcel.xls");
-            var headerbytes = Encoding.UTF8.GetBytes(header);
-
-            memStream.Write(beginBoundary, 0, beginBoundary.Length);
-            memStream.Write(headerbytes, 0, headerbytes.Length);
-
-            var buffer = new byte[1024];
-            int bytesRead; // =0
-
-            while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
+            try
             {
-                memStream.Write(buffer, 0, bytesRead);
+                // 写入文件
+                const string filePartHeader =
+                    "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"\r\n" +
+                     "Content-Type: application/vnd.ms-excel\r\n\r\n";
+                var header = string.Format(filePartHeader, fileKeyName, "flowPoolExcel.xls");
+                var headerbytes = Encoding.UTF8.GetBytes(header);
+
+                memStream.Write(beginBoundary, 0, beginBoundary.Length);
+                memStream.Write(headerbytes, 0, headerbytes.Length);
+
+                var buffer = new byte[1024];
+                int bytesRead; // =0
+
+                while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
+                {
+                    memStream.Write(buffer, 0, bytesRead);
+                }
+
+                // 写入字符串的Key
+                //var stringKeyHeader = "\r\n--" + boundary +
+                //                       "\r\nContent-Disposition: form-data; name=\"{0}\"" +
+                //                       "\r\n\r\n{1}\r\n";
+
+                //foreach (byte[] formitembytes in from string key in stringDict.Keys
+                //                                 select string.Format(stringKeyHeader, key, stringDict[key])
+                //                                     into formitem
+                //                                 select Encoding.UTF8.GetBytes(formitem))
+                //{
+                //    memStream.Write(formitembytes, 0, formitembytes.Length);
+                //}
+
+                // 写入最后的结束边界符
+                memStream.Write(endBoundary, 0, endBoundary.Length);
+
+                webRequest.ContentLength = memStream.Length;
+
+                var requestStream = webRequest.GetRequestStream();
+
+                memStream.Position = 0;
+                var tempBuffer = new byte[memStream.Length];
+                memStream.Read(tempBuffer, 0, tempBuffer.Length);
+                memStream.Close();
+
+                requestStream.Write(tempBuffer, 0, tempBuffer.Length);
+                requestStream.Close();
+
+                var httpWebResponse = (HttpWebResponse)webRequest.GetResponse();
+                using (var httpStreamReader = new StreamReader(httpWebResponse.GetResponseStream(),
+                                                                Encoding.GetEncoding("utf-8")))
+                {
+                    responseContent = httpStreamReader.ReadToEnd();
+                }
+                fileStream.Close();
+                httpWebResponse.Close();
+                webRequest.Abort();
+                return responseContent;
             }
-
-            // 写入字符串的Key
-            //var stringKeyHeader = "\r\n--" + boundary +
-            //                       "\r\nContent-Disposition: form-data; name=\"{0}\"" +
-            //                       "\r\n\r\n{1}\r\n";
-
-            //foreach (byte[] formitembytes in from string key in stringDict.Keys
-            //                                 select string.Format(stringKeyHeader, key, stringDict[key])
-            //                                     into formitem
-            //                                 select Encoding.UTF8.GetBytes(formitem))
-            //{
-            //    memStream.Write(formitembytes, 0, formitembytes.Length);
-            //}
-
-            // 写入最后的结束边界符
-            memStream.Write(endBoundary, 0, endBoundary.Length);
-
-            webRequest.ContentLength = memStream.Length;
-
-            var requestStream = webRequest.GetRequestStream();
-
-            memStream.Position = 0;
-            var tempBuffer = new byte[memStream.Length];
-            memStream.Read(tempBuffer, 0, tempBuffer.Length);
-            memStream.Close();
-
-            requestStream.Write(tempBuffer, 0, tempBuffer.Length);
-            requestStream.Close();
-            
-            var httpWebResponse = (HttpWebResponse)webRequest.GetResponse();
-            using (var httpStreamReader = new StreamReader(httpWebResponse.GetResponseStream(),
-                                                            Encoding.GetEncoding("utf-8")))
-            {
-                responseContent = httpStreamReader.ReadToEnd();
+            catch {
+                fileStream.Close();
+                webRequest.Abort();
+                return "";
             }
-            fileStream.Close();
-            httpWebResponse.Close();
-            webRequest.Abort();
-            return responseContent;
         }
         public CookieContainer ToCookieContainer(string cookies) {
             NameValueCollection dic = new NameValueCollection();
@@ -373,7 +392,7 @@ namespace BLL
         /// <summary>
         /// 完成用户列表充值
         /// </summary>
-        /// <param name="phone">10657030登入，10657532190000624充值</param>
+        /// <param name="phone">10657030登入，10657532190000761充值</param>
         /// <param name="xh">序列号</param>
         /// <param name="code">短信验证码</param>
         /// <returns></returns>
