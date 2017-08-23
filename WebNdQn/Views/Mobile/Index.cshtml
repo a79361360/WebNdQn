@@ -30,6 +30,7 @@
         })
         //查询返回列晴
         searchlist = function (url, data) {
+            $("#ulist").html("");
             $.getJSON(url, data, function (ret) {
                 if (ret.code == 1000) {
                     var caption = "<caption><div class=\"btn-toolbar\" role=\"toolbar\">";

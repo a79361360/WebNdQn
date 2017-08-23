@@ -323,7 +323,7 @@ namespace WebNdQn.Controllers
                 return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
             string phone = Request["mobile"].ToString();        //哪个手机号码接收到的
             int type = Convert.ToInt32("1");                    //通过手机号码判断，1为登入2为充值
-            if (phone == "10657532190000624") type = 2;
+            if (phone == "10657532190000761") type = 2;
             string content = Request["content"];     //短信内容
             if (content.Length < 15) return JsonFormat(new ExtJson { success = false, msg = "太短了不用保存" });
             //登入部分还没有解决，就先放一下
