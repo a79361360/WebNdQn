@@ -56,8 +56,24 @@ namespace BLL
             int result = dal.DecidePhone(phone, ctype, issue);
             return result;
         }
+        /// <summary>
+        /// 校验当前Openid是否已经参加过活动
+        /// </summary>
+        /// <param name="openid"></param>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int DecideOpenid(string openid, int ctype, int issue)
+        {
+            int result = dal.DecideOpenid(openid, ctype, issue);
+            return result;
+        }
         public int CtypeCount(int ctype,int issue) {
             return dal.CtypeInt(ctype, issue);
+        }
+        public int TakeFlowLog(int ctype, int issue, string phone)
+        {
+            return dal.TakeFlowLog(ctype, issue, phone, "");
         }
         /// <summary>
         /// 添加领取流量的记录
@@ -65,8 +81,8 @@ namespace BLL
         /// <param name="ctype">公司类型</param>
         /// <param name="phone">手机号码</param>
         /// <returns>返回影响行数</returns>
-        public int TakeFlowLog(int ctype, int issue, string phone) {
-            return dal.TakeFlowLog(ctype, issue, phone);
+        public int TakeFlowLog(int ctype, int issue, string phone,string openid) {
+            return dal.TakeFlowLog(ctype, issue, phone, openid);
         }
         /// <summary>
         /// 取得传送过来的验证码信息

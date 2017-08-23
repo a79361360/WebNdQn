@@ -14,7 +14,7 @@
             if (parseInt(sharenum)<1) { alert("请进行分享后再进行兑换"); return }
             var ctype = $(this).getUrlParam("ctype");
             var issue = $(this).getUrlParam("issue");
-            $.getJSON("/Home/SignPhoneFilter_gz", { phone: phone,ctype:ctype,issue:issue }, function (ret) {
+            $.getJSON("/Home/SignPhoneFilter", { phone: phone,ctype:ctype,issue:issue }, function (ret) {
                 alert(ret.msg);
             })
         })

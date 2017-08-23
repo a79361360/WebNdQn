@@ -11,7 +11,8 @@
             if (parseInt(sharenum)<1) { alert("您需要先关注一下我们的微信众公号");_system._guide(true); return }
             var ctype = $(this).getUrlParam("ctype");
             var issue = $(this).getUrlParam("issue");
-            $.getJSON("/Home/SignPhoneFilter_gz", { phone: phone,ctype:ctype,issue:issue }, function (ret) {
+            var openid = $("#hid_openid").val();
+            $.getJSON("/Home/SignPhoneFilter_gz", { phone: phone,ctype:ctype,issue:issue,openid:openid }, function (ret) {
                 alert(ret.msg);
             })
         })
@@ -107,6 +108,7 @@
         }
 </style>
 <div class="bg">
+    <input id="hid_openid" value="@ViewBag.Openid" type="hidden" />
     <form class="form-horizontal div_c" role="form">
         <div class="col-sm-6">
             <input type="tel" class="form-control form-bgc" id="phone" placeholder="请输入你的手机号码" style="width: 60%; margin: 8px auto;">
@@ -120,7 +122,6 @@
 <div id="guide">
     <img src="@ViewBag.qrcode">
 </div>
-@*<div style="text-align:center;margin:50px 0; font:normal 14px/24px 'MicroSoft YaHei';"></div>*@
 <script type="text/javascript">
     var _system={
         $:function(id){return document.getElementById(id);},

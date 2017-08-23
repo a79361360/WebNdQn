@@ -46,7 +46,7 @@ namespace WebNdQn.Controllers
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "cgi_token：" + cgi_token);
                 Wx_UserInfo dto2 = wxll.Get_Cgi_UserInfo(dto1.openid, cgi_token);
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "subscribe：" + dto2.subscribe + "openid: " + dto2.openid);
-                string url = state.Replace("|", "&") + "&gzstate=" + dto2.subscribe;
+                string url = state.Replace("|", "&") + "&gzstate=" + dto2.subscribe + "&openid=" + dto2.openid;
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "url：" + url);
                 return Redirect(url);
             }
@@ -54,6 +54,30 @@ namespace WebNdQn.Controllers
                 return Content("缺少配置");
             }
         }
+        //public ActionResult DefaultWx() {
+
+        //}
+        //public ActionResult DefaultWxPortal() {
+        //    int ctype = 0, issue = 1;
+        //    if (Request["ctype"] == null || Request["code"] == null || Request["state"] == null)
+        //        return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+        //    ctype = Convert.ToInt32(Request.QueryString["ctype"]);
+        //    //issue = Convert.ToInt32(Request.QueryString["issue"]);
+        //    string code = Request["code"].ToString();
+        //    string state = Request["state"].ToString();
+        //    T_CooperConfig dto = wxll.Get_CooperConfig(ctype, issue);                              //取得配置
+        //    if (dto == null)
+        //        return JsonFormat(new ExtJson { success = false, msg = "缺少配置" });
+        //    #region 获取微信用户的openid
+        //    WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(dto.wx_appid, dto.wx_secret, code);
+        //    if (dto1 == null)
+        //        return JsonFormat(new ExtJson { success = false, msg = "微信用户信息不正确" });
+        //    ViewBag.openid = dto1.openid;
+        //    Common.Expend.LogTxtExpend.WriteLogs("/Logs/HomeController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "dto1.openid :" + dto1.openid);
+        //    //ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkY";
+        //    #endregion
+        //    return View();
+        //}
         //转换成数组
         public Dictionary<string, string> ParmToDic(string url) {
             string[] str = url.Split('?');
@@ -97,12 +121,13 @@ namespace WebNdQn.Controllers
             }
             else
             {
-                if (Request["ctype"] == null || Request["issue"] == null || Request["gzstate"] == null) {
+                if (Request["ctype"] == null || Request["issue"] == null || Request["gzstate"] == null || Request["openid"] == null) {
                     return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
                 }
                 string ctype = Request["ctype"].ToString();
                 string issue = Request["issue"].ToString();
                 string gz = Request["gzstate"].ToString();
+                string openid = Request["openid"].ToString();
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "ctype：" + ctype+ "issue：" + issue + "gzstate：" + gz);
                 T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
                 if (dto != null)
@@ -110,6 +135,7 @@ namespace WebNdQn.Controllers
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate：" + gz);
                     ViewBag.qrcode = dto.qrcode_url;
                     ViewBag.Gz = gz;
+                    ViewBag.Openid = openid;
                     if (!string.IsNullOrEmpty(dto.bgurl))
                     {
                         ViewBag.bg = dto.bgurl;             //背景图
@@ -124,17 +150,20 @@ namespace WebNdQn.Controllers
             return View();
         }
         public ActionResult SignPhoneFilter_gz() {
-            if (Request["phone"] == null || Request["ctype"] == null || Request["issue"] == null)
+            if (Request["phone"] == null || Request["ctype"] == null || Request["issue"] == null || Request["openid"] == null)
             {
                 return JsonFormat(new ExtJson { success = false, msg = "参数不能为空!" });
             }
-            string phone = Request["phone"].ToString();     //用户手机号码
-            string ctype = Request["ctype"].ToString();     //公司类型
-            string issue = Request["issue"].ToString();     //活动期号
+            string phone = Request["phone"].ToString();         //用户手机号码
+            string ctype = Request["ctype"].ToString();         //公司类型
+            string issue = Request["issue"].ToString();         //活动期号
+            string openid = Request["openid"].ToString();       //微信的Openid
             string path = Server.MapPath(@"/Content/Txt/pwebconfig.txt");
             bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
             if (result)
             {
+                int de_Openid = bll.DecideOpenid(openid, Convert.ToInt32(ctype), Convert.ToInt32(issue));   //Openid是否已经参加过活动
+                if (de_Openid > 0) return JsonFormat(new ExtJson { success = false, msg = "当前微信已经添加过活动!" });
                 int de_reslut = bll.DecidePhone(phone, Convert.ToInt32(ctype), Convert.ToInt32(issue));   //手机号码是否已经参加过活动
                 if (de_reslut > 0)
                 {
@@ -152,7 +181,7 @@ namespace WebNdQn.Controllers
                     }
                     else
                         return JsonFormat(new ExtJson { success = false, msg = "活动已结束，谢谢参考!" });
-                    int result_f = bll.TakeFlowLog(Convert.ToInt32(ctype), Convert.ToInt32(issue), phone);
+                    int result_f = bll.TakeFlowLog(Convert.ToInt32(ctype), Convert.ToInt32(issue), phone, openid);
                     if (result_f == 1)
                         return JsonFormat(new ExtJson { success = true, msg = "记得分享给更多朋友领取流量!" });
                     else
@@ -218,12 +247,13 @@ namespace WebNdQn.Controllers
             return View();
         }
         public ActionResult SignPhoneFilter() {
-            if (Request["phone"] == null || Request["ctype"] == null || Request["issue"] == null) {
-                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            if (Request["phone"] == null || Request["ctype"] == null || Request["issue"] == null)
+            {
+                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空!" });
             }
-            string phone = Request["phone"].ToString();     //用户手机号码
-            string ctype = Request["ctype"].ToString();     //公司类型
-            string issue = Request["issue"].ToString();     //活动期号
+            string phone = Request["phone"].ToString();         //用户手机号码
+            string ctype = Request["ctype"].ToString();         //公司类型
+            string issue = Request["issue"].ToString();         //活动期号
             string path = Server.MapPath(@"/Content/Txt/pwebconfig.txt");
             bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
             if (result)
@@ -231,20 +261,29 @@ namespace WebNdQn.Controllers
                 int de_reslut = bll.DecidePhone(phone, Convert.ToInt32(ctype), Convert.ToInt32(issue));   //手机号码是否已经参加过活动
                 if (de_reslut > 0)
                 {
-                    return JsonFormat(new ExtJson { success = false, msg = "当前手机号已经添加过活动" });
+                    return JsonFormat(new ExtJson { success = false, msg = "当前手机号已经添加过活动!" });
                 }
                 else {
+                    T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
+                    if (dto != null)
+                    {
+                        int limitnum = dto.uplimit;     //活动人数上限
+                        if (limitnum != 0 && bll.CtypeCount(Convert.ToInt32(ctype), Convert.ToInt32(issue)) >= limitnum)
+                        {
+                            return JsonFormat(new ExtJson { success = false, msg = "已经超过活动人数上限!" });
+                        }
+                    }
+                    else
+                        return JsonFormat(new ExtJson { success = false, msg = "活动已结束，谢谢参考!" });
                     int result_f = bll.TakeFlowLog(Convert.ToInt32(ctype), Convert.ToInt32(issue), phone);
                     if (result_f == 1)
-                        return JsonFormat(new ExtJson { success = true, msg = "验证通过允许充值" });
+                        return JsonFormat(new ExtJson { success = true, msg = "记得分享给更多朋友领取流量!" });
                     else
-                        return JsonFormat(new ExtJson { success = false, msg = "写入充值记录失败，请重新尝试." });
-                    //产生Session状态
-                    //bll.SendLoginMsgCode(Convert.ToInt32(ctype), Convert.ToInt32(issue));  //调用发送流量充值，这个方法里面判断一下登入状态是否已经存在，如果存在直接调用，否则先调用登入的短信,做到这里，考虑到一个问题，充值的流量是不是一个固定值???
+                        return JsonFormat(new ExtJson { success = false, msg = "写入充值记录失败，请重新尝试!" });
                 }
             }
             else
-                return JsonFormat(new ExtJson { success = false, msg = "活动仅限宁德移动手机用户参与" });
+                return JsonFormat(new ExtJson { success = false, msg = "本活动仅限宁德移动手机用户参与!" });
         }
         public ActionResult About()
         {

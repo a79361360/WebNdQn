@@ -172,6 +172,21 @@ namespace DAL
             int result = Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
             return result;
         }
+        public int DecideOpenid(string openid, int ctype, int issue)
+        {
+            string sql = "SELECT COUNT(*) FROM [dbo].[T_TakeFlowLog] WHERE ctype=@ctype AND issue=@issue AND openid=@openid";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int),
+                new SqlParameter("@openid",SqlDbType.NVarChar,50)
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            parameter[2].Value = openid;
+            int result = Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
+            return result;
+        }
         /// <summary>
         /// 取得公司活动的号码收集数
         /// </summary>
@@ -196,17 +211,19 @@ namespace DAL
         /// <param name="ctype">公司类型</param>
         /// <param name="phone">手机号码</param>
         /// <returns>返回影响行数</returns>
-        public int TakeFlowLog(int ctype, int issue, string phone) {
-            string sql = "INSERT INTO [T_TakeFlowLog]([ctype],[issue],[phone])VALUES(@ctype,@issue,@phone)";
+        public int TakeFlowLog(int ctype, int issue, string phone,string openid) {
+            string sql = "INSERT INTO [T_TakeFlowLog]([ctype],[issue],[phone],[openid])VALUES(@ctype,@issue,@phone,@openid)";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
                 new SqlParameter("@issue",SqlDbType.Int),
-                new SqlParameter("@phone", SqlDbType.NVarChar, 50)
+                new SqlParameter("@phone", SqlDbType.NVarChar, 20),
+                new SqlParameter("@openid", SqlDbType.NVarChar, 50)
             };
             parameter[0].Value = ctype;
             parameter[1].Value = issue;
             parameter[2].Value = phone;
+            parameter[3].Value = openid;
             return dal.IntExtSql(sql, parameter);
         }
         public DataTable FindFlowLogByCtype(int ctype, int issue)
