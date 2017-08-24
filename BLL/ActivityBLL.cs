@@ -181,7 +181,13 @@ namespace BLL
 
             return BitConverter.ToInt64(result, 0);
         }
-
+        /// <summary>
+        /// 大转盘摇奖
+        /// </summary>
+        /// <param name="cooperid">客户的ID</param>
+        /// <param name="openid">微信的OPENDID</param>
+        /// <param name="phone">手机号码</param>
+        /// <returns></returns>
         public int Getprob(int cooperid,string openid,string phone)
         {
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "方法Getprob开始：" + " cooperid=" + cooperid + " openid" + openid);
@@ -335,7 +341,7 @@ namespace BLL
         }
         public int SetDzpConfig(int configid,int cooperid,string title,int share,string explain,string bgurl,IList<T_ActivityConfigList> list) {
             int result = 0;
-            int resultnum = 0;
+            int resultnum = 0; if (string.IsNullOrEmpty(bgurl)) { bgurl = "/Content/Activity/Dzp/images/body_bg1.jpg"; }
             //新增
             if (configid == 0)
             {
@@ -344,6 +350,7 @@ namespace BLL
             }
             else
                 result = adal.UpdateConfig(configid, cooperid, 1, title, share, explain, bgurl);
+            if (result < 1) return result;    //如果异常就直接返回
             foreach (var item in list)
             {
                 result = adal.SetConfigList(item.id, configid, item.prizename, item.count, item.number, item.winprob);
@@ -395,6 +402,17 @@ namespace BLL
         public string GetActivityPhone(int cooperid, int type, string openid) {
             string phone = adal.GetActivityPhone(cooperid, type, openid);
             return phone;
+        }
+        /// <summary>
+        /// 取得当前openid的中奖记录
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="type">1大转盘</param>
+        /// <param name="openid"></param>
+        /// <returns></returns>
+        public IList<T_ActivityDrawLog> GetDrawList(int cooperid,int type,string openid) {
+            IList<T_ActivityDrawLog> list = DataTableToList.ModelConvertHelper<T_ActivityDrawLog>.ConvertToModel(adal.ActivityDrawList(cooperid, type, openid));
+            return list;
         }
     }
 
