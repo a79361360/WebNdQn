@@ -238,5 +238,26 @@ namespace DAL
             if (result == null|| result.ToString() == "") return "";
             return result.ToString();
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="openid"></param>
+        /// <returns></returns>
+        public DataTable ActivityDrawList(int cooperid,int type, string openid)
+        {
+            string sql = "SELECT a.id,a.cooperid,a.type,a.openid,a.phone,a.configlistid,b.prizename,a.state,Convert(nvarchar(19),a.addtime,120) addtime FROM T_ActivityDrawLog a INNER JOIN T_ActivityConfigList b ON a.configlistid=b.id ";
+                   sql+= "where a.cooperid=@cooperid and a.openid=@openid and a.type=@type";
+            SqlParameter[] parameter = new[]
+                        {
+                new SqlParameter("@cooperid",SqlDbType.Int),
+                new SqlParameter("@type",SqlDbType.Int),
+                new SqlParameter("@openid",SqlDbType.NVarChar,50)
+            };
+            parameter[0].Value = cooperid;
+            parameter[1].Value = type;
+            parameter[2].Value = openid;
+            return dal.ExtSql(sql, parameter);
+        }
     }
 }
