@@ -22,7 +22,7 @@
         .clear{clear:both;}
 
         /* 大转盘样式 */
-        .banner{display:block;width:95%;margin-left:auto;margin-right:auto;margin-bottom: 20px;}
+        .banner{display:block;width:75%;margin-left:auto;margin-right:auto;margin-bottom: 20px;}
         .banner .turnplate{display:block;width:100%;position:relative;}
         .banner .turnplate canvas.item{width:100%;}
         .banner .turnplate img.pointer{position:absolute;width:36%;height:40%;left:32%;top:28%;}
@@ -53,6 +53,36 @@
 
         #mark{width: 100%;height: 100%;background: rgba(0,0,0,0.5);position: fixed;top: 0;left: 0;display: none;}
         .red-img{position: fixed;top: 10%;left: 5%;width: 90%;}
+        /* 查看详情，查看奖品 */
+        .btn_cls {
+            margin-top:70px;
+        }
+        .dzpckxq {
+            background-image: url('../../Content/Activity/Dzp/images/dzp_xq.png');
+            background-size:100% 100%;
+            width:100px;
+            height:20px;
+            display:block;
+            float:left;
+        }
+        .dzpckjl {
+            background-image: url('../../Content/Activity/Dzp/images/dzp_jl.png');
+            background-size:100% 100%;
+            width:100px;
+            height:20px;
+            display:block;
+            float:right;
+        }
+        .dialog-box{margin:0 10%; position:absolute; background-color:#fff; border-radius:.14rem; overflow:hidden;width:80%;top:10%;z-index: 19999;display:none}
+        .dialog-box h1{font-size:.34rem; color:#fff; text-align:center; line-height:38px; background-color:#e40909; font-weight:bold;}
+        .btn-close{ position:absolute; right:0; top:0; width:38px; height:38px; background:url(/Content/Activity/Dzp/images/icon_close.png) center center no-repeat;background-size:70% 70%; font-size:0;}
+        .dialog-box .hdgz-area{ padding:5px 10px;font-size:14px}
+        table {
+            text-align:center;
+        }
+        td {
+            margin:5px 0;
+        }
     </style>
     <style type="text/css">
         #mess_share {
@@ -130,6 +160,7 @@
         };
 
         $(document).ready(function(){
+            getdrawlist();  //记录
             var namelist = '@ViewBag.namelist';
             var t = namelist.split(',');
             //动态添加大转盘的奖品与奖品区域背景颜色
@@ -171,7 +202,7 @@
 
             $('.pointer').click(function (){
                 if(parseFloat(lotteyn)<1){alert("没有可摇的次数");return;}
-                if($("#txt_curphone").val()==""){_system._guide(true);return;}
+                if($("#txt_curphone").val()==""){_system._guide("guide");return;}
 
                 if(turnplate.bRotate)return;
                 turnplate.bRotate = !turnplate.bRotate;
@@ -396,15 +427,32 @@
                 }
             });
         }
-        //隐藏遮层
-        hidemask = function(){
+        //提交手机号码
+        tjphone = function(){
             var p = checkSubmitMobil("#txt_curphone")
             if(p){
-                _system.$("cover").style.display="none";
-                _system.$("guide").style.display="none"; _system.$("cover").onclick=null; window.onresize=null;
+                hidemask("guide");
             }else{
                 $("#div_curphone").addClass("has-warning");
             }
+        }
+        //隐藏遮层
+        hidemask = function(id){
+            _system.$("cover").style.display="none";
+            _system.$(id).style.display="none"; _system.$("cover").onclick=null; window.onresize=null;
+        }
+        //取得中奖记录列表
+        getdrawlist = function(){
+            $.getJSON("/Activity/DzpDrawLog",{cooperid:cooperid,openid:openid},function(ret){
+                if(ret.success){
+                    var str="<table><tr><td>奖品名称</td><td>中奖时间</td></tr>";
+                    $.each(ret.jsonresult,function(i,o){
+                        str+="<tr><td style=\"width:40%\">"+o.prizename+"</td><td style=\"width:60%\">"+o.addtime+"</td></tr>";
+                    })
+                    str+="</table>";
+                    $("#dbox_jp .hdgz-area").html(str);
+                }
+            })
         }
     </script>
 </head>
@@ -431,27 +479,44 @@
             </div>
             <div class="form-group">
                 <div class="col-sm-12" style="text-align:center">
-                    <img src="~/Content/Activity/Dzp/images/telbtn.png" onclick="hidemask()" style="width:215px;height:52px;" />
+                    <img src="~/Content/Activity/Dzp/images/telbtn.png" onclick="tjphone()" style="width:215px;height:52px;" />
                 </div>
             </div>
         </div>
+    </div>
+    <div id="dbox" class="dialog-box">
+        <div><h1>活动说明</h1><span class="btn-close" onclick="hidemask('dbox')">关闭弹窗</span></div>
+        <div class="hdgz-area">
+            @Html.Raw(ViewBag.explain)
         </div>
+    </div>
+    <div id="dbox_jp" class="dialog-box">
+        <div><h1>查看奖品</h1><span class="btn-close" onclick="hidemask('dbox_jp')">关闭弹窗</span></div>
+        <div class="hdgz-area">
+            
+        </div>
+    </div>
     @*<img src="/Content/Activity/Dzp/images/4.png" id="shan-img" style="display:none;" />
     <img src="/Content/Activity/Dzp/images/3.png" id="diy2-img" style="display:none;" />
     <img src="/Content/Activity/Dzp/images/5.png" id="diy1-img" style="display:none;" />
     <img src="/Content/Activity/Dzp/images/6.png" id="diy3-img" style="display:none;" />
     <img src="/Content/Activity/Dzp/images/7.png" id="diy4-img" style="display:none;" />
     <img src="/Content/Activity/Dzp/images/7.png" id="diy5-img" style="display:none;" />*@
-    <div class="banner" style="margin-top: 35%">
+    <div class="banner" style="margin-top: 55%">
         <div class="turnplate" style="background-image:url(/Content/Activity/Dzp/images/cj_bg.png);background-size:100% 100%;">
             <canvas class="item" id="wheelcanvas" width="422px" height="422px"></canvas>
-            <img class="pointer" src="/Content/Activity/Dzp/images/jt2.png" />
+            <img class="pointer" src="/Content/Activity/Dzp/images/jt3.png" />
+        </div>
+        <div class="btn_cls">
+            <span class="dzpckxq" onclick="javascript:_system._guide('dbox');"></span>
+            <span class="dzpckjl" onclick="javascript:_system._guide('dbox_jp');"></span>
         </div>
     </div>
-    <a href="#" class="more"></a>
+    @*<a href="#" class="more"></a>*@
+
     <script type="text/javascript">
         $(function () {
-        //_system._guide(true);
+        //_system._guide("dbox");
         wx.config({
             debug: false,
             appId: '@ViewBag.appid',
@@ -587,18 +652,13 @@
                 //this.$("cover").style.display="none";
             }
         },
-        _guide:function(click){
+        _guide:function(id){
             this._cover(true);
-            this.$("guide").style.display="block";
-            this.$("guide").style.top="30%";
-            //this.$("guide").style.top=(_system._scroll().y+20)+"px";
-            //window.onresize=function(){_system._cover(true);_system.$("guide").style.top=(_system._scroll().y+20)+"px";};
-            window.onresize=function(){_system._cover(true);_system.$("guide").style.top="30%";};
-            if(click){_system.$("cover").onclick=function(){
-                _system._cover();
-                //_system.$("guide").style.display="none"; _system.$("cover").onclick=null; window.onresize=null;
-            };
-            }
+            var top = "10%";
+            this.$(id).style.display="block";
+            if(id=="guide") top="30%";
+            this.$(id).style.top=top;
+            window.onresize=function(){_system._cover(true);_system.$(id).style.top=top;};
         },
         _zero:function(n){
             return n<0?0:n;

@@ -50,12 +50,12 @@ namespace WebNdQn.Controllers
             if (dto == null)
                 return JsonFormat(new ExtJson { success = false, msg = "缺少配置" });
             #region 获取微信用户的openid
-            WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(dto.wx_appid, dto.wx_secret, code);
-            if (dto1 == null)
-                return JsonFormat(new ExtJson { success = false, msg = "微信用户信息不正确" });
-            ViewBag.openid = dto1.openid;
-            Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "dto1.openid :" + dto1.openid);
-            //ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkY";
+            //WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(dto.wx_appid, dto.wx_secret, code);
+            //if (dto1 == null)
+            //    return JsonFormat(new ExtJson { success = false, msg = "微信用户信息不正确" });
+            //ViewBag.openid = dto1.openid;
+            //Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "dto1.openid :" + dto1.openid);
+            ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkY";
             #endregion
             #region 分享到朋友
             if (dto != null)
@@ -90,15 +90,16 @@ namespace WebNdQn.Controllers
                 ViewBag.curphone = Abll.GetActivityPhone(dto.id, 1, ViewBag.openid);
             }
             #endregion
-            #region 大转盘的背景图和标题
+            #region 大转盘的背景图和标题,活动说明
             if (dto != null)
             {
-                string ptitle = "大转盘";string bgurl = "/Content/Activity/Dzp/images/bg_oppo.png";
+                string ptitle = "大转盘";string bgurl = "/Content/Activity/Dzp/images/bg_oppo.png";string explain = "暂时没有游戏说明";
                 T_ActivityConfig dtoc = Abll.FindActivityConfigByCooperid(ViewBag.cooperid);
-                if (dtoc != null) {
-                    ptitle = dtoc.title;bgurl = dtoc.bgurl;
+                if (dtoc != null)
+                {
+                    ptitle = dtoc.title;bgurl = dtoc.bgurl; explain = dtoc.explain.Replace("\n", "<br/>");
                 }
-                ViewBag.ptitle = ptitle;ViewBag.bgurl = bgurl;
+                ViewBag.ptitle = ptitle;ViewBag.bgurl = bgurl;ViewBag.explain = explain;
             }
             #endregion
             return View();
@@ -126,6 +127,22 @@ namespace WebNdQn.Controllers
                 return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功.", jsonresult = resultnum });
             }
             return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败.", jsonresult = 0 });
+        }
+        /// <summary>
+        /// 取得当前活动的奖品记录
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult DzpDrawLog() {
+            if (Request["cooperid"] == null || Request["openid"] == null) 
+                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+
+            string cooperid = Request["cooperid"].ToString();       //cooperid
+            string openid = Request["openid"].ToString();            //微信的openid
+            var list = Abll.GetDrawList(Convert.ToInt32(cooperid), 1, openid);
+            if (list.Count > 0) {
+                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功.", jsonresult = list });
+            }
+            return View();
         }
         /// <summary>
         /// 更新大转盘中奖记录的手机号码

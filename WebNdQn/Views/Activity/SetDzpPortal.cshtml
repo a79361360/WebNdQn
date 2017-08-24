@@ -99,7 +99,7 @@
                 divobj.hide();
                 $(obj).val("展开");
             }
-            if (divobj.html() != "") return;
+            if (divobj.html() != "") { jszjgl(); return; }
             var configid = '@Model.id';
             if (configid == 0) {
                 var str = "";
@@ -113,6 +113,7 @@
                     str += "</div>";
                 }
                 divobj.html(str);
+                jszjgl();
                 return;
             }
             $.ajax({
@@ -143,9 +144,19 @@
                             str += "</div>";
                         }
                         divobj.html(str);
+                        jszjgl();
                     }
                 }
             });
+        }
+        jszjgl = function () {
+            var inputobj = $("#div1").find("input");
+            var zjlz = 0;
+            for (var i = 0; i < 10; i++) {
+                var jlz = $(inputobj[i * 4 + 3]).val();
+                zjlz = parseFloat(zjlz) + parseFloat(jlz);
+            }
+            $("#lab_jl").text(zjlz);
         }
         tj = function () {
             var configid = '@Model.id'; //如果这个为0就为新增
@@ -241,7 +252,7 @@
                     <label for="lastname" class="col-sm-2 control-label">将品数量</label>
                     <label for="lastname" class="col-sm-2 control-label">流量大小</label>
                     <label for="lastname" class="col-sm-2 control-label">中奖概率</label>
-                    <div class="col-sm-2"><input onclick="configlist(this)" type="button" class="btn btn-default" value="展开" /></div>
+                    <div class="col-sm-2"><input onclick="configlist(this)" type="button" class="btn btn-default" value="展开" /><span style="color:red" id="lab_jl"></span></div>
                 </div>
                 <div id="div1"></div>
             </div>

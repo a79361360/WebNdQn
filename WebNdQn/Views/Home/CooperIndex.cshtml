@@ -136,7 +136,7 @@
                     cooperid = eachobj.val();   //cooperid
                 }
             })
-            if (checknum > 1) {
+            if (checknum > 1 || checknum == 0) {
                 tips("只能选择一行", 2);
                 return;
             }
