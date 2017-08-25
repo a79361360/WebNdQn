@@ -50,12 +50,12 @@ namespace WebNdQn.Controllers
             if (dto == null)
                 return JsonFormat(new ExtJson { success = false, msg = "缺少配置" });
             #region 获取微信用户的openid
-            //WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(dto.wx_appid, dto.wx_secret, code);
-            //if (dto1 == null)
-            //    return JsonFormat(new ExtJson { success = false, msg = "微信用户信息不正确" });
-            //ViewBag.openid = dto1.openid;
-            //Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "dto1.openid :" + dto1.openid);
-            ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkY";
+            WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(dto.wx_appid, dto.wx_secret, code);
+            if (dto1 == null)
+                return JsonFormat(new ExtJson { success = false, msg = "微信用户信息不正确" });
+            ViewBag.openid = dto1.openid;
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "dto1.openid :" + dto1.openid);
+            //ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkY";
             #endregion
             #region 分享到朋友
             if (dto != null)
