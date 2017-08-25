@@ -74,9 +74,14 @@
             float:right;
         }
         .dialog-box{margin:0 10%; position:absolute; background-color:#fff; border-radius:.14rem; overflow:hidden;width:80%;top:10%;z-index: 19999;display:none}
-        .dialog-box h1{font-size:.34rem; color:#fff; text-align:center; line-height:38px; background-color:#e40909; font-weight:bold;}
+        .dialog-box h1{font-size:18px; color:#fff; text-align:center; line-height:38px; background-color:#e40909; font-weight:bold;}
         .btn-close{ position:absolute; right:0; top:0; width:38px; height:38px; background:url(/Content/Activity/Dzp/images/icon_close.png) center center no-repeat;background-size:70% 70%; font-size:0;}
-        .dialog-box .hdgz-area{ padding:5px 10px;font-size:14px}
+        .dialog-box .hdgz-area{ 
+            padding:5px 10px;
+            font-size:14px;
+            height:400px;
+            overflow-y:auto;
+        }
         table {
             text-align:center;
         }
@@ -160,7 +165,6 @@
         };
 
         $(document).ready(function(){
-            getdrawlist();  //记录
             var namelist = '@ViewBag.namelist';
             var t = namelist.split(',');
             //动态添加大转盘的奖品与奖品区域背景颜色
@@ -453,6 +457,7 @@
                     $("#dbox_jp .hdgz-area").html(str);
                 }
             })
+            _system._guide('dbox_jp');
         }
     </script>
 </head>
@@ -493,7 +498,7 @@
     <div id="dbox_jp" class="dialog-box">
         <div><h1>查看奖品</h1><span class="btn-close" onclick="hidemask('dbox_jp')">关闭弹窗</span></div>
         <div class="hdgz-area">
-            
+            暂时没有中奖记录
         </div>
     </div>
     @*<img src="/Content/Activity/Dzp/images/4.png" id="shan-img" style="display:none;" />
@@ -509,7 +514,7 @@
         </div>
         <div class="btn_cls">
             <span class="dzpckxq" onclick="javascript:_system._guide('dbox');"></span>
-            <span class="dzpckjl" onclick="javascript:_system._guide('dbox_jp');"></span>
+            <span class="dzpckjl" onclick="getdrawlist()"></span>
         </div>
     </div>
     @*<a href="#" class="more"></a>*@

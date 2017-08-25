@@ -5,6 +5,7 @@ using FJSZ.OA.Common.Web;
 using Model.ViewModel;
 using Model.WxModel;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -237,7 +238,7 @@ namespace BLL
                 Dictionary<string, string> prize = new Dictionary<string, string>();
                 foreach (var item in list1)
                 {
-                    prize.Add(item.prizename, item.winprob);
+                    prize.Add(item.id.ToString(), item.prizename);
                 }
                 return prize;
             }

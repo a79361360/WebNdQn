@@ -81,7 +81,7 @@ namespace WebNdQn.Controllers
                 string namelist = "";
                 foreach (var item in list)
                 {
-                    if (string.IsNullOrEmpty(namelist)) { namelist = item.Key; } else { namelist += "," + item.Key; }
+                    if (string.IsNullOrEmpty(namelist)) { namelist = item.Key; } else { namelist += "," + item.Value; }
                 }
                 ViewBag.namelist = namelist;              //奖品名称列表
                 //取得当前用户还可摇几次，需要用到openid
@@ -139,10 +139,10 @@ namespace WebNdQn.Controllers
             string cooperid = Request["cooperid"].ToString();       //cooperid
             string openid = Request["openid"].ToString();            //微信的openid
             var list = Abll.GetDrawList(Convert.ToInt32(cooperid), 1, openid);
-            if (list.Count > 0) {
-                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功.", jsonresult = list });
-            }
-            return View();
+            if (list.Count > 0) 
+                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "查询成功.", jsonresult = list });
+            else
+                return JsonFormat(new ExtJson { success = false, code = -1000, msg = "没有中奖记录.", jsonresult = null });
         }
         /// <summary>
         /// 更新大转盘中奖记录的手机号码

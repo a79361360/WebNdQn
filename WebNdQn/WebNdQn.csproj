@@ -186,6 +186,7 @@
     <Content Include="Content\Activity\Dzp\images\7.png" />
     <Content Include="Content\Activity\Dzp\images\9.png" />
     <Content Include="Content\Activity\Dzp\images\body_bg.jpg" />
+    <Content Include="Content\Activity\Dzp\images\body_bg1.jpg" />
     <Content Include="Content\Activity\Dzp\images\body_bg2.jpg" />
     <Content Include="Content\Activity\Dzp\images\cj_bg.png" />
     <Content Include="Content\Activity\Dzp\images\dzp_jl.png" />
@@ -194,6 +195,7 @@
     <Content Include="Content\Activity\Dzp\images\icon_close.png" />
     <Content Include="Content\Activity\Dzp\images\jt.png" />
     <Content Include="Content\Activity\Dzp\images\jt2.png" />
+    <Content Include="Content\Activity\Dzp\images\jt3.png" />
     <Content Include="Content\Activity\Dzp\images\red5.png" />
     <Content Include="Content\Activity\Dzp\images\red6.png" />
     <Content Include="Content\Activity\Dzp\images\tel.png" />
