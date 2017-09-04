@@ -148,6 +148,7 @@
             var imgurl = $("#fx_showtx").attr("v");
             if (imgurl == null) imgurl = "";
             var linkurl = $("#txt_linkurl").val();
+            var redirecturi = $("#txt_redirecturi").val();
             var corpid = $("#txt_corpid").val();
             var username = $("#txt_username").val();
             var signphone = $("#txt_signphone").val();
@@ -168,6 +169,7 @@
                 bgurl: bgurl,
                 imgurl: imgurl,
                 linkurl: linkurl,
+                redirecturi: redirecturi,
                 corpid: corpid,
                 username: username,
                 signphone: signphone,
@@ -248,6 +250,12 @@
                 <label for="firstname" class="col-sm-2 control-label">微信分享链接</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="txt_linkurl" name="txt_linkurl" value="@Model.linkurl" placeholder="请输入在微信分享时需要分享的链接">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">其他跳转地址</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_redirecturi" name="txt_redirecturi" value="@Model.redirecturi" placeholder="微信分享成功后需要跳转的链接">
                 </div>
             </div>
             <div class="form-group">

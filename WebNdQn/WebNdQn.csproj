@@ -205,23 +205,15 @@
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Img\app_ico5.png" />
-    <Content Include="Content\Img\bg\bg_1503135299.png" />
-    <Content Include="Content\Img\bg\bg_1503155146.png" />
-    <Content Include="Content\Img\bg\bg_1503165240.png" />
-    <Content Include="Content\Img\bg\bg_1503166195.png" />
-    <Content Include="Content\Img\bg\bg_1503166398.png" />
     <Content Include="Content\Img\bg_1.png" />
     <Content Include="Content\Img\bg_oppo.png" />
+    <Content Include="Content\Img\bg_sindex.png" />
     <Content Include="Content\Img\btn_1.png" />
     <Content Include="Content\Img\btn_oppo.png" />
+    <Content Include="Content\Img\btn_sindex.png" />
     <Content Include="Content\Img\guide1.png" />
-    <Content Include="Content\Img\gzh\gzh_1503155216.png" />
     <Content Include="Content\Img\qrcode_for_gh_cb6992e9a18c_430.jpg" />
     <Content Include="Content\Img\top_up.png" />
-    <Content Include="Content\Img\wxico\wxico_1503165278.png" />
-    <Content Include="Content\Img\wxico\wxico_1503166200.png" />
-    <Content Include="Content\Img\wxico\wxico_1503166405.png" />
-    <Content Include="Content\Img\wxico\wx_mobileimgurl.png" />
     <Content Include="Content\Img\wx_gzh.png" />
     <Content Include="Content\Img\wx_share_oppo.png" />
     <Content Include="Content\mricode.pagination.css" />
@@ -257,7 +249,6 @@
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
-    <Content Include="Content\Txt\flowPoolExcel.xls" />
     <None Include="Properties\PublishProfiles\WebNdQn.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\commonaction.js" />
@@ -316,6 +307,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Content\Img\bg\" />
+    <Folder Include="Content\Img\gzh\" />
+    <Folder Include="Content\Img\wxico\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

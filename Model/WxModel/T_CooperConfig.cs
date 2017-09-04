@@ -17,6 +17,7 @@ namespace Model.WxModel
         public string btnurl { get; set; }
         public string bgurl { get; set; }
         public string linkurl {get;set;}
+        public string redirecturi { get; set; }
         public string corpid { get; set; }
         public string username { get; set; }
         public string userpwd { get; set; }

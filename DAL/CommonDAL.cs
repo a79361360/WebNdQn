@@ -20,7 +20,7 @@ namespace DAL
         /// <returns></returns>
         public DataTable GetCooperConfig(int ctype,int issue)
         {
-            string sql = "SELECT [id],[ctype],[issue],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state=1";
+            string sql = "SELECT [id],[ctype],[issue],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state=1";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
@@ -37,7 +37,7 @@ namespace DAL
         /// <param name="phone">校验的手机号码</param>
         /// <returns></returns>
         public DataTable GetCooperConfig(string phone) {
-            string sql = "SELECT top 1 [id],[ctype],[issue],[title],[descride],[imgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE signphone=@phone and state=1 order by id desc";
+            string sql = "SELECT top 1 [id],[ctype],[issue],[title],[descride],[imgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE signphone=@phone and state=1 order by id desc";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@phone",SqlDbType.NVarChar,20)
@@ -67,7 +67,7 @@ namespace DAL
         /// <param name="id"></param>
         /// <returns></returns>
         public DataTable GetCooperConfigById(int id) {
-            string sql = "SELECT [id],[ctype],[issue],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE id=@id";
+            string sql = "SELECT [id],[ctype],[issue],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE id=@id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@id",SqlDbType.Int)
@@ -76,15 +76,15 @@ namespace DAL
             DataTable dt = dal.ExtSql(sql, parameter);
             return dt;
         }
-        public int SetCooper(int id,int ctype,int issue,string title,string descride,string imgurl,string btnurl,string bgurl,string linkurl,
+        public int SetCooper(int id,int ctype,int issue,string title,string descride,string imgurl,string btnurl,string bgurl,string linkurl,string redirecturi,
             string corpid,string username,string userpwd,string signphone,string wx_appid,string wx_secret,string qrcode_url,
             int eachflow,int uplimit,string cutdate,int state) {
 
-            string sql = "INSERT INTO [T_CooperConfig]([ctype],[issue],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state])";
-            sql += "VALUES(@ctype,@issue,@title,@descride,@imgurl,@btnurl,@bgurl,@linkurl,@corpid,@username,@userpwd,@signphone,@wx_appid,@wx_secret,@qrcode_url,@eachflow,@uplimit,@cutdate,@state)";
+            string sql = "INSERT INTO [T_CooperConfig]([ctype],[issue],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state])";
+            sql += "VALUES(@ctype,@issue,@title,@descride,@imgurl,@btnurl,@bgurl,@linkurl,@redirecturi,@corpid,@username,@userpwd,@signphone,@wx_appid,@wx_secret,@qrcode_url,@eachflow,@uplimit,@cutdate,@state)";
             if (id != 0)
             {
-                sql = "UPDATE [T_CooperConfig] SET [ctype] = @ctype,[title] = @title,[descride] = @descride,[imgurl] = @imgurl,[btnurl] = @btnurl,[bgurl] = @bgurl,[linkurl] = @linkurl,[corpid] = @corpid,[username] = @username,[userpwd] = @userpwd";
+                sql = "UPDATE [T_CooperConfig] SET [ctype] = @ctype,[title] = @title,[descride] = @descride,[imgurl] = @imgurl,[btnurl] = @btnurl,[bgurl] = @bgurl,[linkurl] = @linkurl,[redirecturi] = @redirecturi,[corpid] = @corpid,[username] = @username,[userpwd] = @userpwd";
                 sql += ",[signphone] = @signphone,[wx_appid] = @wx_appid,[wx_secret] = @wx_secret,[qrcode_url] = @qrcode_url,[eachflow] = @eachflow,[uplimit] = @uplimit,[cutdate] = @cutdate,[state] = @state";
                 sql += " where id=@id";
             }
@@ -110,6 +110,7 @@ namespace DAL
                 new SqlParameter("@uplimit",SqlDbType.Int),
                 new SqlParameter("@cutdate",SqlDbType.NVarChar,10),
                 new SqlParameter("@state",SqlDbType.Int),
+                new SqlParameter("@redirecturi",SqlDbType.NVarChar,250),
             };
             parameter[0].Value = id;
             parameter[1].Value = ctype;
@@ -131,6 +132,7 @@ namespace DAL
             parameter[17].Value = uplimit;
             parameter[18].Value = cutdate;
             parameter[19].Value = state;
+            parameter[20].Value = redirecturi;
             int result = Convert.ToInt32(dal.IntExtSql(sql, parameter));
             return result;
 
