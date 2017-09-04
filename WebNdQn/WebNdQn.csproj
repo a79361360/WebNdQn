@@ -312,6 +312,7 @@
     <Content Include="Views\Cooper\SetCooperPortal.cshtml" />
     <Content Include="Views\Activity\ActivityDrawPortal.cshtml" />
     <Content Include="Views\Activity\ActivitySharePortal.cshtml" />
+    <Content Include="Views\Home\SIndex.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
