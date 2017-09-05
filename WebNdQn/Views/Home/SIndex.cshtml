@@ -1,5 +1,5 @@
 ﻿
-<title>宁德移动流量800支撑平台</title>
+<title>1400万福建人的选择！福建手机营业厅！</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
 <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
 <script src="~/Scripts/jquery-1.10.2.min.js"></script>
@@ -8,7 +8,7 @@
     var sharenum = 1;       //分享次数
     $(function () {
         $("#btn").bind("click", function () {
-            window.location.href="http://www.baidu.com";
+            window.location.href="@ViewBag.redirecturi";
             //var phone = $("#phone").val();   //手机号码
             //if (!telRuleCheck2(phone)) { alert("请输入正确的手机号码"); return }
             //if (parseInt(sharenum)<1) { alert("请进行分享后再进行兑换"); return }
@@ -189,7 +189,7 @@
                 title: '@ViewBag.title',
                 desc: '@ViewBag.desc',
                 link: '@ViewBag.linkurl',
-                imgUrl: '@ViewBag.imgurl',
+                imgUrl: 'http://'+document.domain+'@ViewBag.imgurl',
                 trigger: function (res) {
                     // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
                     //alert('用户点击发送给朋友');
@@ -210,7 +210,7 @@
             wx.onMenuShareTimeline({
                 title: '@ViewBag.title',
                 link: '@ViewBag.linkurl',
-                imgUrl: '@ViewBag.imgurl',
+                imgUrl: 'http://'+document.domain+'@ViewBag.imgurl',
                 trigger: function (res) {
                     // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
                     //alert('用户点击分享到朋友圈');

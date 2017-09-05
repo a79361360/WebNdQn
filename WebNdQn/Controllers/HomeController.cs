@@ -243,6 +243,7 @@ namespace WebNdQn.Controllers
                 ViewBag.desc = dto.descride;            //描述
                 ViewBag.imgurl = dto.imgurl;            //图片地址
                 ViewBag.linkurl = dto.linkurl;          //链接地址
+                ViewBag.redirecturi = dto.redirecturi;          //其他链接地址
                 if (!string.IsNullOrEmpty(dto.bgurl))
                 {
                     ViewBag.bg = dto.bgurl;             //背景图
