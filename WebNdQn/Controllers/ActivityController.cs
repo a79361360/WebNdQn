@@ -51,7 +51,7 @@ namespace WebNdQn.Controllers
                 return JsonFormat(new ExtJson { success = false, msg = "缺少配置" });
             #region 获取微信用户的openid
             WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(dto.wx_appid, dto.wx_secret, code);
-            if (dto1 == null)
+            if (dto1.openid == null)
                 return JsonFormat(new ExtJson { success = false, msg = "微信用户信息不正确" });
             ViewBag.openid = dto1.openid;
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "dto1.openid :" + dto1.openid);
@@ -81,7 +81,7 @@ namespace WebNdQn.Controllers
                 string namelist = "";
                 foreach (var item in list)
                 {
-                    if (string.IsNullOrEmpty(namelist)) { namelist = item.Key; } else { namelist += "," + item.Value; }
+                    if (string.IsNullOrEmpty(namelist)) { namelist = item.Value; } else { namelist += "," + item.Value; }
                 }
                 ViewBag.namelist = namelist;              //奖品名称列表
                 //取得当前用户还可摇几次，需要用到openid

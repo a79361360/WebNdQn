@@ -180,7 +180,7 @@ namespace WebNdQn.Controllers
                         }
                     }
                     else
-                        return JsonFormat(new ExtJson { success = false, msg = "活动已结束，谢谢参考!" });
+                        return JsonFormat(new ExtJson { success = false, msg = "活动已结束，谢谢参与!" });
                     int result_f = bll.TakeFlowLog(Convert.ToInt32(ctype), Convert.ToInt32(issue), phone, openid);
                     if (result_f == 1)
                         return JsonFormat(new ExtJson { success = true, msg = "记得分享给更多朋友领取流量!" });
@@ -305,7 +305,7 @@ namespace WebNdQn.Controllers
                         }
                     }
                     else
-                        return JsonFormat(new ExtJson { success = false, msg = "活动已结束，谢谢参考!" });
+                        return JsonFormat(new ExtJson { success = false, msg = "活动已结束，谢谢参与!" });
                     int result_f = bll.TakeFlowLog(Convert.ToInt32(ctype), Convert.ToInt32(issue), phone);
                     if (result_f == 1)
                         return JsonFormat(new ExtJson { success = true, msg = "记得分享给更多朋友领取流量!" });
