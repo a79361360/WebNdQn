@@ -165,6 +165,7 @@
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MobileController.cs" />
+    <Compile Include="Controllers\ZxdtController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -202,6 +203,16 @@
     <Content Include="Content\Activity\Dzp\images\telbtn.png" />
     <Content Include="Content\Activity\Dzp\images\turnplate-bg.png" />
     <Content Include="Content\Activity\Dzp\images\turnplate-pointer.png" />
+    <Content Include="Content\Activity\Zxdt\images\b1g.png" />
+    <Content Include="Content\Activity\Zxdt\images\bg.png" />
+    <Content Include="Content\Activity\Zxdt\images\btn_1.png" />
+    <Content Include="Content\Activity\Zxdt\images\confirm.png" />
+    <Content Include="Content\Activity\Zxdt\images\delete.png" />
+    <Content Include="Content\Activity\Zxdt\images\start.gif" />
+    <Content Include="Content\Activity\Zxdt\index.html" />
+    <Content Include="Content\Activity\Zxdt\jquery.min.js" />
+    <Content Include="Content\Activity\Zxdt\quiz.js" />
+    <Content Include="Content\Activity\Zxdt\style.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Img\app_ico5.png" />
@@ -304,6 +315,7 @@
     <Content Include="Views\Activity\ActivityDrawPortal.cshtml" />
     <Content Include="Views\Activity\ActivitySharePortal.cshtml" />
     <Content Include="Views\Home\SIndex.cshtml" />
+    <Content Include="Views\Zxdt\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

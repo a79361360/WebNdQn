@@ -1,0 +1,252 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Index</title>
+    
+    <link href="~/Content/Activity/Zxdt/style.css?v=2" rel="stylesheet" />
+    @*<link href="~/Content/bootstrap.min.css" rel="stylesheet" />*@
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Content/Activity/Zxdt/quiz.js?v=2"></script>
+    <script type="text/javascript">
+        var init = { 'questions': [{ 'question': 'jQuery是什么？', 'answers': ['JavaScript库', 'CSS库', 'PHP框架', '以上都不是'], 'correctAnswer': 1 }, { 'question': '找出不同类的一项?', 'answers': ['写字台', '沙发', '电视', '桌布'], 'correctAnswer': 3 }, { 'question': '国土面积最大的国家是：', 'answers': ['美国', '中国', '俄罗斯', '加拿大'], 'correctAnswer': 3 }, { 'question': '月亮距离地球多远？', 'answers': ['18万公里', '38万公里', '100万公里', '180万公里'], 'correctAnswer': 2}] };
+
+        $(function () {
+            //_system._guide("dbox_jp");
+
+            $('#quiz-container').jquizzy({
+                questions: init.questions
+            });
+            $(".demo").hide();
+            $("#btn").click(function () {
+                $(".demo").show();
+                $(".bg").hide();
+                $(".nav-start").click();
+            })
+        });
+        //隐藏遮层
+        hidemask = function (id) {
+            _system.$("cover").style.display = "none";
+            _system.$(id).style.display = "none"; _system.$("cover").onclick = null; window.onresize = null;
+        }
+    </script>
+    <style type="text/css">
+        .bg {
+            width: 100%;
+            background-image: url(../Content/Activity/Zxdt/images/bg.png);
+            background-repeat: no-repeat;
+            background-size: 100%;
+            height: 0;
+            padding-bottom: 177.5%;
+            text-align:center;
+        }
+
+        .div_c {
+            padding-top: 100%;
+        }
+
+            .div_c div {
+                height: 50px;
+            }
+
+        .btn_1 {
+            /*background: url("../Content/Activity/Zxdt/images/btn_1.png") center center no-repeat;*/
+            background-size: cover;
+            width: 35%;
+            height: 50%;
+            display: inline-block;
+        }
+        .btn_2 {
+            /*background: url("../Content/Activity/Zxdt/images/btn_1.png") center center no-repeat;*/
+            background-size: cover;
+            width: 22%;
+            height: 35%;
+            margin-right:30px;
+            display: inline-block;
+        }
+        .btn_3 {
+            /*background: url("../Content/Activity/Zxdt/images/btn_1.png") center center no-repeat;*/
+            background-size: cover;
+            width: 22%;
+            height: 35%;
+            margin-left:30px;
+            display: inline-block;
+        }
+        .dialog-box{margin:0 10%; position:absolute; background-color:#fff; border-radius:.14rem; overflow:hidden;width:80%;top:10%;z-index: 19999;display:none}
+        .dialog-box h1{font-size:18px; margin-top:0px; color:#fff; text-align:center; line-height:38px; background-color:#e40909; font-weight:bold;}
+        .btn-close{ position:absolute; right:0; top:0; width:38px; height:38px; background:url(/Content/Activity/Dzp/images/icon_close.png) center center no-repeat;background-size:70% 70%; font-size:0;}
+        .dialog-box .hdgz-area{ 
+            padding:5px 10px;
+            font-size:14px;
+            height:400px;
+            overflow-y:auto;
+        }
+        table {
+            text-align:center;
+        }
+        td {
+            margin:5px 0;
+        }
+    </style>
+    <style type="text/css">
+        #mess_share {
+            margin: 15px 0;
+        }
+
+        #share_1 {
+            float: left;
+            width: 49%;
+        }
+
+        #share_2 {
+            float: right;
+            width: 49%;
+        }
+
+        #mess_share img {
+            width: 22px;
+            height: 22px;
+        }
+
+        #cover {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 18888;
+            background-color: #000000;
+            opacity: 0.7;
+        }
+
+        #cover1 {
+            display: none;
+            position: absolute;
+            left: 0;
+            top: 0;
+            z-index: 18888;
+            background-color: #000000;
+            background-image: url(../Content/Img/bg_2.jpg);
+            background-repeat: no-repeat;
+            background-size: 100%;
+            opacity: 1;
+        }
+
+        #guide {
+            display: none;
+            position: absolute;
+            top: 30%;
+            left: 10%;
+            z-index: 19999;
+            background-color: #fcfcfc;
+        }
+
+            #guide img {
+                width: 260px;
+                height: 180px;
+            }
+    </style>
+</head>
+<body>
+    <div id="cover"></div>
+    <div id="guide" style="width:80%; height:200px">
+        <div class="container" style="padding:40px 20px;">
+            <div class="form-group" style="height:45px;">
+                <div class="col-sm-2" style="float:left;padding-left:0; padding-right:0">
+                    <img src="~/Content/Activity/Dzp/images/tel.png" style="width:52px;height:45px" />
+                </div>
+                <div id="div_curphone" class="col-sm-10" style="float:right;width:75%">
+                    @if (ViewBag.curphone == "")
+                    {
+                        <input type="text" style="margin-top:10px;" class="form-control" id="txt_curphone" name="txt_curphone" value="@ViewBag.curphone" placeholder="请输入您的电话号码">
+                    }
+                    else {
+                        <fieldset disabled>
+                            <input type="text" style="margin-top:10px;" class="form-control" id="txt_curphone" name="txt_curphone" value="@ViewBag.curphone" placeholder="请输入您的电话号码">
+                        </fieldset>
+                    }
+                </div>
+                <div style="clear: both;"></div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12" style="text-align:center">
+                    <img src="~/Content/Activity/Dzp/images/telbtn.png" onclick="tjphone()" style="width:215px;height:52px;" />
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="dbox" class="dialog-box">
+        <div><h1>活动说明</h1><span class="btn-close" onclick="hidemask('dbox')">关闭弹窗</span></div>
+        <div class="hdgz-area">
+            @Html.Raw(ViewBag.explain)
+        </div>
+    </div>
+    <div id="dbox_jp" class="dialog-box">
+        <div><h1>查看奖品</h1><span class="btn-close" onclick="hidemask('dbox_jp')">关闭弹窗</span></div>
+        <div class="hdgz-area">
+            暂时没有中奖记录
+        </div>
+    </div>
+
+    <div class="bg">
+        <form class="form-horizontal div_c" role="form">
+            <div class="form-group">
+                <div class="col-sm-12">
+                    <span id="btn" class="btn_1"></span>
+                </div>
+            </div>
+            <div class="form-group">
+                <span id="btn1" class="btn_2 col-sm-6"></span>
+                <span id="btn2" class="btn_3 col-sm-6"></span>
+            </div>
+        </form>
+    </div>
+    <div class="demo">
+        <div id='quiz-container'>
+        </div>
+    </div>
+    <br />
+    <script type="text/javascript">
+        var _system = {
+            $: function (id) { return document.getElementById(id); },
+            _client: function () {
+                return {
+                    w: document.documentElement.scrollWidth, h: document.documentElement.scrollHeight,
+                    bw: document.documentElement.clientWidth, bh: document.documentElement.clientHeight
+                };
+            },
+            _scroll: function () {
+                return {
+                    x: document.documentElement.scrollLeft ? document.documentElement.scrollLeft : document.body.scrollLeft,
+                    y: document.documentElement.scrollTop ? document.documentElement.scrollTop : document.body.scrollTop
+                };
+            },
+            _cover: function (show) {
+                if (show) {
+                    this.$("cover").style.display = "block";
+                    this.$("cover").style.width = (this._client().bw > this._client().w ? this._client().bw : this._client().w) + "px";
+                    this.$("cover").style.height = (this._client().bh > this._client().h ? this._client().bh : this._client().h) + "px";
+                } else {
+                    //this.$("cover").style.display="none";
+                }
+            },
+            _guide: function (id) {
+                this._cover(true);
+                var top = "10%";
+                this.$(id).style.display = "block";
+                if (id == "guide") top = "30%";
+                this.$(id).style.top = top;
+                window.onresize = function () { _system._cover(true); _system.$(id).style.top = top; };
+            },
+            _zero: function (n) {
+                return n < 0 ? 0 : n;
+            }
+        }
+    </script>
+</body>
+</html>
