@@ -40,6 +40,22 @@ namespace FJSZ.OA.Common.Web
             string url = System.Web.HttpContext.Current.Request.Url.ToString();
             return url;
         }
+        /// <summary>
+        /// 取得当前域名,将Http的协议头加上例: http://www.qingqiu.com
+        /// </summary>
+        /// <returns></returns>
+        public static string GetCurHttpHost()
+        {
+            return "http://" + HttpContext.Current.Request.Url.Host;
+        }
+        /// <summary>
+        /// 取得当前域名
+        /// </summary>
+        /// <returns></returns>
+        public static string GetCurHost()
+        {
+            return HttpContext.Current.Request.Url.Host;
+        }
         public static string HttpUploadFile(string virtualpath, string filename)
         {
             string path = "", suffix = "";
