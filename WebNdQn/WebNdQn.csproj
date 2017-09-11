@@ -208,6 +208,8 @@
     <Content Include="Content\Activity\Zxdt\images\btn_1.png" />
     <Content Include="Content\Activity\Zxdt\images\confirm.png" />
     <Content Include="Content\Activity\Zxdt\images\delete.png" />
+    <Content Include="Content\Activity\Zxdt\images\ranlist.png" />
+    <Content Include="Content\Activity\Zxdt\images\role.png" />
     <Content Include="Content\Activity\Zxdt\images\start.gif" />
     <Content Include="Content\Activity\Zxdt\index.html" />
     <Content Include="Content\Activity\Zxdt\jquery.min.js" />
@@ -252,7 +254,7 @@
     <Content Include="Content\My97DatePicker\开发包\skin\whyGreen\bg.jpg" />
     <Content Include="Content\My97DatePicker\开发包\skin\whyGreen\datepicker.css" />
     <Content Include="Content\My97DatePicker\开发包\skin\whyGreen\img.gif" />
-    <Content Include="Content\Txt\prob.txt" />
+    <Content Include="Content\Txt\putianconfig.txt" />
     <Content Include="Content\Txt\pwebconfig.txt" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />

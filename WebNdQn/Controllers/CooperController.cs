@@ -70,6 +70,8 @@ namespace WebNdQn.Controllers
         public ActionResult SetCooper() {
             string cooperid = Request.Form["cooperid"];             //会员人数
             string ctype = Request.Form["ctype"];                   //会员人数
+            string areatype = Request.Form["areatype"];                   //会员人数
+            string gener = Request.Form["gener"];                   //会员人数
             string title = Request.Form["title"];                   //会员人数
             string descride = Request.Form["descride"];                   //会员人数
             string btnurl = "";
@@ -90,7 +92,7 @@ namespace WebNdQn.Controllers
             string state = Request.Form["state"];                   //会员人数
             T_CooperConfig dto = new T_CooperConfig();
             dto.issue = 1;
-            dto.id = Convert.ToInt32(cooperid); dto.ctype = Convert.ToInt32(ctype); dto.title = title;
+            dto.id = Convert.ToInt32(cooperid); dto.ctype = Convert.ToInt32(ctype);dto.areatype = Convert.ToInt32(areatype);dto.gener = gener; dto.title = title;
             dto.descride = descride; dto.btnurl = btnurl; dto.bgurl = bgurl; dto.imgurl = imgurl; dto.linkurl = linkurl;dto.redirecturi = redirecturi;
             dto.corpid = corpid; dto.username = username; dto.userpwd = userpwd; dto.signphone = signphone; dto.wx_appid = appid;
             dto.wx_secret = secret; dto.qrcode_url = qrcode_url; dto.eachflow = Convert.ToInt32(eachflow);

@@ -9,6 +9,7 @@ using Fgly.Common.Expand;
 using Model.WxModel;
 using FJSZ.OA.Common.Web;
 using System.Net.Http;
+using Model.ViewModel;
 
 namespace WebNdQn.Controllers
 {
@@ -45,7 +46,7 @@ namespace WebNdQn.Controllers
                 string cgi_token = wxll.Get_Cgi_Taoke(dto.wx_appid, dto.wx_secret);
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "cgi_token：" + cgi_token);
                 Wx_UserInfo dto2 = wxll.Get_Cgi_UserInfo(dto1.openid, cgi_token);
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "subscribe：" + dto2.subscribe + "openid: " + dto2.openid);
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "subscribe：" + dto2.subscribe + "openid: " + dto2.openid + "nickname:" + dto2.nickname + "headurl:" + dto2.headimgurl);
                 string url = state.Replace("|", "&") + "&gzstate=" + dto2.subscribe + "&openid=" + dto2.openid;
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "url：" + url);
                 return Redirect(url);
@@ -194,32 +195,149 @@ namespace WebNdQn.Controllers
         //分享到朋友或者朋友圈
         public ActionResult Index()
         {
-            int cooper = 0, issue = 1;
-            if(Request.QueryString["ctype"] !=null){
-                cooper = Convert.ToInt32(Request.QueryString["ctype"]);
-                issue = Convert.ToInt32(Request.QueryString["issue"]);
-            }
-            T_CooperConfig dto = wxll.Get_CooperConfig(cooper, issue);                              //取得配置
-            long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
-            string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
-            string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
-            ViewBag.appid = Wx_config.appid;
-            ViewBag.timestamp = timestamp;
-            ViewBag.noncestr = noncestr;
-            ViewBag.signatrue = signatrue;
-            if (dto != null)
+            if (Request["ctype"] == null || Request["issue"] == null)
+                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            string ctype = Request["ctype"].ToString(); string issue = Request["issue"].ToString();
+            T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));     //取得配置
+            string[] str = dto.gener.Split('|');    //分享推广|关注推广
+            if (str.Length < 2) 
+                return JsonFormat(new ExtJson { success = false, msg = "推广配置错误" });
+            if (str[1] == "1" && Request["gzstate"] == null && Request["openid"] == null)
             {
-                ViewBag.title = dto.title;              //标题
-                ViewBag.desc = dto.descride;            //描述
-                ViewBag.imgurl = dto.imgurl;            //图片地址
-                ViewBag.linkurl = dto.linkurl;          //链接地址
-                if (!string.IsNullOrEmpty(dto.bgurl))
-                {
-                    ViewBag.bg = dto.bgurl;             //背景图
-                    ViewBag.btn = dto.btnurl;           //背景按钮图
-                }
-                //ViewBag.dto = dto;                      //实体类
+                string state = Request.Url.AbsoluteUri.Replace("&", "|");   //将&替换成|
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "state的值： " + state);
+                string url = wxll.Wx_Auth_Code(dto.wx_appid, "http://wx.ndll800.com/Home/Wx_Auth_Code", "snsapi_base", state);  //snsapi_base,snsapi_userinfo
+                return Redirect(url);
             }
+            else {
+                string gz = "0"; string openid = "";
+                if (Request["gzstate"] != null && Request["openid"] != null){
+                    gz = Request["gzstate"].ToString();
+                    openid = Request["openid"].ToString();
+                }
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
+                if (dto != null)
+                {
+                    V_IndexDto rdto = new V_IndexDto();
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate：" + gz);
+                    //公共部分
+                    if (!string.IsNullOrEmpty(dto.bgurl))
+                    {
+                        rdto.bgurl = dto.bgurl;             //背景图
+                        rdto.btnurl = dto.btnurl;           //背景按钮图
+                    }
+                    rdto.genner = dto.gener;                //推广类型 分享推广|关注推广
+                    //关注公众号部分
+                    rdto.qrcodeurl = dto.qrcode_url;    //关注公众号的二维码图片地址
+                    rdto.gz = gz;                       //微信用户是否关注过当前公众号
+                    rdto.openid = openid;               //微信用户的openid
+                    //分享部分
+                    rdto.wx_appid = Wx_config.appid;    //微信公众号
+                    long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
+                    string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
+                    string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
+                    rdto.timestamp = timestamp; rdto.noncestr = noncestr; rdto.signatrue = signatrue;         //上面三个附值
+                    rdto.fx_title = dto.title; rdto.fx_descride = dto.descride; rdto.fx_imgurl = dto.imgurl; rdto.fx_linkurl = dto.linkurl;    //分享的标题,描述,小图标,链接
+                    return View(rdto);
+                }
+                else
+                {
+                    return JsonFormat(new ExtJson { success = false, msg = "配置为空" });
+                }
+            }
+            //if (Request["gzstate"] == null)
+            //{
+            //    if (Request["ctype"] == null || Request["issue"] == null)
+            //    {
+            //        return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            //    }
+            //    string ctype = Request["ctype"].ToString(); string issue = Request["issue"].ToString();
+            //    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "参数非空 ctype: " + ctype + "issue: " + issue);
+            //    T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
+            //    if (dto != null)
+            //    {
+            //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate为空");
+            //        //snsapi_base,snsapi_userinfo
+            //        string state = Request.Url.AbsoluteUri.Replace("&", "|");   //将&替换成|
+            //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "state的值： " + state);
+            //        string url = wxll.Wx_Auth_Code(dto.wx_appid, "http://wx.ndll800.com/Home/Wx_Auth_Code", "snsapi_base", state);
+            //        return Redirect(url);
+            //    }
+            //    else
+            //    {
+            //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "未进行客户信息配置： ctype: " + ctype + "issue: " + issue);
+            //        return JsonFormat(new ExtJson { success = false, msg = "配置为空" });
+            //    }
+            //}
+            //else
+            //{
+            //    if (Request["ctype"] == null || Request["issue"] == null || Request["gzstate"] == null || Request["openid"] == null)
+            //    {
+            //        return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            //    }
+            //    string ctype = Request["ctype"].ToString();
+            //    string issue = Request["issue"].ToString();
+            //    string gz = Request["gzstate"].ToString();
+            //    string openid = Request["openid"].ToString();
+            //    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
+            //    T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
+            //    if (dto != null)
+            //    {
+            //        V_IndexDto rdto = new V_IndexDto();
+            //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate：" + gz);
+            //        //公共部分
+            //        if (!string.IsNullOrEmpty(dto.bgurl))
+            //        {
+            //            rdto.bgurl = dto.bgurl;             //背景图
+            //            rdto.btnurl = dto.btnurl;           //背景按钮图
+            //        }
+            //        //关注公众号部分
+            //        rdto.qrcodeurl = dto.qrcode_url;    //关注公众号的二维码图片地址
+            //        rdto.gz = gz;                       //微信用户是否关注过当前公众号
+            //        rdto.openid = openid;               //微信用户的openid
+            //        //分享部分
+            //        rdto.wx_appid = Wx_config.appid;    //微信公众号
+            //        long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
+            //        string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
+            //        string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
+            //        rdto.timestamp = timestamp;rdto.noncestr = noncestr;rdto.signatrue = signatrue;         //上面三个附值
+            //        rdto.fx_title = dto.title;rdto.fx_descride = dto.descride;rdto.fx_imgurl = dto.imgurl;rdto.fx_linkurl = dto.linkurl;    //分享的标题,描述,小图标,链接
+            //        return View(rdto);
+            //    }
+            //    else
+            //    {
+            //        return JsonFormat(new ExtJson { success = false, msg = "配置为空" });
+            //    }
+
+            //}
+
+
+            //int cooper = 0, issue = 1;
+            //if(Request.QueryString["ctype"] !=null){
+            //    cooper = Convert.ToInt32(Request.QueryString["ctype"]);
+            //    issue = Convert.ToInt32(Request.QueryString["issue"]);
+            //}
+            //T_CooperConfig dto = wxll.Get_CooperConfig(cooper, issue);                              //取得配置
+            //long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
+            //string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
+            //string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
+            //ViewBag.appid = Wx_config.appid;
+            //ViewBag.timestamp = timestamp;
+            //ViewBag.noncestr = noncestr;
+            //ViewBag.signatrue = signatrue;
+            //if (dto != null)
+            //{
+            //    ViewBag.title = dto.title;              //标题
+            //    ViewBag.desc = dto.descride;            //描述
+            //    ViewBag.imgurl = dto.imgurl;            //图片地址
+            //    ViewBag.linkurl = dto.linkurl;          //链接地址
+            //    if (!string.IsNullOrEmpty(dto.bgurl))
+            //    {
+            //        ViewBag.bg = dto.bgurl;             //背景图
+            //        ViewBag.btn = dto.btnurl;           //背景按钮图
+            //    }
+            //    //ViewBag.dto = dto;                      //实体类
+            //}
             return View(dto);
         }
         public ActionResult SIndex() {
