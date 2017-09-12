@@ -33,6 +33,10 @@ namespace Model.ViewModel
         /// </summary>
         public string genner { get; set; }
         /// <summary>
+        /// 地区1宁德地区2莆田地区
+        /// </summary>
+        public int areatype { get; set; }
+        /// <summary>
         /// 微信分享API 时间戳
         /// </summary>
         public long timestamp { get; set; }

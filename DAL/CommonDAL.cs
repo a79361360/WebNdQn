@@ -1,4 +1,5 @@
 ﻿using Common;
+using Model.EnumModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -20,7 +21,7 @@ namespace DAL
         /// <returns></returns>
         public DataTable GetCooperConfig(int ctype,int issue)
         {
-            string sql = "SELECT [id],[ctype],[issue],[areatype],[gener],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state=1";
+            string sql = "SELECT [id],[ctype],[issue],[areatype],areatypen='',[gener],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state=1";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
@@ -29,6 +30,9 @@ namespace DAL
             parameter[0].Value = ctype;
             parameter[1].Value = issue;
             DataTable dt = dal.ExtSql(sql, parameter);
+            foreach (DataRow item in dt.Rows) {
+                item["areatypen"] = Enum.GetName(typeof(ConstDefine.AreaType), 1);
+            }
             return dt;
         }
         /// <summary>
@@ -67,13 +71,15 @@ namespace DAL
         /// <param name="id"></param>
         /// <returns></returns>
         public DataTable GetCooperConfigById(int id) {
-            string sql = "SELECT [id],[ctype],[issue],[title],[areatype],[gener],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE id=@id";
+            string sql = "SELECT [id],[ctype],[issue],[title],[areatype],areatypen='',[gener],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE id=@id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@id",SqlDbType.Int)
             };
             parameter[0].Value = id;
             DataTable dt = dal.ExtSql(sql, parameter);
+            foreach (DataRow item in dt.Rows)
+                item["areatypen"] = Enum.GetName(typeof(ConstDefine.AreaType), Convert.ToInt32(item["areatype"]));
             return dt;
         }
         public int SetCooper(int id,int ctype,int issue, int areatype, string gener, string title,string descride,string imgurl,string btnurl,string bgurl,string linkurl,string redirecturi,
@@ -81,7 +87,7 @@ namespace DAL
             int eachflow,int uplimit,string cutdate,int state) {
 
             string sql = "INSERT INTO [T_CooperConfig]([ctype],[issue],[areatype],[gener],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state])";
-            sql += "VALUES(@ctype,@issue,@title,@descride,@imgurl,@btnurl,@bgurl,@linkurl,@redirecturi,@corpid,@username,@userpwd,@signphone,@wx_appid,@wx_secret,@qrcode_url,@eachflow,@uplimit,@cutdate,@state)";
+            sql += "VALUES(@ctype,@issue,@areatype,@gener,@title,@descride,@imgurl,@btnurl,@bgurl,@linkurl,@redirecturi,@corpid,@username,@userpwd,@signphone,@wx_appid,@wx_secret,@qrcode_url,@eachflow,@uplimit,@cutdate,@state)";
             if (id != 0)
             {
                 sql = "UPDATE [T_CooperConfig] SET [ctype] = @ctype,[title] = @title,[areatype] = @areatype,[gener] = @gener,[descride] = @descride,[imgurl] = @imgurl,[btnurl] = @btnurl,[bgurl] = @bgurl,[linkurl] = @linkurl,[redirecturi] = @redirecturi,[corpid] = @corpid,[username] = @username,[userpwd] = @userpwd";

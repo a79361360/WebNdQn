@@ -329,5 +329,6 @@ namespace Fgly.Common.Expand
             string returnValue = Regex.Replace(s, "<(?!br|p)[^>]+>", "", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             return returnValue.Replace("<br />", "\r\n").Replace("<br>", "\r\n");
         }
+
     }
 }

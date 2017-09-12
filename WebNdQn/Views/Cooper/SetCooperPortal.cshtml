@@ -40,8 +40,11 @@
                 if ('@Model.state' == "2") statestr = "已结束";
                 $("#field").text(statestr);
             } else {
-                $("#field").text("未开启"); $("#field").val("0");
+                $("#field").text("未开启"); $("#field").attr("v_val", "0");
+                $("#txt_areatype").text("宁德地区"); $("#txt_areatype").attr("v_val", "1");
             }
+            //checkbox附值
+            getgener(2,'@Model.gener');
             $('.dropdown-menu a').click(function () {
                 var txt = $(this).text(); var val = $(this).attr("v_val");
                 var objdrop = $(this).parent().parent().siblings("button").eq(0);
@@ -86,6 +89,7 @@
         }
         //取得图片地址的名称与后缀名
         getfilename = function (url) {
+            url = url.split("?")[0];    //将问号部分分离掉
             var str = url.substring(url.lastIndexOf("/") + 1, url.length);
             if (str.lastIndexOf(".") == -1) return "";
             //var str1 = url.substr(url.lastIndexOf("/") + 1, url.length - url.lastIndexOf("/"));
@@ -140,13 +144,31 @@
             }
 
         }
-
+        //组合推广类型成字符串t(1取值,2附值[v为必传值])
+        getgener = function (t, v) {
+            var cbs = $("#checkboxline [type=checkbox]");
+            if (t == "1") {
+                var result = "";
+                for (var i = 0; i < cbs.length; i++) {
+                    if (cbs[i].checked)
+                        result == "" ? result = "1" : result += "|1";
+                    else result == "" ? result = "0" : result += "|0";
+                }
+            } else if (t == "2") {
+                var vlist = v.split("|");
+                for (var i = 0; i < cbs.length; i++) {
+                    if (vlist[i] == "1")
+                        cbs[i].checked = true;
+                }
+            }
+            return result;
+        }
         tj = function () {
             var cooperid = '@Model.id'; //如果这个为0就为新增
             var ctype = $("#txt_ctype").val();
             var title = $("#txt_title").val();
-            var areatype = $("#txt_areatype").val();
-            var gener = $("#txt_gener").val();
+            var areatype = $("#txt_areatype").attr("v_val");
+            var gener = getgener(1);
             var descride = $("#txt_descride").val();
             var bgurl = $("#bg_showtx").attr("v");
             if (bgurl == null) bgurl = "";
@@ -208,14 +230,14 @@
             <div class="form-group">
                 <label for="firstname" class="col-sm-2 control-label">Ctype</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="txt_ctype" name="txt_ctype" value="@Model.ctype" placeholder="类型">
+                    <input type="text" class="form-control" onclick="getgener()" id="txt_ctype" name="txt_ctype" value="@Model.ctype" placeholder="类型">
                 </div>
             </div>
             <div class="form-group">
                 <label for="firstname" class="col-sm-2 control-label">区域</label>
                 <div class="col-sm-10">
                     <div class="btn-group" style="float: left;">
-                        <button id="areatype" type="button" v_val="@Model.areatype" class="btn btn-default"></button>
+                        <button id="txt_areatype" type="button" v_val="@Model.areatype" class="btn btn-default">@Model.areatypen</button>
                         <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
                             <span class="caret"></span>
                             <span class="sr-only">切换下拉菜单</span>
@@ -224,6 +246,19 @@
                             <li><a href="#" v_val="1">宁德地区</a></li>
                             <li><a href="#" v_val="2">莆田地区</a></li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">推广类型</label>
+                <div id="checkboxline" class="col-sm-10">
+                    <div>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="cbox_1" value="option1">分享推广
+                        </label>
+                        <label class="checkbox-inline">
+                            <input type="checkbox" id="cbox_2" value="option2">关注推广
+                        </label>
                     </div>
                 </div>
             </div>

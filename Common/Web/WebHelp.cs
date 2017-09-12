@@ -101,9 +101,9 @@ namespace FJSZ.OA.Common.Web
                     path = Path.Combine(filePath, filename);
                     HttpContext.Current.Request.Files[fileid].SaveAs(path);
                 }
-                catch
+                catch(Exception er)
                 {
-
+                    path = "";
                 }
             }
             return path;

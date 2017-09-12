@@ -71,6 +71,7 @@
     <Compile Include="DEncrypt\HashEncode.cs" />
     <Compile Include="DEncrypt\RSACryption.cs" />
     <Compile Include="DEncrypt\SSOUtil.cs" />
+    <Compile Include="ExHelp\EnumHelp.cs" />
     <Compile Include="ExHelp\EqlHelp.cs" />
     <Compile Include="ExHelp\ListHelp.cs" />
     <Compile Include="ExHelp\LoadHelp.cs" />

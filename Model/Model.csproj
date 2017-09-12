@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="CommonModel\LoginSession.cs" />
     <Compile Include="CommonModel\Parameter.cs" />
+    <Compile Include="EnumModel\ConstDefine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\IdListDto.cs" />
     <Compile Include="ViewModel\V_IndexDto.cs" />

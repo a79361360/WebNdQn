@@ -10,6 +10,7 @@ using Model.WxModel;
 using FJSZ.OA.Common.Web;
 using System.Net.Http;
 using Model.ViewModel;
+using Model.EnumModel;
 
 namespace WebNdQn.Controllers
 {
@@ -151,7 +152,7 @@ namespace WebNdQn.Controllers
             return View();
         }
         public ActionResult SignPhoneFilter_gz() {
-            if (Request["phone"] == null || Request["ctype"] == null || Request["issue"] == null || Request["openid"] == null)
+            if (Request["phone"] == null || Request["ctype"] == null || Request["issue"] == null || Request["openid"] == null || Request["area"] == null)
             {
                 return JsonFormat(new ExtJson { success = false, msg = "参数不能为空!" });
             }
@@ -159,7 +160,10 @@ namespace WebNdQn.Controllers
             string ctype = Request["ctype"].ToString();         //公司类型
             string issue = Request["issue"].ToString();         //活动期号
             string openid = Request["openid"].ToString();       //微信的Openid
-            string path = Server.MapPath(@"/Content/Txt/pwebconfig.txt");
+            string area = Request["area"].ToString();           //地区1宁德2莆田
+            string txtpath = "/Content/Txt/pwebconfig.txt";
+            if(area=="2") txtpath = "/Content/Txt/putianconfig.txt";
+            string path = Server.MapPath(txtpath);
             bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
             if (result)
             {
@@ -170,7 +174,8 @@ namespace WebNdQn.Controllers
                 {
                     return JsonFormat(new ExtJson { success = false, msg = "当前手机号已经添加过活动!" });
                 }
-                else {
+                else
+                {
                     T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
                     if (dto != null)
                     {
@@ -190,7 +195,10 @@ namespace WebNdQn.Controllers
                 }
             }
             else
-                return JsonFormat(new ExtJson { success = false, msg = "本活动仅限宁德移动手机用户参与!" });
+            {
+                string arean = Enum.GetName(typeof(ConstDefine.AreaType), Convert.ToInt32(area));
+                return JsonFormat(new ExtJson { success = false, msg = "本活动仅限"+ arean + "移动手机用户参与!" });
+            }
         }
         //分享到朋友或者朋友圈
         public ActionResult Index()
@@ -206,7 +214,8 @@ namespace WebNdQn.Controllers
             {
                 string state = Request.Url.AbsoluteUri.Replace("&", "|");   //将&替换成|
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "state的值： " + state);
-                string url = wxll.Wx_Auth_Code(dto.wx_appid, "http://wx.ndll800.com/Home/Wx_Auth_Code", "snsapi_base", state);  //snsapi_base,snsapi_userinfo
+                string url = wxll.Wx_Auth_Code(dto.wx_appid, WebHelp.GetCurHttpHost() + "/Home/Wx_Auth_Code", "snsapi_base", state);  //snsapi_base,snsapi_userinfo
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "URL： " + url);
                 return Redirect(url);
             }
             else {
@@ -219,6 +228,7 @@ namespace WebNdQn.Controllers
                 if (dto != null)
                 {
                     V_IndexDto rdto = new V_IndexDto();
+                    
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate：" + gz);
                     //公共部分
                     if (!string.IsNullOrEmpty(dto.bgurl))
@@ -227,6 +237,7 @@ namespace WebNdQn.Controllers
                         rdto.btnurl = dto.btnurl;           //背景按钮图
                     }
                     rdto.genner = dto.gener;                //推广类型 分享推广|关注推广
+                    rdto.areatype = dto.areatype;           //1宁德地区2莆田地区       
                     //关注公众号部分
                     rdto.qrcodeurl = dto.qrcode_url;    //关注公众号的二维码图片地址
                     rdto.gz = gz;                       //微信用户是否关注过当前公众号
@@ -237,7 +248,7 @@ namespace WebNdQn.Controllers
                     string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
                     string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
                     rdto.timestamp = timestamp; rdto.noncestr = noncestr; rdto.signatrue = signatrue;         //上面三个附值
-                    rdto.fx_title = dto.title; rdto.fx_descride = dto.descride; rdto.fx_imgurl = dto.imgurl; rdto.fx_linkurl = dto.linkurl;    //分享的标题,描述,小图标,链接
+                    rdto.fx_title = dto.title; rdto.fx_descride = dto.descride; rdto.fx_imgurl = WebHelp.GetCurHttpHost() + dto.imgurl; rdto.fx_linkurl = dto.linkurl;    //分享的标题,描述,小图标,链接
                     return View(rdto);
                 }
                 else
@@ -245,100 +256,6 @@ namespace WebNdQn.Controllers
                     return JsonFormat(new ExtJson { success = false, msg = "配置为空" });
                 }
             }
-            //if (Request["gzstate"] == null)
-            //{
-            //    if (Request["ctype"] == null || Request["issue"] == null)
-            //    {
-            //        return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
-            //    }
-            //    string ctype = Request["ctype"].ToString(); string issue = Request["issue"].ToString();
-            //    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "参数非空 ctype: " + ctype + "issue: " + issue);
-            //    T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
-            //    if (dto != null)
-            //    {
-            //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate为空");
-            //        //snsapi_base,snsapi_userinfo
-            //        string state = Request.Url.AbsoluteUri.Replace("&", "|");   //将&替换成|
-            //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "state的值： " + state);
-            //        string url = wxll.Wx_Auth_Code(dto.wx_appid, "http://wx.ndll800.com/Home/Wx_Auth_Code", "snsapi_base", state);
-            //        return Redirect(url);
-            //    }
-            //    else
-            //    {
-            //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "未进行客户信息配置： ctype: " + ctype + "issue: " + issue);
-            //        return JsonFormat(new ExtJson { success = false, msg = "配置为空" });
-            //    }
-            //}
-            //else
-            //{
-            //    if (Request["ctype"] == null || Request["issue"] == null || Request["gzstate"] == null || Request["openid"] == null)
-            //    {
-            //        return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
-            //    }
-            //    string ctype = Request["ctype"].ToString();
-            //    string issue = Request["issue"].ToString();
-            //    string gz = Request["gzstate"].ToString();
-            //    string openid = Request["openid"].ToString();
-            //    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
-            //    T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
-            //    if (dto != null)
-            //    {
-            //        V_IndexDto rdto = new V_IndexDto();
-            //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate：" + gz);
-            //        //公共部分
-            //        if (!string.IsNullOrEmpty(dto.bgurl))
-            //        {
-            //            rdto.bgurl = dto.bgurl;             //背景图
-            //            rdto.btnurl = dto.btnurl;           //背景按钮图
-            //        }
-            //        //关注公众号部分
-            //        rdto.qrcodeurl = dto.qrcode_url;    //关注公众号的二维码图片地址
-            //        rdto.gz = gz;                       //微信用户是否关注过当前公众号
-            //        rdto.openid = openid;               //微信用户的openid
-            //        //分享部分
-            //        rdto.wx_appid = Wx_config.appid;    //微信公众号
-            //        long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
-            //        string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
-            //        string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
-            //        rdto.timestamp = timestamp;rdto.noncestr = noncestr;rdto.signatrue = signatrue;         //上面三个附值
-            //        rdto.fx_title = dto.title;rdto.fx_descride = dto.descride;rdto.fx_imgurl = dto.imgurl;rdto.fx_linkurl = dto.linkurl;    //分享的标题,描述,小图标,链接
-            //        return View(rdto);
-            //    }
-            //    else
-            //    {
-            //        return JsonFormat(new ExtJson { success = false, msg = "配置为空" });
-            //    }
-
-            //}
-
-
-            //int cooper = 0, issue = 1;
-            //if(Request.QueryString["ctype"] !=null){
-            //    cooper = Convert.ToInt32(Request.QueryString["ctype"]);
-            //    issue = Convert.ToInt32(Request.QueryString["issue"]);
-            //}
-            //T_CooperConfig dto = wxll.Get_CooperConfig(cooper, issue);                              //取得配置
-            //long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
-            //string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
-            //string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
-            //ViewBag.appid = Wx_config.appid;
-            //ViewBag.timestamp = timestamp;
-            //ViewBag.noncestr = noncestr;
-            //ViewBag.signatrue = signatrue;
-            //if (dto != null)
-            //{
-            //    ViewBag.title = dto.title;              //标题
-            //    ViewBag.desc = dto.descride;            //描述
-            //    ViewBag.imgurl = dto.imgurl;            //图片地址
-            //    ViewBag.linkurl = dto.linkurl;          //链接地址
-            //    if (!string.IsNullOrEmpty(dto.bgurl))
-            //    {
-            //        ViewBag.bg = dto.bgurl;             //背景图
-            //        ViewBag.btn = dto.btnurl;           //背景按钮图
-            //    }
-            //    //ViewBag.dto = dto;                      //实体类
-            //}
-            return View(dto);
         }
         public ActionResult SIndex() {
             int cooper = 0, issue = 1;
@@ -511,9 +428,14 @@ namespace WebNdQn.Controllers
         }
         //test
         public ActionResult SendLoginPost() {
-            string url = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t";
-            bll.SendLoginPost(url);
-            return View();
+            string name = Enum.GetName(typeof(ConstDefine.AwardType), 1);
+            int value = System.EnumHelp.GetEnumValue(typeof(ConstDefine.AwardType), "乐豆");
+            string des = System.EnumHelp.GetDescription(ConstDefine.AwardType.乐豆);
+
+            return JsonFormat(new ExtJson { success = false, msg = name + "|" + value + "|" + des });
+            //string url = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t";
+            //bll.SendLoginPost(url);
+            //return View();
         }
         public ActionResult TestShare() {
             string phone = Request["mobile"].ToString();        //哪个手机号码接收到的

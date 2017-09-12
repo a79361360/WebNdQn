@@ -12,6 +12,7 @@ namespace Model.WxModel
         public int ctype { get;set;}
         public int issue { get; set; }
         public int areatype { get; set; }
+        public string areatypen { get; set; }
         public string gener { get; set; }
         public string title {get;set;}
         public string descride {get;set;}
