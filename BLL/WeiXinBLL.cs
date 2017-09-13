@@ -20,6 +20,7 @@ namespace BLL
     {
         WebHttp web = new WebHttp();
         CommonDAL dal = new CommonDAL();
+        WeiXinDAL wdal = new WeiXinDAL();
         public string Get_Jsapi_Ticket(string access_token) {
             var t = FJSZ.OA.Common.CacheAccess.GetFromCache("jsapi_ticket");
             if (t==null)
@@ -63,7 +64,7 @@ namespace BLL
         }
 
         /// <summary>
-        /// 取得CGI的TOKEN值
+        /// 取得CGI的TOKEN值,这种方式取不到用户的openid,所以需要code先取一下openid值
         /// </summary>
         /// <param name="appid"></param>
         /// <param name="secret"></param>
@@ -91,11 +92,23 @@ namespace BLL
             string url = "https://open.weixin.qq.com/connect/oauth2/authorize?appid="+appid+"&redirect_uri="+ backurl + "&response_type=code&scope="+ scope + "&state="+ state + "#wechat_redirect";
             return url;
         }
-        //取得网页授权token
+        //取得SNS网页授权token
         public WxJsApi_token Wx_Auth_AccessToken(string appid,string secret,string code) {
             string url = "https://api.weixin.qq.com/sns/oauth2/access_token?appid="+ appid + "&secret="+ secret + "&code="+ code + "&grant_type=authorization_code";
             string result = web.Get(url);
             WxJsApi_token dto = JsonConvert.DeserializeObject<WxJsApi_token>(result);
+            return dto;
+        }
+        /// <summary>
+        /// SNS微信用户的详细信息
+        /// </summary>
+        /// <param name="openid"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public Wx_UserInfo Get_SNS_UserInfo(string openid, string token) {
+            string url = "https://api.weixin.qq.com/sns/userinfo?access_token="+ token + "&openid="+ openid + "&lang=zh_CN";
+            string result = web.Get(url);
+            Wx_UserInfo dto = JsonConvert.DeserializeObject<Wx_UserInfo>(result);
             return dto;
         }
         /// <summary>
@@ -145,5 +158,23 @@ namespace BLL
             //ParmToDic(lll);
             return dic;
         }
+
+
+        public int SetWxUserInfo(string appid,string openid,string nickname,int sex,string headurl, string unionid = "1") {
+            int id = 0; //记录的ID
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WeiXinBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SetWxUserInfo: 开始");
+            int result = wdal.IsExistsWxUser(appid, openid);
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WeiXinBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "result:" + result);
+            if (result > 0) {
+                if(result>1) Common.Expend.LogTxtExpend.WriteLogs("/Logs/UnusualErr_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "WeiXinBLL=>SetWxUserInfo(154) 说明:    理论上这个数值不应该多于1条,一个appid对应一个openid" );
+                id = wdal.GetWxUserIdByAO(appid, openid);
+            }
+            T_WxUserInfo dto = new T_WxUserInfo();
+            dto.id = id;dto.wx_appid = appid;dto.wx_openid = openid;dto.wx_nickname = nickname;dto.wx_sex = sex;dto.wx_headurl = headurl;dto.wx_unionid = "";
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WeiXinBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "dto.id:" + dto.id+ "dto.wx_appid:  "+ dto.wx_appid + "dto.wx_openid:  " + dto.wx_openid + "dto.wx_nickname:  " + dto.wx_nickname + "dto.wx_sex:  " + dto.wx_sex + "dto.headurl:  " + dto.wx_headurl + "dto.wx_unionid:  " + dto.wx_unionid);
+            result = wdal.SetWxUserInfo(dto);
+            return result;
+        }
+
     }
 }
