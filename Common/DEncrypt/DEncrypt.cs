@@ -1,5 +1,6 @@
 using System;
-using System.Security.Cryptography;  
+using System.IO;
+using System.Security.Cryptography;
 using System.Text;
 namespace FJSZ.OA.Common.DEncrypt
 {
@@ -13,16 +14,66 @@ namespace FJSZ.OA.Common.DEncrypt
 		/// </summary>
 		public DEncrypt()  
 		{  
-		} 
+		}
+        public static string signkey = "adc9ee659ca881f1c3096688fff9fc58";
+        /// <summary>
+        /// 加密
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string DESEncrypt1(string s)
+        {
+            DESCryptoServiceProvider provider = new DESCryptoServiceProvider();
+            provider.Key = Encoding.ASCII.GetBytes("@w$2k!9%");
+            provider.IV = Encoding.ASCII.GetBytes("@w$2k!9%");
 
-		#region 使用 缺省密钥字符串 加密/解密string
+            MemoryStream ms = new MemoryStream();
+            byte[] bytes = Encoding.Default.GetBytes(s);
 
-		/// <summary>
-		/// 使用缺省密钥字符串加密string
-		/// </summary>
-		/// <param name="original">明文</param>
-		/// <returns>密文</returns>
-		public static string Encrypt(string original)
+            CryptoStream cs = new CryptoStream(ms, provider.CreateEncryptor(), CryptoStreamMode.Write);
+            cs.Write(bytes, 0, bytes.Length);
+            cs.FlushFinalBlock();
+            cs.Close();
+            ms.Close();
+
+            StringBuilder encrptDbStr = new StringBuilder();
+            foreach (byte num in ms.ToArray())
+                encrptDbStr.AppendFormat("{0:X2}", num);
+
+            return encrptDbStr.ToString().ToUpper();
+        }
+        /// <summary>
+        /// 解密
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        public static string DESDecrypt1(string s)
+        {
+            DESCryptoServiceProvider dESCryptoServiceProvider = new DESCryptoServiceProvider();
+            dESCryptoServiceProvider.Key = Encoding.ASCII.GetBytes("@w$2k!9%");
+            dESCryptoServiceProvider.IV = Encoding.ASCII.GetBytes("@w$2k!9%");
+            byte[] array = new byte[s.Length / 2];
+            for (int i = 0; i < s.Length / 2; i++)
+            {
+                array[i] = (byte)Convert.ToInt32(s.Substring(i * 2, 2), 16);
+            }
+            MemoryStream memoryStream = new MemoryStream();
+            CryptoStream cryptoStream = new CryptoStream(memoryStream, dESCryptoServiceProvider.CreateDecryptor(), CryptoStreamMode.Write);
+            cryptoStream.Write(array, 0, array.Length);
+            cryptoStream.FlushFinalBlock();
+            cryptoStream.Close();
+            memoryStream.Close();
+            return Encoding.ASCII.GetString(memoryStream.ToArray());
+        }
+
+        #region 使用 缺省密钥字符串 加密/解密string
+
+        /// <summary>
+        /// 使用缺省密钥字符串加密string
+        /// </summary>
+        /// <param name="original">明文</param>
+        /// <returns>密文</returns>
+        public static string Encrypt(string original)
 		{
             return Encrypt(original, "HOHO18Tools");
 		}
