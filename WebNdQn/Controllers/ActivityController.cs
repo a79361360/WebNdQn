@@ -29,10 +29,10 @@ namespace WebNdQn.Controllers
             T_CooperConfig dto = wxll.Get_CooperConfig(ctype, issue);                              //取得配置
             if (dto != null) {
                 string state = "";                                              //snsapi_base,snsapi_userinfo(需要用户确认登入)
-                string backurl = "http://" + Request.Url.Host + "/Activity/Dzp?ctype=" + ctype + "&issue=" + issue;
+                string backurl = System.Web.HttpUtility.UrlEncode("http://" + Request.Url.Host + "/Activity/Dzp?ctype=" + ctype + "&issue=" + issue);
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "方法Index backurl :" + backurl);
                 string url = wxll.Wx_Auth_Code(dto.wx_appid, backurl, "snsapi_base", state);
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "方法Index url :" + backurl);
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "方法Index url :" + url);
                 return Redirect(url);
             }
             return View();

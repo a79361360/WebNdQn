@@ -165,6 +165,7 @@
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MobileController.cs" />
+    <Compile Include="Controllers\WeiXController.cs" />
     <Compile Include="Controllers\ZxdtController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
@@ -324,6 +325,7 @@
     <Folder Include="Content\Img\bg\" />
     <Folder Include="Content\Img\gzh\" />
     <Folder Include="Content\Img\wxico\" />
+    <Folder Include="Views\WeiX\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="fonts\glyphicons-halflings-regular.woff" />

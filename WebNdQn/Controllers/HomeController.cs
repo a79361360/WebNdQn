@@ -11,6 +11,7 @@ using FJSZ.OA.Common.Web;
 using System.Net.Http;
 using Model.ViewModel;
 using Model.EnumModel;
+using FJSZ.OA.Common.DEncrypt;
 
 namespace WebNdQn.Controllers
 {
@@ -207,29 +208,44 @@ namespace WebNdQn.Controllers
                 return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
             string ctype = Request["ctype"].ToString(); string issue = Request["issue"].ToString();
             T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));     //取得配置
+            if (dto == null) 
+                return Content("配置为空");
             string[] str = dto.gener.Split('|');    //分享推广|关注推广
-            if (str.Length < 2) 
-                return JsonFormat(new ExtJson { success = false, msg = "推广配置错误" });
-            if (str[1] == "1" && Request["gzstate"] == null && Request["openid"] == null)
+            if (str.Length < 2)
+                return Content("推广配置错误");
+            if (str[1] == "1" && Request["p"] == null)
             {
-                string state = Request.Url.AbsoluteUri.Replace("&", "|");   //将&替换成|
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "state的值： " + state);
-                string url = wxll.Wx_Auth_Code(dto.wx_appid, WebHelp.GetCurHttpHost() + "/Home/Wx_Auth_Code", "snsapi_base", state);  //snsapi_base,snsapi_userinfo
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "URL： " + url);
+                string c = "&c="+DEncrypt.DESEncrypt1("CGI|1|" + WebHelp.GetCurHttpHost() + "/Home/Index");   //c参数进行加密
+                string param = Request.Url.Query + c;   //参数串,例如:http://wx.ndll800.com/home/default?ctype=1&issue=1 取的param为:   ?ctype=1&issue=1
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/HomeController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     param： " + param);
+                string state = "";                  //state的值暂时为空,如果后面有需要验签,再用起来,现在就直接用参数来做校验
+                string url = wxll.Wx_Auth_Code(dto.wx_appid, System.Web.HttpUtility.UrlEncode(WebHelp.GetCurHttpHost() + "/WeiX/Wx_Auth_Code" + param), "snsapi_userinfo", state);  //snsapi_base,snsapi_userinfo
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/HomeController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     URL： " + url);
                 return Redirect(url);
             }
             else {
                 string gz = "0"; string openid = "";
-                if (Request["gzstate"] != null && Request["openid"] != null){
-                    gz = Request["gzstate"].ToString();
-                    openid = Request["openid"].ToString();
+                if (Request["p"] != null){
+                    try
+                    {
+                        string p = Request["p"].ToString();
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/HomeController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + Request["p"].ToString());
+                        string temp = DEncrypt.DESDecrypt1(p);    //取得p参数,并且进行解密
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/HomeController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + temp);
+                        string[] plist = temp.Split('|');   //微信发送|是否
+                        if (plist[0] != "1") return Content("配置参数异常");
+                        gz = plist[1]; openid = plist[2];   //是否关注,微信用户id
+                    }
+                    catch {
+                        return Content("参数错误");
+                    }
                 }
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/HomeController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
                 if (dto != null)
                 {
                     V_IndexDto rdto = new V_IndexDto();
                     
-                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "gzstate：" + gz);
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/HomeController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     gzstate：" + gz);
                     //公共部分
                     if (!string.IsNullOrEmpty(dto.bgurl))
                     {
