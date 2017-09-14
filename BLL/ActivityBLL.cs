@@ -270,17 +270,17 @@ namespace BLL
             IList<T_ActivityConfigList> list = DataTableToList.ModelConvertHelper<T_ActivityConfigList>.ConvertToModel(adal.GetActivityConfigList(configid));
             return list;
         }
-        public int SetDzpConfig(int configid,int cooperid,string title,int share,string explain,string bgurl,IList<T_ActivityConfigList> list) {
+        public int SetDzpConfig(int configid,int cooperid,string title,int share,string explain,string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl, IList<T_ActivityConfigList> list) {
             int result = 0;
             int resultnum = 0; if (string.IsNullOrEmpty(bgurl)) { bgurl = "/Content/Activity/Dzp/images/body_bg1.jpg"; }
             //新增
             if (configid == 0)
             {
-                configid = adal.AddConfig(cooperid, 1, title, share, explain, bgurl); //主表ID
+                configid = adal.AddConfig(cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl); //主表ID
                 result = configid;
             }
             else
-                result = adal.UpdateConfig(configid, cooperid, 1, title, share, explain, bgurl);
+                result = adal.UpdateConfig(configid, cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl);
             if (result < 1) return result;    //如果异常就直接返回
             foreach (var item in list)
             {

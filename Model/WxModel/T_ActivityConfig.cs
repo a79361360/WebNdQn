@@ -15,5 +15,11 @@ namespace Model.WxModel
         public int share { get; set; }
         public string explain { get; set; }
         public string bgurl { get; set; }
+
+        public string wx_title { get; set; }
+        public string wx_descride { get; set; }
+        public string wx_imgurl { get; set; }
+        public string wx_linkurl { get; set; }
+        
     }
 }

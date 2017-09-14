@@ -460,7 +460,7 @@ namespace WebNdQn.Controllers
             return View();
         }
         /// <summary>
-        /// 发送验证码
+        /// 发送登入验证码
         /// </summary>
         /// <returns></returns>
         public ActionResult SendMobileCode() {
@@ -468,6 +468,7 @@ namespace WebNdQn.Controllers
             mbll.HelpWebSend(21, 1);
             return View();
         }
+        //仅做测试.
         public ActionResult LoginByMobileCode()
         {
             bll.LoginByMobileCode(21, 1);

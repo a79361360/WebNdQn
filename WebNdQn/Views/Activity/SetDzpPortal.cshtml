@@ -13,18 +13,25 @@
     <script src="~/Scripts/bootstrap.min.js"></script>
     <script type="text/javascript">
         $(function () {
-            $("#showtx").click(function () {
+            $("#showtx,#fx_showtx").click(function () {
                 var img = $(this).attr("v");
+                if (img == null || img == "") tips("没有可以查看的图片", 1);
                 showtx(img);
             })
             $("#path").change(function () {
                 $("#docPath").val($(":file").val());
             });
+            $("#fx_Path_file").change(function () {
+                $("#fx_Path_txt").val($(this).val());
+            });
         })
 
         showtx = function (img) {
-            var content = "<img src='" + img + "' style=\"width:320px;height:586px;\"/>";
-            qiu_confirm("q_showtx", "查看头像", content, 420, 630);
+            var content = "<img src='" + img + "'/>";
+            var imgSrc = $(content).attr("src");
+            getImageWidth(imgSrc, function (w, h) {
+                qiu_confirm("q_showtx", "查看头像", content, w + 50, h + 50);
+            });
         }
         //弹于信息tips
         tips = function (content, timeout) {
@@ -54,11 +61,27 @@
                 edittx();
             })
         }
+        //取得图片长宽
+        function getImageWidth(url, callback) {
+            var img = new Image();
+            img.src = url;
+
+            // 如果图片被缓存，则直接返回缓存数据
+            if (img.complete) {
+                callback(img.width, img.height);
+            } else {
+                // 完全加载完毕的事件
+                img.onload = function () {
+                    callback(img.width, img.height);
+                }
+            }
+
+        }
         //点击选中txt里面的内容
         txtselect = function (obj) {
             $(obj).select();
         }
-        $(function () {
+        @*$(function () {
             $("#qdxgtx").click(function () {
                 var formData = new FormData();
                 formData.append("myfile", document.getElementById("path").files[0]);
@@ -87,7 +110,51 @@
                     }
                 });
             });
-        });
+        });*@
+        updateimg = function (type, fileid, showid) {
+            var vurl = $("#" + showid).attr("v");
+            if (vurl == null) vurl = "";
+            else vurl = getfilename(vurl);
+            var formData = new FormData();
+            formData.append(fileid, document.getElementById(fileid).files[0]);
+            formData.append("myfile", fileid);
+            formData.append("type", type);
+            formData.append("vurl", vurl);
+            $.ajax({
+                url: "/Cooper/UpdateImg",
+                type: "POST",
+                data: formData,
+                /**
+                *必须false才会自动加上正确的Content-Type
+                */
+                contentType: false,
+                /**
+                * 必须false才会避开jQuery对 formdata 的默认处理
+                * XMLHttpRequest会对 formdata 进行正确的处理
+                */
+                processData: false,
+                success: function (data) {
+                    if (data.success) {
+                        var text = "背景图片更新成功";
+                        if (type == "2") text = "微信分享小图标更新成功";
+                        if (type == "3") text = "公众号二维码更新成功";
+                        tips(text, 1);
+                        $("#" + showid).attr("v", data.jsonresult);
+                    }
+                },
+                error: function () {
+                    alert("上传失败！");
+                }
+            });
+        }
+        //取得图片地址的名称与后缀名
+        getfilename = function (url) {
+            url = url.split("?")[0];    //将问号部分分离掉
+            var str = url.substring(url.lastIndexOf("/") + 1, url.length);
+            if (str.lastIndexOf(".") == -1) return "";
+            //var str1 = url.substr(url.lastIndexOf("/") + 1, url.length - url.lastIndexOf("/"));
+            return str;
+        }
         //取得配置列表的数据
         configlist = function (obj) {
             var v = $(obj).val();
@@ -165,6 +232,12 @@
             var share = $("#txt_share").val();
             var explain = $("#txt_explain").val();
             var bgurl = $("#showtx").attr("v");
+
+            var wxtitle = $("#txt_wxtitle").val();
+            var wxdescride = $("#txt_wxdescride").val();
+            var wximgurl = $("#fx_showtx").attr("v");
+            var wxlinkurl = $("#txt_wxlinkurl").val();
+
             var _datalist = [];
             var labelobj = $("#div1").find("label");
             var inputobj = $("#div1").find("input");
@@ -193,6 +266,10 @@
                 share: share,
                 explain: explain,
                 bgurl: bgurl,
+                wxtitle: wxtitle,
+                wxdescride: wxdescride,
+                wximgurl: wximgurl,
+                wxlinkurl: wxlinkurl,
                 list: list
             }
             $.ajax({
@@ -239,7 +316,7 @@
                     </div>
                 </div>
                 <div class="col-sm-1">
-                    <input id="qdxgtx" type="button" class="btn btn-default" value="确定" />
+                    <input id="qdxgtx" onclick="updateimg(1, 'path', 'showtx')" type="button" class="btn btn-default" value="确定" />
                 </div>
                 <div class="col-sm-3">
                     <input id="showtx" v="@Model.bgurl" type="button" class="btn btn-default" value="查看" />
@@ -248,13 +325,34 @@
             <div class="form-group">
                 <label for="firstname" class="col-sm-2 control-label">微信标题</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="txt_title" name="txt_title" value="@Model.title" placeholder="请输入标题,最多20个汉字">
+                    <input type="text" class="form-control" id="txt_wxtitle" name="txt_title" value="@Model.wx_title" placeholder="请输入标题,最多20个汉字">
                 </div>
             </div>
             <div class="form-group">
                 <label for="lastname" class="col-sm-2 control-label">微信描述</label>
                 <div class="col-sm-10">
-                    <textarea type="text" rows="3" class="form-control" id="txt_descride" name="txt_descride" value="@Model.descride" placeholder="说明备注">@Model.descride</textarea>
+                    <textarea type="text" rows="3" class="form-control" id="txt_wxdescride" name="txt_descride" value="@Model.wx_descride" placeholder="说明备注">@Model.wx_descride</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">微信分享小图标</label>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <input id="fx_Path_txt" type="text" class="form-control">
+                        <span style="position: relative" class="btn btn-primary input-group-addon">浏览<input id="fx_Path_file" style="width: 60px;height:40px; position: absolute;top:-6px;left: -4px;opacity: 0; filter:alpha(opacity=0)" class="form-control" type="file"></span>
+                    </div>
+                </div>
+                <div class="col-sm-1">
+                    <input id="fx_qd" onclick="updateimg(2, 'fx_Path_file', 'fx_showtx')" type="button" class="btn btn-default" value="确定" />
+                </div>
+                <div class="col-sm-3">
+                    <input id="fx_showtx" v="@Model.wx_imgurl" type="button" class="btn btn-default" value="查看" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">微信分享链接</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_wxlinkurl" name="txt_linkurl" value="@Model.wx_linkurl" placeholder="请输入在微信分享时需要分享的链接">
                 </div>
             </div>
             <div class="form-group">

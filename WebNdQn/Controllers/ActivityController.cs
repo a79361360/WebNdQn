@@ -1,5 +1,6 @@
 ﻿using BLL;
 using Fgly.Common.Expand;
+using FJSZ.OA.Common.Web;
 using FrameWork;
 using FrameWork.Common;
 using Model.ViewModel;
@@ -68,10 +69,10 @@ namespace WebNdQn.Controllers
                 ViewBag.noncestr = noncestr;
                 ViewBag.signatrue = signatrue;
 
-                ViewBag.title = dto.title;              //标题
-                ViewBag.desc = dto.descride;            //描述
-                ViewBag.imgurl = dto.imgurl;            //图片地址
-                ViewBag.linkurl = dto.linkurl;          //链接地址
+                //ViewBag.title = dto.title;              //标题
+                //ViewBag.desc = dto.descride;            //描述
+                //ViewBag.imgurl = dto.imgurl;            //图片地址
+                //ViewBag.linkurl = dto.linkurl;          //链接地址
             }
             #endregion
             #region 奖品的列表,当前用户还可摇奖次数,是否有手机号码
@@ -98,6 +99,10 @@ namespace WebNdQn.Controllers
                 if (dtoc != null)
                 {
                     ptitle = dtoc.title;bgurl = dtoc.bgurl; explain = dtoc.explain.Replace("\n", "<br/>");
+                    ViewBag.title = dtoc.wx_title;              //标题
+                    ViewBag.desc = dtoc.wx_descride;            //描述
+                    ViewBag.imgurl = WebHelp.GetCurHttpHost() + dtoc.wx_imgurl;            //图片地址
+                    ViewBag.linkurl = dtoc.wx_linkurl;          //链接地址
                 }
                 ViewBag.ptitle = ptitle;ViewBag.bgurl = bgurl;ViewBag.explain = explain;
             }
@@ -221,9 +226,15 @@ namespace WebNdQn.Controllers
             string share = Request.Form["share"];                   //会员人数
             string explain = Request.Form["explain"];               //会员人数
             string bgurl = Request.Form["bgurl"];                   //会员人数
+
+            string wxtitle = Request.Form["wxtitle"];                   //会员人数
+            string wxdescride = Request.Form["wxdescride"];                   //会员人数
+            string wximgurl = Request.Form["wximgurl"];                   //会员人数
+            string wxlinkurl = Request.Form["wxlinkurl"];                   //会员人数
+
             string list = Request.Form["list"];                     //会员人数
             IList<T_ActivityConfigList> Configlist = FrameWork.Common.SerializeJson<T_ActivityConfigList>.JSONStringToList(list);    //会员列表
-            int result = Abll.SetDzpConfig(Convert.ToInt32(configid), Convert.ToInt32(cooperid), title, Convert.ToInt32(share), explain, bgurl, Configlist);
+            int result = Abll.SetDzpConfig(Convert.ToInt32(configid), Convert.ToInt32(cooperid), title, Convert.ToInt32(share), explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, Configlist);
             if (result > 0)
                 return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功.", jsonresult = list });
             else

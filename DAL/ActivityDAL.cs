@@ -71,7 +71,7 @@ namespace DAL
             return Convert.ToInt32(list["@ReturnValue"]);
         }
         public DataTable GetActivityZb(int cooperid) {
-            string sql = "SELECT id,cooperid,type,title,share,explain,bgurl FROM T_ActivityConfig where cooperid=@cooperid";
+            string sql = "SELECT id,cooperid,type,title,share,explain,bgurl,wx_title,wx_descride,wx_imgurl,wx_linkurl FROM T_ActivityConfig where cooperid=@cooperid";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@cooperid",SqlDbType.Int)
@@ -98,9 +98,9 @@ namespace DAL
             int result = dal.IntExtSql(sql, parameter);
             return result;
         }
-        public int AddConfig(int cooperid,int type,string title,int share,string explain,string bgurl) {
-            string sql = "INSERT INTO [T_ActivityConfig]([cooperid],[type],[title],[share],[explain],[bgurl])";
-            sql += "VALUES(@cooperid,@type,@title,@share,@explain,@bgurl) select SCOPE_IDENTITY() as id";
+        public int AddConfig(int cooperid,int type,string title,int share,string explain,string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl) {
+            string sql = "INSERT INTO [T_ActivityConfig]([cooperid],[type],[title],[share],[explain],[bgurl],[wx_title],[wx_descride],[wx_imgurl],[wx_linkurl])";
+            sql += "VALUES(@cooperid,@type,@title,@share,@explain,@bgurl,@wxtitle,@wxdescride,@wximgurl,@wxlinkurl) select SCOPE_IDENTITY() as id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@cooperid",SqlDbType.Int),
@@ -109,6 +109,10 @@ namespace DAL
                 new SqlParameter("@share",SqlDbType.Int),
                 new SqlParameter("@explain",SqlDbType.NVarChar,400),
                 new SqlParameter("@bgurl",SqlDbType.NVarChar,250),
+                new SqlParameter("@wxtitle",SqlDbType.NVarChar,50),
+                new SqlParameter("@wxdescride",SqlDbType.NVarChar,250),
+                new SqlParameter("@wximgurl",SqlDbType.NVarChar,250),
+                new SqlParameter("@wxlinkurl",SqlDbType.NVarChar,250),
             };
             parameter[0].Value = cooperid;
             parameter[1].Value = type;
@@ -116,6 +120,10 @@ namespace DAL
             parameter[3].Value = share;
             parameter[4].Value = explain;
             parameter[5].Value = bgurl;
+            parameter[6].Value = wxtitle;
+            parameter[7].Value = wxdescride;
+            parameter[8].Value = wximgurl;
+            parameter[9].Value = wxlinkurl;
             int result = 0;
             try {
                 result = Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
@@ -125,8 +133,9 @@ namespace DAL
             }
             return result;
         }
-        public int UpdateConfig(int configid, int cooperid, int type, string title, int share, string explain, string bgurl) {
-            string sql = "UPDATE [T_ActivityConfig] SET [cooperid] = @cooperid,[type] = @type,[title] = @title,[share] = @share,[explain] = @explain,[bgurl] = @bgurl where id=@configid";
+        public int UpdateConfig(int configid, int cooperid, int type, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl) {
+            string sql = "UPDATE [T_ActivityConfig] SET [cooperid] = @cooperid,[type] = @type,[title] = @title,[share] = @share,[explain] = @explain,[bgurl] = @bgurl ";
+            sql += ",[wx_title] = @wxtitle,[wx_descride] = @wxdescride,[wx_imgurl] = @wximgurl,[wx_linkurl] = @wxlinkurl where id=@configid";
             SqlParameter[] parameter = new[]
               {
                 new SqlParameter("@cooperid",SqlDbType.Int),
@@ -136,6 +145,10 @@ namespace DAL
                 new SqlParameter("@explain",SqlDbType.NVarChar,400),
                 new SqlParameter("@bgurl",SqlDbType.NVarChar,250),
                 new SqlParameter("@configid",SqlDbType.Int),
+                new SqlParameter("@wxtitle",SqlDbType.NVarChar,50),
+                new SqlParameter("@wxdescride",SqlDbType.NVarChar,250),
+                new SqlParameter("@wximgurl",SqlDbType.NVarChar,250),
+                new SqlParameter("@wxlinkurl",SqlDbType.NVarChar,250),
             };
             parameter[0].Value = cooperid;
             parameter[1].Value = type;
@@ -144,6 +157,10 @@ namespace DAL
             parameter[4].Value = explain;
             parameter[5].Value = bgurl;
             parameter[6].Value = configid;
+            parameter[7].Value = wxtitle;
+            parameter[8].Value = wxdescride;
+            parameter[9].Value = wximgurl;
+            parameter[10].Value = wxlinkurl;
             int result = Convert.ToInt32(dal.IntExtSql(sql, parameter));
             return result;
         }
