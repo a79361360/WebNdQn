@@ -274,24 +274,5 @@ namespace DAL
             parameter[4].Value = content;
             return dal.IntExtSql(sql, parameter);
         }
-        /// <summary>
-        /// 取得登入缓存的cookie
-        /// </summary>
-        /// <param name="ctype"></param>
-        /// <param name="issue"></param>
-        /// <returns></returns>
-        public DataTable GetLoginCache(int ctype, int issue)
-        {
-            string sql = "SELECT [id],[ctype],[issue],[cookie],[lasttime] FROM [dbo].[T_LoginLogCache] WHERE ctype=@ctype and issue=@issue";
-            SqlParameter[] parameter = new[]
-            {
-                new SqlParameter("@ctype",SqlDbType.Int),
-                new SqlParameter("@issue",SqlDbType.Int)
-            };
-            parameter[0].Value = ctype;
-            parameter[1].Value = issue;
-            DataTable dt = dal.ExtSql(sql, parameter);
-            return dt;
-        }
     }
 }

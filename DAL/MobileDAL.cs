@@ -68,6 +68,27 @@ namespace DAL
             return dal.ExtSql(sql, parameter);
         }
         /// <summary>
+        /// 更新用户的短信验证码
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public int UpdateConfigPwd(int ctype, int issue, string code)
+        {
+            string sql = "UPDATE [T_CooperConfig] SET [userpwd] = @pwd WHERE ctype=@ctype AND issue=@issue";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int),
+                new SqlParameter("@pwd",SqlDbType.NVarChar,50),
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            parameter[2].Value = code;
+            return dal.IntExtSql(sql, parameter);
+        }
+        /// <summary>
         /// 更新短信的序列号,将状态设置为1
         /// </summary>
         /// <param name="ctype">类型</param>
@@ -166,26 +187,6 @@ namespace DAL
             return dal.IntExtSql(sql, parameter);
         }
         /// <summary>
-        /// 更新用户的短信验证码
-        /// </summary>
-        /// <param name="ctype"></param>
-        /// <param name="issue"></param>
-        /// <param name="code"></param>
-        /// <returns></returns>
-        public int UpdateConfigPwd(int ctype,int issue,string code) {
-            string sql = "UPDATE [T_CooperConfig] SET [userpwd] = @pwd WHERE ctype=@ctype AND issue=@issue";
-            SqlParameter[] parameter = new[]
-            {
-                new SqlParameter("@ctype",SqlDbType.Int),
-                new SqlParameter("@issue",SqlDbType.Int),
-                new SqlParameter("@pwd",SqlDbType.NVarChar,50),
-            };
-            parameter[0].Value = ctype;
-            parameter[1].Value = issue;
-            parameter[2].Value = code;
-            return dal.IntExtSql(sql, parameter);
-        }
-        /// <summary>
         /// 更新登入短信的序列号
         /// </summary>
         /// <param name="ctype"></param>
@@ -218,6 +219,25 @@ namespace DAL
         {
             string sql = "UPDATE [T_LoginLogCache] SET dlstate = 0";
             return dal.IntExtSql(sql);
+        }
+        /// <summary>
+        /// 取得登入缓存的cookie
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public DataTable GetLoginCache(int ctype, int issue)
+        {
+            string sql = "SELECT [id],[ctype],[issue],[cookie],[czparam],[czdxhm],[dxxh],[state],[dlxh],[dlstate],[lasttime] FROM [dbo].[T_LoginLogCache] WHERE ctype=@ctype and issue=@issue";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int)
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            DataTable dt = dal.ExtSql(sql, parameter);
+            return dt;
         }
     }
 }
