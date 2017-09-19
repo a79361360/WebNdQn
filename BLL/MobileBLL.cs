@@ -718,7 +718,7 @@ namespace BLL
         /// </summary>
         /// <param name="ctype"></param>
         /// <param name="issue"></param>
-        public void HelpWebSend(int ctype, int issue)
+        public int HelpWebSend(int ctype, int issue)
         {
             IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
             if (list.Count > 0)
@@ -740,9 +740,16 @@ namespace BLL
                     ProxyIp = "ieproxy",
                     ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
                 };
-                result = helpweb.GetHtml(item);
+                try {
+                    result = helpweb.GetHtml(item);
+                }
+                catch (Exception er) {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "HelpWebSend 3 登入首页异常" + er.Message);
+                    return -1;
+                }
                 string viewstate = "";                      //定义ViewState变量
                 string cookie = fhcookie(result.Cookie);    //合并Cookie
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "HelpWebSend 4 选择短信方式登入 Cookie: "+ cookie);
                 //选择短信登入
                 helpweb = new HttpHelper();
                 item = new HttpItem()
@@ -754,11 +761,15 @@ namespace BLL
                     ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
                     Postdata = "__EVENTTARGET=rbl_PType%241&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=" + System.Web.HttpUtility.UrlEncode(viewstate) + "&__VIEWSTATEGENERATOR=CC3279BD&__VIEWSTATEENCRYPTED=&LoginType=1&SMSTimes=90&SMSAliasTimes=90&txtCorpCode=&txtUserName=&rbl_PType=2&txtPd=&txtCheckCode=&txtQDLRegisterUrl=%2FADCQDLPortal%2FProduction%2FProductOrderControl.aspx"
                 };
-                //请求的返回值对象
-                result = helpweb.GetHtml(item);
-                //11111
-                //NSoup.Nodes.Document doc = NSoup.NSoupClient.Parse(result.Html);
-                //viewstate = doc.Select("#__VIEWSTATE").Val();  //取得虚拟路径URL
+                try {
+                    //请求的返回值对象
+                    result = helpweb.GetHtml(item);
+                }
+                catch (Exception er) {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "HelpWebSend 4 选择短信方式登入异常：" + er.Message);
+                    return -2;
+                }
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "HelpWebSend 5 准备开始发送登入短信");
                 //发送短信
                 helpweb = new HttpHelper();
                 item = new HttpItem()
@@ -770,7 +781,13 @@ namespace BLL
                     ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
                     Postdata = "__EVENTTARGET=lbtn_GetSMS&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=" + System.Web.HttpUtility.UrlEncode(viewstate) + "&__VIEWSTATEGENERATOR=CC3279BD&__VIEWSTATEENCRYPTED=&LoginType=1&SMSTimes=90&SMSAliasTimes=90&txtCorpCode=" + dto.corpid + "&txtUserName=" + dto.username + "&rbl_PType=2&SMSP=&txtCheckCode=&txtQDLRegisterUrl=%2FADCQDLPortal%2FProduction%2FProductOrderControl.aspx"
                 };
-                result = helpweb.GetHtml(item);
+                try {
+                    result = helpweb.GetHtml(item);
+                }
+                catch (Exception er) {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "HelpWebSend 6 发送短信异常：" + er.Message);
+                    return -3;
+                }
                 //获取请请求的Html
                 string html = result.Html;
                 NSoup.Nodes.Document doc = NSoup.NSoupClient.Parse(result.Html);
