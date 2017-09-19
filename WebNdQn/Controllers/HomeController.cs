@@ -383,22 +383,23 @@ namespace WebNdQn.Controllers
         /// 接收验证码
         /// </summary>
         /// <returns></returns>
-        public ActionResult TakeCode() {
-            if (Request["type"] == null || Request["code"] == null|| Request["phone"] == null) {
-                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
-            }
-            string phone = Request["phone"].ToString();     //哪个手机号码接收到的
-            int type = Convert.ToInt32(Request["type"]);    //1为登入2为充值
-            string code = Request["code"];    //验证码
-            if (type == 1) {
-                bll.SaveLoginState(phone, Convert.ToInt32(code));
-            }
-            int result = bll.TakeMsgCode(type, phone,"0", code,"");    //将收到的验证码保存
-            if (result > 0) {
-                return JsonFormat(new ExtJson { success = true, msg = "保存验证码成功" });
-            }
-            return JsonFormat(new ExtJson { success = false, msg = "保存验证码失败" });
-        }
+        //public ActionResult TakeCode() {
+        //    if (Request["type"] == null || Request["code"] == null|| Request["phone"] == null) {
+        //        return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+        //    }
+        //    string phone = Request["phone"].ToString();     //哪个手机号码接收到的
+        //    int type = Convert.ToInt32(Request["type"]);    //1为登入2为充值
+        //    string code = Request["code"];    //验证码
+        //    if (type == 1) {
+        //        bll.SaveLoginState(phone, Convert.ToInt32(code));
+        //    }
+        //    int result = bll.TakeMsgCode(type, phone,"0", code,"");    //将收到的验证码保存
+        //    if (result > 0) {
+        //        return JsonFormat(new ExtJson { success = true, msg = "保存验证码成功" });
+        //    }
+        //    return JsonFormat(new ExtJson { success = false, msg = "保存验证码失败" });
+        //}
+
         public ActionResult TakeMobileCode()
         {
             if (Request["mobile"] == null || Request["content"] == null)
@@ -408,40 +409,15 @@ namespace WebNdQn.Controllers
             if (phone == "10657532190000761") type = 2;
             string content = Request["content"];     //短信内容
             if (content.Length < 15) return JsonFormat(new ExtJson { success = false, msg = "太短了不用保存" });
-            //登入部分还没有解决，就先放一下
-            if (type == 1)
-            {
-                bll.SaveLoginState(phone, 0);
-            }
             string code = bll.FilterMobileCode(phone, content);     //将短信里面的验证码解析出来
             string xh = bll.FilterMobileXh(phone, content);         //将短信里面的序列号解析出来
-            if (!code.IsInt()) return JsonFormat(new ExtJson { success = false, msg = "验证码取值错误" });
-            int clresult = -1;  //处理结果变量
-            if (type == 2)
-                clresult = mbll.OverCzWithMsgCode(phone, xh, code);
-            int result = bll.TakeMsgCode(type, phone, xh, code, content);       //将收到的验证码保存
-            if (result > 0)
-            {
-                return JsonFormat(new ExtJson { success = true, msg = "保存验证码成功" + "结果：" + clresult });
-            }
-            return JsonFormat(new ExtJson { success = false, msg = "保存验证码失败" + "结果：" + clresult });
+            int result = mbll.testuppwd(21, 1, code);
+            return Content("成功");
         }
         /// <summary>
         /// 测试signatrue
         /// </summary>
         /// <returns></returns>
-        public ActionResult ShareWeixi() {
-            string access_token = wxll.Get_Access_Token(Wx_config.appid, Wx_config.appsecret);
-            //string access_token = "Bgbznk2ods_Y_vfDikpMAd_cwbM2tsBAJgZAZQ2O0bEbmCn1Q9AZ8mBPCSalthgBrJP2wqb6AMbI4ZPx9j7qLV4MwhovhvXWUE37BCXRmXS5i0Ht6R-nKy8urDVuoQ4rYAQaAEAJLB";
-            string jsapi_ticket = wxll.Get_Jsapi_Ticket(access_token);
-            //string jsapi_ticket = "kgt8ON7yVITDhtdwci0qeWuN-3Mn_q_dPJGra0ooR2HLQNbupFT-S95u5DfpnCt2Q3PBr88Fy0wfZ3IHBaiybQ";
-            //string test = Request["test"].ToString();
-            long timestamp = DateTime.Now.ToUnixTimeStamp();        //时间戳
-            string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");
-            string signatrue = wxll.Get_signature(timestamp, noncestr);
-            
-            return JsonFormat(new ExtJson { success = true, msg = jsapi_ticket });
-        }
         //test
         public ActionResult SendLoginPost() {
             string name = Enum.GetName(typeof(ConstDefine.AwardType), 1);
@@ -454,9 +430,9 @@ namespace WebNdQn.Controllers
             //return View();
         }
         public ActionResult TestShare() {
-            string phone = Request["mobile"].ToString();        //哪个手机号码接收到的
-            string content = Request["content"];     //短信内容
-            string xh = bll.FilterMobileXh(phone, content);   //将短信里面的序列号解析出来
+            //string phone = Request["mobile"].ToString();        //哪个手机号码接收到的
+            //string content = Request["content"];     //短信内容
+            //string xh = bll.FilterMobileXh(phone, content);   //将短信里面的序列号解析出来
             return View();
         }
         /// <summary>
@@ -464,15 +440,25 @@ namespace WebNdQn.Controllers
         /// </summary>
         /// <returns></returns>
         public ActionResult SendMobileCode() {
-            //bll.SendLoginMsgCode(21, 1);
+            //bll.HttpCliendSendMsg(21, 1);
             mbll.HelpWebSend(21, 1);
             return View();
         }
         //仅做测试.
         public ActionResult LoginByMobileCode()
         {
-            bll.LoginByMobileCode(21, 1);
-            //bll.HelpWebLogin(21, 1);
+            //if (Request["mobile"] == null || Request["content"] == null)
+            //    return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            //string phone = Request["mobile"].ToString();        //哪个手机号码接收到的
+            //int type = Convert.ToInt32("1");                    //通过手机号码判断，1为登入2为充值
+            //if (phone == "10657532190000761") type = 2;
+            //string content = Request["content"];     //短信内容
+            //if (content.Length < 15) return JsonFormat(new ExtJson { success = false, msg = "太短了不用保存" });
+            //string code = bll.FilterMobileCode(phone, content);     //将短信里面的验证码解析出来
+            //string xh = bll.FilterMobileXh(phone, content);         //将短信里面的序列号解析出来
+            //int result = mbll.testuppwd(21, 1, code);
+            //bll.HttpCliendGetMsg(21, 1);
+            bll.HelpWebLogin(21, 1);
             return View();
         }
 

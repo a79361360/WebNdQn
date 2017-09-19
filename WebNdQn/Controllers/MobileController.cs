@@ -14,21 +14,28 @@ namespace WebNdQn.Controllers
         CommonBLL bll = new CommonBLL();
         MobileBLL mbll = new MobileBLL();
         // GET: Mobile
+        /// <summary>
+        /// 超端控制页面
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
             return View();
         }
+
+
+
+        /// <summary>
+        /// 批量调用状态正在进行中的单子进行直充
+        /// </summary>
+        /// <returns></returns>
         public ActionResult ToExeclSendMsgCode() {
-            //上传execl并调发送短信接口
-            //if (Request["ctype"] == null || Request["issue"] == null)
-            //    return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
-            //string ctype = Request["ctype"].ToString();
-            //string issue = Request["issue"].ToString();
-            //int resutint = mbll.ToExeclSendMsgCode(Convert.ToInt32(ctype), Convert.ToInt32(issue));
             mbll.ExecuteCooperList();
-            //int resutint = mbll.ToExeclSendMsgCode(21, 1);
             return JsonFormat(new ExtJson { success = true, msg = "执行完成", code = 1000 });
         }
+
+
+
         //手动执行
         public ActionResult SingleSendToExecl() {
             if (Request["ctype"] == null || Request["issue"] == null)
@@ -67,6 +74,10 @@ namespace WebNdQn.Controllers
             }
             return JsonFormat(new ExtJson { success = true, code = 1000, msg = "运行结束。", jsonresult = Num + "|" + ANum });
         }
+        /// <summary>
+        /// 超端查询
+        /// </summary>
+        /// <returns></returns>
         public ActionResult FindCacheList() {
             var list = mbll.FindCacheList();
             if (list.Count > 0)
