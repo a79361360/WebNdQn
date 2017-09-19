@@ -130,7 +130,7 @@ namespace BLL
         /// 发送登入短信验证码
         /// </summary>
         /// <returns></returns>
-        public bool SendLoginMsgCode(int ctype,int issue) {
+        public bool HttpCliendSendMsg(int ctype,int issue) {
             HttpClient cache = (HttpClient)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_state" + issue.ToString()); //Session状态是否存在
             if (cache == null) {
                 IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
@@ -138,20 +138,26 @@ namespace BLL
                 {
                     T_CooperConfig dto = list[0];
                     WebHttp web = new WebHttp();
-                    web.SendLoginMobileCode(dto.corpid, dto.username);
+                    web.HttpCliendSendMsg(dto.corpid, dto.username);
                     //web.SendLoginPost(dto.corpid, dto.username, dto.userpwd, ctype, issue);   //生成登入cache,等待短信
                     //HelpWebLogin(dto.corpid, dto.username, dto.userpwd, ctype, issue);
                 }
             }
             return true;
         }
-        public bool LoginByMobileCode(int ctype,int issue) {
+        /// <summary>
+        /// HttpClient形式取得短信登入
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public bool HttpCliendGetMsg(int ctype,int issue) {
             IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
             if (list.Count > 0)
             {
                 T_CooperConfig dto = list[0];
                 WebHttp web = new WebHttp();
-                web.LoginByMobileCode(dto.corpid, dto.username, dto.userpwd);
+                web.HttpCliendGetMsg(dto.corpid, dto.username, dto.userpwd);
             }
             return true;
         }
@@ -344,21 +350,21 @@ namespace BLL
             {
                 T_CooperConfig dto = list[0];
                 string strCookies = (string)FJSZ.OA.Common.CacheAccess.GetFromCache(dto.corpid + "_cookie");
-                HttpHelper helpweb = new HttpHelper();
-                helpweb = new HttpHelper();
+                HttpHelper helpweb = (HttpHelper)FJSZ.OA.Common.CacheAccess.GetFromCache(dto.corpid + "_helpweb");
                 HttpItem item = new HttpItem()
                 {
                     URL = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t",//URL     必需项    
                     Method = "post",//URL     可选项 默认为Get
                     ProxyIp = "ieproxy",
                     ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值
-                    Postdata = "__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=&__VIEWSTATEGENERATOR=CC3279BD&__VIEWSTATEENCRYPTED=&LoginType=1&SMSTimes=0&SMSAliasTimes=90&txtCorpCode=" + dto.corpid + "&txtUserName=" + dto.username + "&rbl_PType=2&SMSP=" + dto.userpwd + "&txtCheckCode=&button3=%E7%99%BB%E5%BD%95&txtQDLRegisterUrl=%2FADCQDLPortal%2FProduction%2FProductOrderControl.aspx",//Post要发送的数据
-                    Cookie = strCookies,
+                    Postdata = "__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=&__VIEWSTATEGENERATOR=CC3279BD&__VIEWSTATEENCRYPTED=&LoginType=1&SMSTimes=25&SMSAliasTimes=90&txtCorpCode=" + dto.corpid + "&txtUserName=" + dto.username + "&rbl_PType=2&SMSP=" + dto.userpwd + "&txtCheckCode=&button3=%E7%99%BB%E5%BD%95&txtQDLRegisterUrl=%2FADCQDLPortal%2FProduction%2FProductOrderControl.aspx",//Post要发送的数据
+                    //Cookie = strCookies,
                     Allowautoredirect = true,//自动跳转
                     AutoRedirectCookie = true//是否自动处理Cookie 
+                    ,Referer= "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t"
                 };
                 //请求的返回值对象
-                HttpResult result = helpweb.FastRequest(item);
+                HttpResult result = helpweb.GetHtml(item);
                 //获取请请求的Html
                 string html = result.Html;
                 //获取请求的Cookie
