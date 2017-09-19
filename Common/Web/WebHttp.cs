@@ -203,7 +203,7 @@ namespace FJSZ.OA.Common.Web
         /// </summary>
         /// <param name="corpid">企业代码</param>
         /// <param name="username">企业账号</param>
-        public void SendLoginMobileCode(string corpid,string username) {
+        public void HttpCliendSendMsg(string corpid,string username) {
             HttpClient httpClient = new HttpClient();
             httpClient.MaxResponseContentBufferSize = 256000;
             httpClient.DefaultRequestHeaders.ExpectContinue = false;
@@ -255,7 +255,7 @@ namespace FJSZ.OA.Common.Web
         /// <param name="corpid">企业代码</param>
         /// <param name="username">企业账号</param>
         /// <param name="code">短信验证码</param>
-        public void LoginByMobileCode(string corpid, string username, string code) {
+        public void HttpCliendGetMsg(string corpid, string username, string code) {
             //HttpClient httpClient = new HttpClient();
             HttpClient httpClient = (HttpClient)FJSZ.OA.Common.CacheAccess.GetFromCache(corpid + "_httpclient");
             //httpClient.MaxResponseContentBufferSize = 256000;

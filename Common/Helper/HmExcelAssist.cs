@@ -13,11 +13,11 @@ namespace Common.Helper
     /// </summary>
     public class HmExcelAssist
     {
-        public static void DataTabletoExcel(System.Data.DataTable tmpDataTable, string strFileName)
+        public static int DataTabletoExcel(System.Data.DataTable tmpDataTable, string strFileName)
         {
-            Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "数据条数：" + tmpDataTable.Rows.Count + "文件的URL：" + strFileName);
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "DataTabletoExcel 3_1_4_1 开始批量上传待充值用户记录,数据条数：" + tmpDataTable.Rows.Count + "文件的URL：" + strFileName);
             if (tmpDataTable == null)
-                return;
+                return -2;
             if (System.IO.File.Exists(strFileName))                                //存在则删除  
             {
                 System.IO.File.Delete(strFileName);
@@ -50,15 +50,19 @@ namespace Common.Helper
             }
             //xlBook.SaveCopyAs(HttpUtility.UrlDecode(strFileName, System.Text.Encoding.UTF8));
             //xlBook.SaveCopyAs(strFileName);
+            int result = 0;
             try {
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "准备开始保存Execl文件");
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "DataTabletoExcel 3_1_4_2 准备开始保存Execl文件");
                 xlBook.SaveAs(strFileName, Excel.XlFileFormat.xlExcel8, null, null, false, false, Excel.XlSaveAsAccessMode.xlNoChange, null, null, null, null, null);
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "保存结束Execl文件");
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "DataTabletoExcel 3_1_4_3 保存结束Execl文件");
+                result = 1;
             }
             catch (Exception er) {
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "保存过程出现了异常。" + er.Message);
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "DataTabletoExcel 3_1_4_4 保存过程出现了异常。" + er.Message);
+                result = -1;
             }
             xlBook.Close();
+            return result;
         }
     }
 }
