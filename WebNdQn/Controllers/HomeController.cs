@@ -411,7 +411,6 @@ namespace WebNdQn.Controllers
             if (content.Length < 15) return JsonFormat(new ExtJson { success = false, msg = "太短了不用保存" });
             string code = bll.FilterMobileCode(phone, content);     //将短信里面的验证码解析出来
             string xh = bll.FilterMobileXh(phone, content);         //将短信里面的序列号解析出来
-            int result = mbll.testuppwd(21, 1, code);
             return Content("成功");
         }
         /// <summary>

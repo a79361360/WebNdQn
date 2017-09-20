@@ -68,7 +68,7 @@ namespace DAL
             return dal.ExtSql(sql, parameter);
         }
         /// <summary>
-        /// 更新用户的短信验证码
+        /// 更新用户T_CooperConfig的短信密码字段
         /// </summary>
         /// <param name="ctype"></param>
         /// <param name="issue"></param>
@@ -238,6 +238,23 @@ namespace DAL
             parameter[1].Value = issue;
             DataTable dt = dal.ExtSql(sql, parameter);
             return dt;
+        }
+        /// <summary>
+        /// 是否存在待充值的记录
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int IsExistsCzList(int ctype,int issue) {
+            string sql = "select COUNT(*) from T_TakeFlowLog where ctype=@ctype and issue=@issue and state!=1";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int)
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            return Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
         }
     }
 }

@@ -37,16 +37,16 @@ namespace WService
             }
         }
         private void ToExeclSendMsgCode() {
-            MobileBLL mbll = new MobileBLL();
-            try {
-                mbll.ExecuteCooperList();
-            }
-            catch (Exception er) {
-                using (System.IO.StreamWriter sw = new System.IO.StreamWriter("G:\\log_ExecuteCooperList.txt", true))
-                {
-                    sw.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ") + "出现异常" + er.Message);
-                }
-            }
+            //MobileBLL mbll = new MobileBLL();
+            //try {
+            //    mbll.ExecuteCooperList();
+            //}
+            //catch (Exception er) {
+            //    using (System.IO.StreamWriter sw = new System.IO.StreamWriter("G:\\log_ExecuteCooperList.txt", true))
+            //    {
+            //        sw.WriteLine(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss ") + "出现异常" + er.Message);
+            //    }
+            //}
         }
         protected override void OnStop()
         {

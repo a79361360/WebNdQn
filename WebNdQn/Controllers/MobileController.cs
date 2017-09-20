@@ -36,15 +36,45 @@ namespace WebNdQn.Controllers
 
 
 
-        //手动执行
+        //手动执行充值
         public ActionResult SingleSendToExecl() {
             if (Request["ctype"] == null || Request["issue"] == null)
                 return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
             string ctype = Request["ctype"].ToString();
             string issue = Request["issue"].ToString();
-            int resutint = mbll.ToExeclSendMsgCode(Convert.ToInt32(ctype), Convert.ToInt32(issue));
-            return JsonFormat(new ExtJson { success = true, msg = "执行完成", code = 1000, jsonresult = resutint });
+            //判断是否有待充值记录
+            int result_1 = mbll.IsExistsCzList(Convert.ToInt32(ctype), Convert.ToInt32(issue));
+            if (result_1 == 0) 
+                return JsonFormat(new ExtJson { success = false, msg = "没有待充值的记录", code = -1000, jsonresult = "" });
+
+            int result_2 = mbll.ToExeclSendMsgCode(Convert.ToInt32(ctype), Convert.ToInt32(issue));
+            if (result_2 == -1010) 
+                return JsonFormat(new ExtJson { success = false, msg = "登入状态无效", code = -1010, jsonresult = "" });
+            if (result_2 == -11)
+                return JsonFormat(new ExtJson { success = false, msg = "当前账号已无流量池权限", code = -11, jsonresult = "" });
+
+            return JsonFormat(new ExtJson { success = true, msg = "执行完成", code = 1000, jsonresult = "" });
         }
+        /// <summary>
+        /// 手动发送登入短信
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SignleSendLoginMsg() {
+            if (Request["ctype"] == null || Request["issue"] == null)
+                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            string ctype = Request["ctype"].ToString();
+            string issue = Request["issue"].ToString();
+            int result = mbll.HelpWebSend(Convert.ToInt32(ctype), Convert.ToInt32(issue));
+            if (result == 1) 
+                return JsonFormat(new ExtJson { success = true, msg = "发送成功", code = 1000, jsonresult = "" });
+            else
+                return JsonFormat(new ExtJson { success = false, msg = "发送失败", code = -1000, jsonresult = "" });
+        }
+
+        /// <summary>
+        /// 通过定时的连接操作,保存Session的活性
+        /// </summary>
+        /// <returns></returns>
         public ActionResult KeepSessionEd() {
             if (Request["lx"] == null) 
                 return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
@@ -85,6 +115,10 @@ namespace WebNdQn.Controllers
             else
                 return JsonFormat(new ExtJson { success = false, msg = "查询失败", code = -1000, jsonresult = "" });
         }
+        /// <summary>
+        /// 接收APP发过来的短信
+        /// </summary>
+        /// <returns></returns>
         public ActionResult TakeMobileCode()
         {
             if (Request["mobile"] == null || Request["content"] == null)
@@ -110,10 +144,8 @@ namespace WebNdQn.Controllers
             }
             return JsonFormat(new ExtJson { success = false, msg = "保存验证码失败" + "结果：" + clresult });
         }
-
-
         /// <summary>
-        /// 更新登入的cookie
+        /// 手动更新登入的cookie
         /// </summary>
         /// <returns></returns>
         public ActionResult UpdateDlCookie() {

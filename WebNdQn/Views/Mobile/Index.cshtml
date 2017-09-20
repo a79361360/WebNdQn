@@ -65,14 +65,25 @@
             var url = "/Mobile/SingleSendToExecl";
             $.getJSON(url, { ctype: ctype, issue: issue }, function (ret) {
                 if (ret.code == 1000) {
-                    var content = "充值完成.";
-                    if (ret.jsonresult == "2")
-                        content = "充值完成,没有需要充值的用户!";
-                    if (ret.jsonresult != "1" && ret.jsonresult != "2")
-                        content = "充值失败，查询异常日志!";
+                    var content = "发送充值短信完成.";
                     tips(content, 1);
-                } else
-                    tips("异常情况.", 1);
+                } else if (ret.code == -1010) {
+                    SendLoginMsg(ctype, issue, obj);
+                } else {
+                    tips(ret.msg, 1);
+                }
+            })
+        }
+        //手动登入
+        SendLoginMsg = function (ctype, issue, obj) {
+            var url = "/Mobile/SignleSendLoginMsg";
+            $.getJSON(url, { ctype: ctype, issue: issue }, function (ret) {
+                if (ret.code == 1000) {
+                    var content = "登入状态失效,登入短信发送成功";
+                    tips(content, 1);
+                } else {
+                    tips("登入短信发送失败", 1);
+                }
             })
         }
         //截取字符串结束
@@ -140,23 +151,23 @@
         }
         //每秒减1
         timedown = function () {
-            var ztimes = $("#btn_ztimes").val();
-            var curtimes1 = parseFloat(ztimes) - 1;
-            $("#btn_ztimes").val(curtimes1);
-            $("#btn_ztimes").text(curtimes1 + '秒');
-            if (parseFloat(curtimes1) < 0) {
-                $("#btn_ztimes").val(1500);
-                keepzsession();
-            }
+            //var ztimes = $("#btn_ztimes").val();
+            //var curtimes1 = parseFloat(ztimes) - 1;
+            //$("#btn_ztimes").val(curtimes1);
+            //$("#btn_ztimes").text(curtimes1 + '秒');
+            //if (parseFloat(curtimes1) < 0) {
+            //    $("#btn_ztimes").val(1500);
+            //    keepzsession();
+            //}
 
-            var ctimes = $("#btn_ctimes").val();
-            curtimes1 = parseFloat(ctimes) - 1;
-            $("#btn_ctimes").val(curtimes1);
-            $("#btn_ctimes").text(curtimes1 + '秒');
-            if (parseFloat(curtimes1) < 0) {
-                $("#btn_ctimes").val(250);
-                fivesend();
-            }
+            //var ctimes = $("#btn_ctimes").val();
+            //curtimes1 = parseFloat(ctimes) - 1;
+            //$("#btn_ctimes").val(curtimes1);
+            //$("#btn_ctimes").text(curtimes1 + '秒');
+            //if (parseFloat(curtimes1) < 0) {
+            //    $("#btn_ctimes").val(250);
+            //    fivesend();
+            //}
         }
     </script>
 </head>

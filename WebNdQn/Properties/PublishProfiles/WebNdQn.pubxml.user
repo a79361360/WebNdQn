@@ -13,13 +13,13 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/BLL.dll">
-      <publishTime>09/18/2017 15:11:22</publishTime>
+      <publishTime>09/20/2017 18:03:59</publishTime>
     </File>
     <File Include="bin/Common.dll">
-      <publishTime>09/18/2017 15:11:21</publishTime>
+      <publishTime>09/20/2017 16:29:27</publishTime>
     </File>
     <File Include="bin/DAL.dll">
-      <publishTime>09/18/2017 15:11:22</publishTime>
+      <publishTime>09/20/2017 16:29:27</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -73,7 +73,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/Model.dll">
-      <publishTime>09/14/2017 16:16:34</publishTime>
+      <publishTime>09/20/2017 16:29:27</publishTime>
     </File>
     <File Include="bin/MySql.Data.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -112,7 +112,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/WebNdQn.dll">
-      <publishTime>09/18/2017 15:11:22</publishTime>
+      <publishTime>09/20/2017 18:03:59</publishTime>
     </File>
     <File Include="bin/zh-Hans/EntityFramework.resources.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -643,7 +643,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="Views/Mobile/Index.cshtml">
-      <publishTime>09/04/2017 14:18:26</publishTime>
+      <publishTime>09/20/2017 18:01:12</publishTime>
     </File>
     <File Include="Views/Shared/Error.cshtml">
       <publishTime>09/15/2017 17:59:11</publishTime>
