@@ -1,4 +1,5 @@
 ﻿using Common;
+using Model.WxModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -163,7 +164,7 @@ namespace DAL
         /// </summary>
         /// <returns></returns>
         public DataTable FindCtypeIssueCache() {
-            string sql = "SELECT [ctype],[issue],[cookie] dlcookie,[czparam],[czdxhm] FROM [dbo].[T_LoginLogCache]";
+            string sql = "SELECT id, [ctype],[issue],[cookie] dlcookie,[czparam],[czdxhm] FROM [dbo].[T_LoginLogCache]";
             return dal.ExtSql(sql);
         }
 
@@ -247,6 +248,54 @@ namespace DAL
         /// <returns></returns>
         public int IsExistsCzList(int ctype,int issue) {
             string sql = "select COUNT(*) from T_TakeFlowLog where ctype=@ctype and issue=@issue and state!=1";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int)
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            return Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
+        }
+        /// <summary>
+        /// 添加超端控制记录
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public int InsertLoginCache(T_LoginLogCache dto) {
+            string sql = "INSERT INTO [T_LoginLogCache]([ctype],[issue])VALUES(@ctype,@issue)";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int)
+            };
+            parameter[0].Value = dto.ctype;
+            parameter[1].Value = dto.issue;
+            return dal.IntExtSql(sql, parameter);
+        }
+        /// <summary>
+        /// 根据ID移除超端记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int RemoveLoginCache(int id) {
+            string sql = "DELETE FROM [T_LoginLogCache] WHERE id=@id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@id",SqlDbType.Int)
+            };
+            parameter[0].Value = id;
+            return dal.IntExtSql(sql, parameter);
+        }
+        /// <summary>
+        /// 是否存在超端记录
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int IsExistsT_LoginLogCache(int ctype, int issue)
+        {
+            string sql = "SELECT COUNT(*) FROM [T_LoginLogCache] where ctype=@ctype and issue=@issue";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),

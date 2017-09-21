@@ -73,9 +73,9 @@ namespace BLL
             //if (!string.IsNullOrEmpty(filter))
             //    filter = " where " + filter;
             SqlPageParam param = new SqlPageParam();
-            param.TableName = "T_ActivityConfig";
+            param.TableName = "V_ActivityConfig";
             param.PrimaryKey = "id";
-            param.Fields = "id,cooperid,type,title,share,explain,bgurl";
+            param.Fields = "id,cooperid,ctype,type,title,share,explain,bgurl";
             param.PageSize = pageSize;
             param.PageIndex = pageIndex;
             param.Filter = filter;

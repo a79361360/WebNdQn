@@ -101,11 +101,11 @@
                     params: data,       //自定义请求参数
                     success: function (data) {
                         if (data.code == 1000) {
-                            var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:119px;\">CType</th><th style=\"width:118px;\">标题</th><th style=\"width:118px;\">充值多少</th><th style=\"width:118px;\">上限人数</th><th style=\"width:45px;\">状态</th></tr></thead>";
+                            var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:45px;\">CType</th><th style=\"width:200px;\">标题</th><th style=\"width:45px;\">充值多少</th><th style=\"width:45px;\">上限人数</th><th style=\"width:45px;\">状态</th></tr></thead>";
                             $.each(data.list, function (i, o) {
                                 var statestr = "未开启";
                                 if (o.state == "1") statestr = "进行中"; else if (o.state == "2") statestr = "已结束";
-                                str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td>" + o.ctype + "</td><td>" + o.title + "</td><td>" + o.eachflow + "</td><td>" + o.uplimit + "</td><td>" + statestr + "</td></tr>";
+                                str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td title=\"点击查看链接地址\" style=\"cursor: pointer;\" onclick=\"getindexurl(this)\">" + o.ctype + "</td><td>" + o.title + "</td><td>" + o.eachflow + "</td><td>" + o.uplimit + "</td><td>" + statestr + "</td></tr>";
                             })
                             str += "</table>";
                             $("#ulist").html(str);
@@ -142,6 +142,25 @@
             }
             window.open("/Activity/SetDzpPortal?cooperid=" + cooperid, "_blank");
         }
+        //添加超端记录
+        addlogincache = function () {
+            var tr = $("#ulist tbody tr");
+            var checknum = 0; var ctype = 0;
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (eachobj.prop("checked")) {
+                    checknum++;
+                    ctype = $(e).children("td").next().eq(0).text();    //取得ctype的值
+                }
+            })
+            if (checknum > 1 || checknum == 0) {
+                tips("只能选择一行", 2);
+                return;
+            }
+            $.post("/Mobile/AddLoginCache", { ctype: ctype, issue: 1 }, function (ret) {
+                tips(ret.msg, 1);
+            })
+        }
         //弹于信息tips
         tips = function (content, timeout) {
             var tipsobj = $("#myModal");
@@ -151,6 +170,14 @@
             BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
             tipsobj = $(BootDialog); tipsobj.modal('show');
             if (timeout > 0) { setTimeout(function () { tipsobj.modal('hide') }, timeout * 1000); }
+        }
+        //取得直充地址
+        getindexurl = function (obj) {
+            var host = window.location.host;
+            var ctype = $(obj).text().trim();
+            var url = "http://" + host + "/Home/Index?ctype=" + ctype + "&issue=1";
+            var content = "<input type=\"text\" class=\"form-control\" style=\"width: 420px;margin:0 5px\" value=\"" + url + "\">";
+            tips(content, -1);
         }
     </script>
 </head>
@@ -201,6 +228,7 @@
                         <div class="btn-group"><button type="button" class="btn btn-default" onclick="EditRedrit()">编辑</button></div>
                         <div class="btn-group"><button type="button" class="btn btn-default" onclick="RemoveById()">删除</button></div>
                         <div class="btn-group"><button type="button" class="btn btn-default" onclick="setdzpconfig()">设置大转盘</button></div>
+                        <div class="btn-group"><button type="button" class="btn btn-default" onclick="addlogincache()">添加到超端</button></div>
                     </div>
                 <div id="ulist">
 

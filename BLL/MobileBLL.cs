@@ -3,6 +3,7 @@ using CsharpHttpHelper;
 using CsharpHttpHelper.Enum;
 using DAL;
 using FJSZ.OA.Common.Web;
+using Model.ViewModel;
 using Model.WxModel;
 using Newtonsoft.Json;
 using System;
@@ -21,6 +22,25 @@ namespace BLL
         CommonDAL dal = new CommonDAL();
         MobileDAL mdal = new MobileDAL();
         public static string czhost = "218.207.214.83:8080";   //充值页面的主机HOST
+        #region one里面需要重新定义调用的
+        /// <summary>
+        /// 上传EXECL并且发送短信
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int one_plyhfp(int ctype,int issue) {
+            czcachedto czdto = (czcachedto)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype + "_czcache_" + issue);    //取得充值的CZCookie值
+            if (czdto == null) return -1;
+            int czresult = plyhfp(ctype, issue, czdto.czurl, czdto.cookie);     //上传EXECL并且发送短信
+            if (czresult == 1)
+                return 1;
+            else
+                return -2;
+        }
+        #endregion
+
+
 
         /// <summary>
         /// 是否存在待充值的记录
@@ -951,7 +971,7 @@ namespace BLL
 
 
         /// <summary>
-        /// 保持平台Session活跃30分钟，保持充值Session活跃5分钟
+        /// 保持平台Session活跃30分钟，保持充值Session活跃5分钟,也可以用来判断是否有效
         /// </summary>
         /// <param name="ctype"></param>
         /// <param name="issue"></param>
@@ -1002,17 +1022,34 @@ namespace BLL
             }
             else if (lx == 2) {
                 czcachedto czdto = (czcachedto)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype + "_czcache_" + issue);
-                HttpHelper helpweb = new HttpHelper();
-                HttpItem item = new HttpItem()
+                if (czdto != null)
                 {
-                    URL = czdto.czurl,//URL     必需项    
-                    Method = "GET",//URL     可选项 默认为Get   
-                    ProxyIp = "ieproxy",
-                    Cookie = czdto.cookie,
-                    ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
-                };
-                HttpResult result = helpweb.GetHtml(item);
-                return 1;
+                    HttpHelper helpweb = new HttpHelper();  //初始实例化HttpHelper
+                    HttpResult result = new HttpResult();   //初始实例化HttpResult
+                    HttpItem item = new HttpItem()          //初始实例化HttpItem
+                    {
+                        URL = czdto.czurl,//URL     必需项    
+                        Method = "GET",//URL     可选项 默认为Get   
+                        ProxyIp = "ieproxy",
+                        Cookie = czdto.cookie,
+                        ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
+                    };
+                    try
+                    {
+                        result = helpweb.GetHtml(item);
+                        if (result.StatusDescription == "OK")
+                            return 1;   //一旦他非空,那么这个CZCookie肯定是有效的
+                        else
+                        {
+                            FJSZ.OA.Common.CacheAccess.RemoveCache(ctype + "_czcache_" + issue);
+                            return -1;
+                        }
+                    }
+                    catch (Exception er) {
+                        FJSZ.OA.Common.CacheAccess.RemoveCache(ctype + "_czcache_" + issue);
+                        return -1;
+                    }
+                }
             }
             return -1;
         }
@@ -1030,8 +1067,50 @@ namespace BLL
             }
             return list;
         }
+        /// <summary>
+        /// 添加超端记录,返回-1000表示已经存在超端记录
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int InsertLoginCache(int ctype,int issue) {
+            int result = mdal.IsExistsT_LoginLogCache(ctype, issue);
+            if (result > 0) return -1000;
+            T_LoginLogCache dto = new T_LoginLogCache();
+            dto.ctype = ctype;dto.issue = issue;
+            result = mdal.InsertLoginCache(dto);
+            return result;
+        }
+        /// <summary>
+        /// 移除超端记录,返回成功数量
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public int RemoveLoginCache(IList<IdListDto> ids)
+        {
+            int sresult = 0;    //成功的数量
+            if (ids.Count == 0)
+                throw new ArgumentNullException();
+            else
+            {
+                try
+                {
+                    foreach (var item in ids)
+                    {
+                        int gid = item.id;        //ID
+                        int result = mdal.RemoveLoginCache(gid);
+                        sresult = sresult + result;
+                    }
+                }
+                catch
+                {
+                    return -1000;
+                }
+            }
+            return sresult;
+        }
 
-        
+
 
 
     }
@@ -1060,6 +1139,7 @@ namespace BLL
         public int result { get; set; }
     }
     public class listcachedto {
+        public int id { get; set; }
         public int ctype { get; set; }
         public int issue { get; set; }
         public string dlcookie { get; set; }

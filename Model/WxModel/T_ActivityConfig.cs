@@ -10,6 +10,10 @@ namespace Model.WxModel
     {
         public int id { get; set; }
         public int cooperid { get; set; }
+        /// <summary>
+        /// 用视图V_ActivityConfig
+        /// </summary>
+        public int ctype { get; set; }
         public int type { get; set; }
         public string title { get; set; }
         public int share { get; set; }

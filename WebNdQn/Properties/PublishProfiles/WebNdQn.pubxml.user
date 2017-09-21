@@ -13,13 +13,13 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/BLL.dll">
-      <publishTime>09/20/2017 18:03:59</publishTime>
+      <publishTime>09/21/2017 17:53:23</publishTime>
     </File>
     <File Include="bin/Common.dll">
       <publishTime>09/20/2017 16:29:27</publishTime>
     </File>
     <File Include="bin/DAL.dll">
-      <publishTime>09/20/2017 16:29:27</publishTime>
+      <publishTime>09/21/2017 17:11:02</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -73,7 +73,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/Model.dll">
-      <publishTime>09/20/2017 16:29:27</publishTime>
+      <publishTime>09/21/2017 17:11:02</publishTime>
     </File>
     <File Include="bin/MySql.Data.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -112,7 +112,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/WebNdQn.dll">
-      <publishTime>09/20/2017 18:03:59</publishTime>
+      <publishTime>09/21/2017 17:53:23</publishTime>
     </File>
     <File Include="bin/zh-Hans/EntityFramework.resources.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -598,7 +598,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="Views/Activity/DzpPortal.cshtml">
-      <publishTime>09/04/2017 14:18:26</publishTime>
+      <publishTime>09/21/2017 14:38:25</publishTime>
     </File>
     <File Include="Views/Activity/Index.cshtml">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -619,13 +619,13 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="Views/Home/CooperIndex.cshtml">
-      <publishTime>09/04/2017 14:18:26</publishTime>
+      <publishTime>09/21/2017 12:00:22</publishTime>
     </File>
     <File Include="Views/Home/Default.cshtml">
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="Views/Home/Index.cshtml">
-      <publishTime>09/13/2017 19:03:44</publishTime>
+      <publishTime>09/21/2017 09:50:09</publishTime>
     </File>
     <File Include="Views/Home/Navigation.cshtml">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -643,7 +643,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="Views/Mobile/Index.cshtml">
-      <publishTime>09/20/2017 18:01:12</publishTime>
+      <publishTime>09/21/2017 17:21:22</publishTime>
     </File>
     <File Include="Views/Shared/Error.cshtml">
       <publishTime>09/15/2017 17:59:11</publishTime>

@@ -51,11 +51,11 @@
                     params: data,       //自定义请求参数
                     success: function (data) {
                         if (data.code == 1000) {
-                            var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:119px;\">Cooperid</th><th style=\"width:118px;\">类型</th><th style=\"width:118px;\">标题</th><th style=\"width:118px;\">分享</th><th style=\"width:118px;\">说明备注</th><th style=\"width:118px;\">背景URL</th></tr></thead>";
+                            var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:45px;\">Ctype</th><th style=\"width:118px;\">类型</th><th style=\"width:118px;\">标题</th><th style=\"width:118px;\">分享</th><th style=\"width:118px;\">说明备注</th><th style=\"width:118px;\">背景URL</th></tr></thead>";
                             $.each(data.list, function (i, o) {
                                 var typestr = "大转盘";
                                 if (o.type == "1") typestr = "大转盘";
-                                str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\" v=\"" + o.cooperid + "\"></td><td>" + o.cooperid + "</td><td>" + typestr + "</td><td>" + o.title + "</td><td>" + o.share + "</td><td title=\"" + o.explain + "\">" + autoAddEllipsis(o.explain, 10) + "</td><td onclick=\"showtx('" + o.bgurl + "')\">" + autoAddEllipsis(o.bgurl, 10) + "</td></tr>";
+                                str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\" v=\"" + o.cooperid + "\"></td><td>" + o.ctype + "</td><td>" + typestr + "</td><td>" + o.title + "</td><td>" + o.share + "</td><td title=\"" + o.explain + "\">" + autoAddEllipsis(o.explain, 10) + "</td><td onclick=\"showtx('" + o.bgurl + "')\" title=\"" + o.bgurl + "\">" + autoAddEllipsis(o.bgurl, 10) + "</td></tr>";
                             })
                             str += "</table>";
                             $("#ulist").html(str);
@@ -93,7 +93,7 @@
             $.getJSON("/Cooper/GetConfigById", { cooperid: cooperid }, function (ret) {
                 if (ret.success) {
                     var data = ret.jsonresult.split('|');
-                    var url = "http://wx.ndll800.com/Activity/Index?ctype=" + data[0] + "&issue=" + data[1];
+                    var url = "http://" + window.location.host + "/Activity/Index?ctype=" + data[0] + "&issue=" + data[1];
                     var str = "<input type=\"text\" class=\"form-control\" style=\"width: 420px;margin:0 5px\" value=\"" + url + "\" />";
                     qiu_confirm("q_showtx", "查看链接", str, 600, 80);
                 }
@@ -134,6 +134,9 @@
                         list.push(data);
                     }
                 })
+                if (list.length < 1) {
+                    tips("未选中任何行", 2); return;
+                }
                 $.ajax({
                     type: "POST",
                     url: '/Activity/RemoveActivity',
@@ -142,9 +145,8 @@
                     success: function (data) {
                         if (data.success) {
                             tips(data.msg, 2);
-                        } else {
-                            tips(data.msg, 2);
-                        }
+                            $("#search").click();
+                        } else tips(data.msg, 2);
                     }
                 });
             }

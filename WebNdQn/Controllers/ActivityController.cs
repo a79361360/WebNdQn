@@ -41,19 +41,20 @@ namespace WebNdQn.Controllers
         public ActionResult Dzp() {
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Request.Url.AbsoluteUri :" + Request.Url.AbsoluteUri);
             int ctype = 0, issue = 1;
-            if (Request["ctype"] == null|| Request["code"] == null || Request["state"] == null)
+            if (Request["ctype"] == null|| Request["issue"] == null || Request["code"] == null || Request["state"] == null)
                 return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
             ctype = Convert.ToInt32(Request.QueryString["ctype"]);
-            //issue = Convert.ToInt32(Request.QueryString["issue"]);
+            issue = Convert.ToInt32(Request.QueryString["issue"]);
             string code = Request["code"].ToString();
             string state = Request["state"].ToString();
             T_CooperConfig dto = wxll.Get_CooperConfig(ctype, issue);                              //取得配置
             if (dto == null)
-                return JsonFormat(new ExtJson { success = false, msg = "缺少配置" });
+                return Content("缺少配置");
             #region 获取微信用户的openid
             WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(dto.wx_appid, dto.wx_secret, code);
             if (dto1.openid == null)
-                return JsonFormat(new ExtJson { success = false, msg = "微信用户信息不正确" });
+                return Redirect("/Activity/Index?ctype=" + ctype + "&issue=" + issue);  //进行一次重新跳转
+            //return JsonFormat(new ExtJson { success = false, msg = "微信用户信息不正确" });
             ViewBag.openid = dto1.openid;
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "dto1.openid :" + dto1.openid);
             //ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkY";

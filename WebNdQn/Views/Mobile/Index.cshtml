@@ -34,13 +34,12 @@
             $.getJSON(url, data, function (ret) {
                 if (ret.code == 1000) {
                     var caption = "<caption><div class=\"btn-toolbar\" role=\"toolbar\">";
-                    caption += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-default\" onclick=\"SignSession(1)\">验证登录Session</button></div>";
-                    caption += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-default\" onclick=\"SignSession(2)\">验证充值Session</button></div>";
+                    caption += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-default\" onclick=\"RemoveById()\">删除</button></div>";
                     caption += "</div></caption>";
 
-                    var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:45px;\">序号</th><th style=\"width:45px;\">Ctype</th><th style=\"width:45px;\">期号</th><th style=\"width:118px;\">登入Cookie</th><th style=\"width:118px;\">充值Cookie</th><th style=\"width:118px;\">URL</th><th style=\"width:118px;\">Param</th><th style=\"width:118px;\">操作</th></tr></thead>" + caption;
+                    var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:45px;\">Ctype</th><th style=\"width:45px;\">期号</th><th style=\"width:118px;\">登入Cookie</th><th style=\"width:118px;\">充值Cookie</th><th style=\"width:118px;\">URL</th><th style=\"width:118px;\">Param</th><th style=\"width:118px;\">操作</th></tr></thead>" + caption;
                     $.each(ret.jsonresult, function (i, o) {
-                        str += "<tr><td>" + (parseInt(i) + 1) + "</td><td>" + o.ctype + "</td><td>" + o.issue + "</td><td onclick=\"setdlcookie(" + o.ctype + "," + o.issue + ")\" title=\"" + o.dlcookie + "\">" + autoAddEllipsis(o.dlcookie, 15) + "</td><td title=\"" + o.cookie + "\">" + autoAddEllipsis(o.cookie, 10) + "</td><td title=\"" + o.czurl + "\">" + autoAddEllipsis(o.czurl, 10) + "</td><td title=\"" + o.czparam + "\">" + autoAddEllipsis(o.czparam, 10) + "</td><td><button class=\"btn btn-default\" onclick=\"SendToExecl(" + o.ctype + "," + o.issue + ",this)\">手动充值</button></td></tr>";
+                        str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td>" + o.ctype + "</td><td>" + o.issue + "</td><td title=\"" + o.dlcookie + "\">" + autoAddEllipsis(o.dlcookie, 15) + "</td><td title=\"" + o.cookie + "\">" + autoAddEllipsis(o.cookie, 10) + "</td><td title=\"" + o.czurl + "\">" + autoAddEllipsis(o.czurl, 10) + "</td><td title=\"" + o.czparam + "\">" + autoAddEllipsis(o.czparam, 10) + "</td><td><button class=\"btn btn-default\" onclick=\"One(" + o.ctype + "," + o.issue + ")\">手动充值</button></td></tr>";
                     })
                     str += "</table>";
                     $("#ulist").html(str);
@@ -48,42 +47,39 @@
                     tips("查询失败.", 1);
             })
         }
-        //设置登入cookie
-        setdlcookie = function (ctype, issue) {
-            var strhtml = "<form action=\"\" class=\"bs-example bs-example-form\" role=\"form\"><div class=\"row\"><div class=\"col-lg-12\"><div class=\"input-group\" style=\"float:left;\">";
-            strhtml += "<textarea id=\"dltext\" class=\"form-control\" rows=\"3\" style=\"width: 540px;margin:0 5px\" />";
-            strhtml += "</div></div></div></form>";
-            qiu_confirm("" + ctype, "添加登入Cookie", strhtml, 600, 120);
-        }
-        //验证登录/充值
-        SignSession = function (lx) {
-            if (lx == "1") keepzsession();
-            if (lx == "2") fivesend();
-        }
-        //手动充值
-        SendToExecl = function (ctype, issue, obj) {
-            var url = "/Mobile/SingleSendToExecl";
-            $.getJSON(url, { ctype: ctype, issue: issue }, function (ret) {
-                if (ret.code == 1000) {
-                    var content = "发送充值短信完成.";
-                    tips(content, 1);
-                } else if (ret.code == -1010) {
-                    SendLoginMsg(ctype, issue, obj);
-                } else {
-                    tips(ret.msg, 1);
+        //删除超端记录
+        RemoveById = function () {
+            if (confirm("确定要清空数据吗?")) {
+                var list = [];      //数组对象，将
+                var data;           //元素对象
+                var tr = $("#ulist tbody tr");
+                $.each(tr, function (i, e) {
+                    var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                    if (eachobj.prop("checked")) {
+                        data = new Object();    //元素对象实例
+                        data.id = eachobj.val();
+                        list.push(data);
+                    }
+                })
+                if (list.length < 1) {
+                    tips("未选中任何行", 2); return;
                 }
-            })
+                $.post("/Mobile/RemoveLoginCache", { data: JSON.stringify(list) }, function (ret) {
+                    if (ret.success) {
+                        tips(ret.msg, 2);
+                        $("#search").click();
+                    }else
+                        tips(ret.msg, 2);
+                })
+            }
         }
-        //手动登入
-        SendLoginMsg = function (ctype, issue, obj) {
-            var url = "/Mobile/SignleSendLoginMsg";
-            $.getJSON(url, { ctype: ctype, issue: issue }, function (ret) {
-                if (ret.code == 1000) {
-                    var content = "登入状态失效,登入短信发送成功";
-                    tips(content, 1);
-                } else {
-                    tips("登入短信发送失败", 1);
-                }
+        //点击全选
+        togglechg = function () {
+            var qx = $("#allqx");
+            var tr = $("#ulist tbody tr")
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (qx.prop("checked")) eachobj.prop("checked", true); else eachobj.prop("checked", false);
             })
         }
         //截取字符串结束
@@ -128,27 +124,6 @@
             })
         }
         window.setInterval(function () { timedown() }, 1000);
-        //登录Session
-        keepzsession = function () {
-            var url = "/Mobile/KeepSessionEd?pl=1&lx=1"
-            $.getJSON(url, {}, function (ret) {
-                if (ret.code == 1000) {
-                    var data = ret.jsonresult.split('|');
-                    //console.log("成功" + data[0] + "次，总共" + data[1] + "次");
-                    tips("成功" + data[0] + "次，总共" + data[1] + "次", 1);
-                }
-            })
-        }
-        //充值Session
-        fivesend = function () {
-            var url = "/Mobile/ToExeclSendMsgCode"
-            $.getJSON(url, {}, function (ret) {
-                if (ret.code == 1000) {
-                    //console.log("成功");
-                    tips("命令已经执行", 1);
-                }
-            })
-        }
         //每秒减1
         timedown = function () {
             //var ztimes = $("#btn_ztimes").val();
@@ -160,14 +135,59 @@
             //    keepzsession();
             //}
 
-            //var ctimes = $("#btn_ctimes").val();
-            //curtimes1 = parseFloat(ctimes) - 1;
-            //$("#btn_ctimes").val(curtimes1);
-            //$("#btn_ctimes").text(curtimes1 + '秒');
-            //if (parseFloat(curtimes1) < 0) {
-            //    $("#btn_ctimes").val(250);
-            //    fivesend();
-            //}
+            var ctimes = $("#btn_ctimes").val();
+            curtimes1 = parseFloat(ctimes) - 1;
+            $("#btn_ctimes").val(curtimes1);
+            $("#btn_ctimes").text(curtimes1 + '秒');
+            if (parseFloat(curtimes1) < 0) {
+                $("#btn_ctimes").val(250);
+                fivesend();
+            }
+        }
+
+        //充值
+        One = function (ctype,issue) {
+            $.getJSON("/Mobile/One", { ctype: ctype, issue: issue }, function (ret) {
+                if (ret.code == -1001) {
+                    Two(ctype, issue);  //充值Session失效,
+                }
+                else tips(ret.msg, 2);
+            })
+        }
+        //用登入Session得充值Session
+        Two = function (ctype, issue) {
+            $.getJSON("/Mobile/Two", { ctype: ctype, issue: issue }, function (ret) {
+                if (ret.code == -1001) {
+                    Three(ctype, issue);    //登入Session失效
+                }else if (ret.code == 1000) {
+                    One(ctype, issue);      //充值Session生成成功
+                } else tips(ret.msg, 2);
+            })
+        }
+        var three_timer;    //定时器
+        var three_num = 0;  //
+        //用账号,短信,获取登入Session
+        Three = function (ctype, issue) {
+            $.getJSON("/Mobile/Three", { ctype: ctype, issue: issue }, function (ret) {
+                if (ret.code == 1000) {
+                    three_timer = window.setInterval(function () { Four(ctype, issue) }, 5000); 
+                }
+                else tips(ret.msg, 2);
+            })
+        }
+        //每隔5秒访问一下
+        Four = function (ctype, issue) {
+            if (three_num > 5) { clearInterval(three_timer); tips("登入Session连续验证5次依然无效,排查日志", 2); return; }
+            $.getJSON("/Mobile/Four", { ctype: ctype, issue: issue }, function (ret) {
+                if (ret.code == 1000) {
+                    //登入Session有效,清空定时器并调用Two
+                    clearInterval(three_timer);
+                    Two(ctype, issue);
+                }
+                else {
+                    three_num++;
+                }
+            })
         }
     </script>
 </head>
