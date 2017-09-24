@@ -112,7 +112,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/WebNdQn.dll">
-      <publishTime>09/21/2017 17:53:23</publishTime>
+      <publishTime>09/24/2017 13:04:03</publishTime>
     </File>
     <File Include="bin/zh-Hans/EntityFramework.resources.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -643,10 +643,10 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="Views/Mobile/Index.cshtml">
-      <publishTime>09/21/2017 17:21:22</publishTime>
+      <publishTime>09/22/2017 15:29:11</publishTime>
     </File>
     <File Include="Views/Shared/Error.cshtml">
-      <publishTime>09/15/2017 17:59:11</publishTime>
+      <publishTime>09/21/2017 18:53:17</publishTime>
     </File>
     <File Include="Views/Shared/_Layout.cshtml">
       <publishTime>09/04/2017 14:18:26</publishTime>

@@ -22,6 +22,11 @@
                 var data = { ctype: field, phone: fieldv };
                 searchlist(url, data);
             })
+            $("#monit").click(function () {
+                var text = $(this).text();
+                if (text == "监控") $(this).text("监控中"); else $(this).text("监控");
+                forulist();
+            })
             $('.dropdown-menu a').click(function () {
                 var txt = $(this).text(); var val = $(this).attr("v_val");
                 var objdrop = $(this).parent().parent().siblings("button").eq(0);
@@ -30,7 +35,7 @@
         })
         //查询返回列晴
         searchlist = function (url, data) {
-            $("#ulist").html("");
+            $("#ulist").html(""); 
             $.getJSON(url, data, function (ret) {
                 if (ret.code == 1000) {
                     var caption = "<caption><div class=\"btn-toolbar\" role=\"toolbar\">";
@@ -39,7 +44,7 @@
 
                     var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:45px;\">Ctype</th><th style=\"width:45px;\">期号</th><th style=\"width:118px;\">登入Cookie</th><th style=\"width:118px;\">充值Cookie</th><th style=\"width:118px;\">URL</th><th style=\"width:118px;\">Param</th><th style=\"width:118px;\">操作</th></tr></thead>" + caption;
                     $.each(ret.jsonresult, function (i, o) {
-                        str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td>" + o.ctype + "</td><td>" + o.issue + "</td><td title=\"" + o.dlcookie + "\">" + autoAddEllipsis(o.dlcookie, 15) + "</td><td title=\"" + o.cookie + "\">" + autoAddEllipsis(o.cookie, 10) + "</td><td title=\"" + o.czurl + "\">" + autoAddEllipsis(o.czurl, 10) + "</td><td title=\"" + o.czparam + "\">" + autoAddEllipsis(o.czparam, 10) + "</td><td><button class=\"btn btn-default\" onclick=\"One(" + o.ctype + "," + o.issue + ")\">手动充值</button></td></tr>";
+                        str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td class=\"tdcls\">" + o.ctype + "</td><td>" + o.issue + "</td><td title=\"" + o.dlcookie + "\">" + autoAddEllipsis(o.dlcookie, 15) + "</td><td title=\"" + o.cookie + "\">" + autoAddEllipsis(o.cookie, 10) + "</td><td title=\"" + o.czurl + "\">" + autoAddEllipsis(o.czurl, 10) + "</td><td title=\"" + o.czparam + "\">" + autoAddEllipsis(o.czparam, 10) + "</td><td><button class=\"btn btn-default\" onclick=\"One(" + o.ctype + "," + o.issue + ")\">手动充值</button></td></tr>";
                     })
                     str += "</table>";
                     $("#ulist").html(str);
@@ -141,43 +146,92 @@
             $("#btn_ctimes").text(curtimes1 + '秒');
             if (parseFloat(curtimes1) < 0) {
                 $("#btn_ctimes").val(250);
-                fivesend();
+                forulist();
             }
         }
-
+        var isl = true;     //与lindex一起来判断,当前的ctype是否结束,true为可进行,false为不能进行下一个
+        var lindex = 0;     //单子td的索引值
+        var len = 0;        //共有几个单子
+        var ulist_timer;    //定时器,每隔10秒去判断当前的ctype结束没有,是否可以进行下一个
+        //开始遍历ulist里面td
+        forulist = function () {
+            var text = $("#monit").text();      //取得监控按钮的值
+            if (text != "监控中") return;      //如果没处于监控中,后面将不执行
+            var list = $(".tdcls");
+            if (list.length == 0) { tips("没有需要监控的单子", 2); return; }   //没有列表,需要先点击查询,将列表查询出来
+            lindex = 0;len = list.length;       //初始化遍历变量
+            ulist_timer = setInterval(function () { execute_one(list) }, 10000);    //定时器初始化,每10秒去调用一次
+        }
+        //开始调用
+        execute_one = function (list) {
+            //如果索引已经超过列表最大值,就清空定时器Return
+            if (lindex > (len - 1)) {
+                console.log("execute_one > clearInterval"); clearInterval(ulist_timer);
+                return;
+            }
+            list.css("background-color", "white");          //清空所有背景色,方便看到目前在执行哪个单子
+            $(list[lindex]).css("background-color", "red"); //当前单了设置成红色
+            var ctype = $(list[lindex]).text().trim();      //取得当前ctype的值
+            var issue = 1;                                  //issue的值
+            if (ctype.trim() == "") return;                 //如果出现ctype为空的情况,就直接不做,理论上是不可能出现的
+            console.log("lindex=" + lindex + "(len - 1)=" + (len - 1));
+            if (isl) {
+                isl = false;
+                One(ctype, issue);
+            };
+        }
+        //修改isl标识和lindex索引,认为当前单子结束,可执行下一个单子
+        execute_case = function () {
+            isl = true;
+            lindex++;
+        }
         //充值
-        One = function (ctype,issue) {
+        One = function (ctype, issue) {
+            console.log("One > ");
             $.getJSON("/Mobile/One", { ctype: ctype, issue: issue }, function (ret) {
                 if (ret.code == -1001) {
                     Two(ctype, issue);  //充值Session失效,
                 }
-                else tips(ret.msg, 2);
+                else {
+                    tips(ret.msg, 2);
+                    execute_case();
+                }
             })
         }
         //用登入Session得充值Session
         Two = function (ctype, issue) {
+            console.log("Two > ");
             $.getJSON("/Mobile/Two", { ctype: ctype, issue: issue }, function (ret) {
                 if (ret.code == -1001) {
                     Three(ctype, issue);    //登入Session失效
-                }else if (ret.code == 1000) {
+                } else if (ret.code == 1000) {
                     One(ctype, issue);      //充值Session生成成功
-                } else tips(ret.msg, 2);
+                } else {
+                    tips(ret.msg, 2);
+                    execute_case();
+                }
             })
         }
         var three_timer;    //定时器
         var three_num = 0;  //
         //用账号,短信,获取登入Session
         Three = function (ctype, issue) {
+            console.log("Three > ");
             $.getJSON("/Mobile/Three", { ctype: ctype, issue: issue }, function (ret) {
                 if (ret.code == 1000) {
-                    three_timer = window.setInterval(function () { Four(ctype, issue) }, 5000); 
+                    three_num = 0;  //初始化
+                    three_timer = window.setInterval(function () { Four(ctype, issue) }, 5000);
                 }
-                else tips(ret.msg, 2);
+                else {
+                    tips(ret.msg, 2);
+                    execute_case();
+                }
             })
         }
         //每隔5秒访问一下
         Four = function (ctype, issue) {
-            if (three_num > 5) { clearInterval(three_timer); tips("登入Session连续验证5次依然无效,排查日志", 2); return; }
+            console.log("Four > ");
+            if (three_num > 5) { clearInterval(three_timer); tips("登入Session连续验证6次依然无效,排查日志", 2); console.log(three_timer); execute_case(); return; }
             $.getJSON("/Mobile/Four", { ctype: ctype, issue: issue }, function (ret) {
                 if (ret.code == 1000) {
                     //登入Session有效,清空定时器并调用Two
@@ -214,7 +268,8 @@
                                 <input id="fieldv" type="text" class="form-control" style="width: 220px;margin:0 5px" />
                             </div><!-- /input-group -->
                             <button id="search" type="button" style="float:left; margin-left:5px;" class="btn btn-default">查询</button>
-                            <button id="btn_ztimes" value="1500" style="float:left; margin-left:5px;" type="button" class="btn btn-info">1500秒</button>
+                            <button id="monit" type="button" style="float:left; margin-left:5px;" class="btn btn-default">监控</button>
+                            @*<button id="btn_ztimes" value="1500" style="float:left; margin-left:5px;" type="button" class="btn btn-info">1500秒</button>*@
                             <button id="btn_ctimes" value="250" style="float:left; margin-left:5px;" type="button" class="btn btn-info">250秒</button>
                         </div><!-- /.col-lg-6 -->
                     </div><!-- /.row -->

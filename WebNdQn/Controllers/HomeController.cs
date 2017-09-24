@@ -213,7 +213,7 @@ namespace WebNdQn.Controllers
             string[] str = dto.gener.Split('|');    //分享推广|关注推广
             if (str.Length < 2)
                 return Content("推广配置错误");
-            if (str[1] == "1" && Request["p"] == null)
+            if (Request["p"] == null)
             {
                 string c = "&c="+DEncrypt.DESEncrypt1("CGI|1|" + WebHelp.GetCurHttpHost() + "/Home/Index");   //c参数进行加密
                 string param = Request.Url.Query + c;   //参数串,例如:http://wx.ndll800.com/home/default?ctype=1&issue=1 取的param为:   ?ctype=1&issue=1
@@ -228,7 +228,7 @@ namespace WebNdQn.Controllers
                 if (Request["p"] != null){
                     try
                     {
-                        string p = Request["p"].ToString();
+                        string p = Request["p"].ToString(); //1|subscribe|openid  微信发送|是否关注|openid
                         Common.Expend.LogTxtExpend.WriteLogs("/Logs/HomeController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + Request["p"].ToString());
                         string temp = DEncrypt.DESDecrypt1(p);    //取得p参数,并且进行解密
                         Common.Expend.LogTxtExpend.WriteLogs("/Logs/HomeController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + temp);
@@ -239,6 +239,9 @@ namespace WebNdQn.Controllers
                     catch {
                         return Content("参数错误");
                     }
+                }
+                if (string.IsNullOrEmpty(openid)) {
+                    return Content("授权失败");
                 }
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/HomeController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
                 if (dto != null)
@@ -258,6 +261,7 @@ namespace WebNdQn.Controllers
                     rdto.qrcodeurl = dto.qrcode_url;    //关注公众号的二维码图片地址
                     rdto.gz = gz;                       //微信用户是否关注过当前公众号
                     rdto.openid = openid;               //微信用户的openid
+
                     //分享部分
                     rdto.wx_appid = Wx_config.appid;    //微信公众号
                     long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳

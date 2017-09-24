@@ -77,7 +77,7 @@ namespace WebNdQn.Controllers
             if (result == 1)
                 return JsonFormat(new ExtJson { success = true, msg = "发送成功", code = 1000, jsonresult = "" });
             else
-                return JsonFormat(new ExtJson { success = false, msg = "发送失败", code = -1000, jsonresult = "" });
+                return JsonFormat(new ExtJson { success = false, msg = "发送失败,需要去排查日志", code = -1000, jsonresult = "" });
         }
         /// <summary>
         /// 持续校验登入Session有效性

@@ -54,15 +54,31 @@ namespace WebNdQn.Controllers
                 if (clist[0].ToUpper() == "CGI")
                 {
                     //取得CGI的token值,这是一个全局的token
-                    string cgi_token = wxbll.Get_Cgi_Taoke(dto.wx_appid, dto.wx_secret);
+                    object obj_cgi_token = FJSZ.OA.Common.CacheAccess.GetFromCache("cgi_token");
+                    string cgi_token = "";
+                    if (obj_cgi_token == null)
+                    {
+                        cgi_token = wxbll.Get_Cgi_Taoke(dto.wx_appid, dto.wx_secret);
+                        FJSZ.OA.Common.CacheAccess.InsertToCacheByTime("cgi_token", cgi_token, 7000);
+                    }
+                    else cgi_token = obj_cgi_token.ToString();
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/WeiXController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Wx_Auth_Code 取得cgi_token值：" + cgi_token);
                     //和通过授权code取得的openid值一起,取到用户的详细信息
                     Wx_UserInfo dto2 = wxbll.Get_Cgi_UserInfo(dto1.openid, cgi_token);
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "subscribe：" + dto2.subscribe + "openid: " + dto2.openid + "nickname:" + dto2.nickname + "headurl:" + dto2.headimgurl);
                     if (clist[1] == "1")
                     {
-                        //将微信用户的详细信息写入数据库
-                        wxbll.SetWxUserInfo(dto.wx_appid, dto1.openid, dto2.nickname, dto2.sex, dto2.headimgurl, dto2.unionid);
+                        //当用户已经关注了公众号就能取到详细信息,直接写入
+                        if (dto2.subscribe == 1)
+                        {
+                            wxbll.SetWxUserInfo(dto.wx_appid, dto1.openid, dto2.nickname, dto2.sex, dto2.headimgurl, dto2.unionid);
+                        }
+                        else
+                        {
+                            //当用户没有关注公众号,取不到详细信息,就需要用sns_token去取详细信息写入数据库
+                            dto2 = wxbll.Get_SNS_UserInfo(dto1.openid, dto1.access_token);
+                            wxbll.SetWxUserInfo(dto.wx_appid, dto1.openid, dto2.nickname, dto2.sex, dto2.headimgurl, dto2.unionid);
+                        }
                     }
                     param = "?ctype=" + ctype + "&issue=" + issue + "&p=" + DEncrypt.DESEncrypt1("1|" + dto2.subscribe + "|" + dto1.openid); //1|subscribe|openid  微信发送|是否关注|openid
                     backurl = clist[2] + param;
