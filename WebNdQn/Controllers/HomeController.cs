@@ -450,19 +450,20 @@ namespace WebNdQn.Controllers
         //仅做测试.
         public ActionResult LoginByMobileCode()
         {
-            //if (Request["mobile"] == null || Request["content"] == null)
-            //    return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
-            //string phone = Request["mobile"].ToString();        //哪个手机号码接收到的
-            //int type = Convert.ToInt32("1");                    //通过手机号码判断，1为登入2为充值
-            //if (phone == "10657532190000761") type = 2;
-            //string content = Request["content"];     //短信内容
-            //if (content.Length < 15) return JsonFormat(new ExtJson { success = false, msg = "太短了不用保存" });
-            //string code = bll.FilterMobileCode(phone, content);     //将短信里面的验证码解析出来
-            //string xh = bll.FilterMobileXh(phone, content);         //将短信里面的序列号解析出来
-            //int result = mbll.testuppwd(21, 1, code);
+            if (Request["mobile"] == null || Request["content"] == null)
+                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            string phone = Request["mobile"].ToString();        //哪个手机号码接收到的
+            int type = Convert.ToInt32("1");                    //通过手机号码判断，1为登入2为充值
+            if (phone == "10657532190000761") type = 2;
+            string content = Request["content"];     //短信内容
+            if (content.Length < 15) return JsonFormat(new ExtJson { success = false, msg = "太短了不用保存" });
+            string code = bll.FilterMobileCode(phone, content);     //将短信里面的验证码解析出来
+            string xh = bll.FilterMobileXh(phone, content);         //将短信里面的序列号解析出来
+            int result = mbll.testuppwd(21, 1, code);
+            int result_1 = bll.TakeMsgCode(type, phone, xh, code, content);       //将收到的验证码保存
             //bll.HttpCliendGetMsg(21, 1);
-            bll.HelpWebLogin(21, 1);
-            return View();
+            //bll.HelpWebLogin(21, 1);
+            return Content(result + "_" + result_1);
         }
 
 
