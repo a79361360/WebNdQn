@@ -234,7 +234,8 @@ namespace BLL
             return result;
         }
         public T_ActivityConfig FindActivityConfigByCooperid(int cooperid) {
-            IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(adal.GetActivityZb(cooperid));
+            //1为大转盘
+            IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(adal.GetActivityZb(cooperid, 1));
             T_ActivityConfig dto = new T_ActivityConfig();
             if (list.Count > 0){
                 dto = list[0];
