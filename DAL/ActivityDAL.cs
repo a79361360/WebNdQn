@@ -23,6 +23,12 @@ namespace DAL
             DataTable dt = dal.ExtSql(sql, parameter);
             return dt;
         }
+        /// <summary>
+        /// 取得大转盘
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="type">1表示大转盘</param>
+        /// <returns></returns>
         public int GetActivityConfigId(int cooperid,int type) {
             string sql = "SELECT top 1 id FROM T_ActivityConfig WHERE cooperid=@cooperid and type=@type";
             SqlParameter[] parameter = new[]
@@ -70,33 +76,17 @@ namespace DAL
             dal.ExtProc(sql, parameter, str, out list);
             return Convert.ToInt32(list["@ReturnValue"]);
         }
-        public DataTable GetActivityZb(int cooperid) {
-            string sql = "SELECT id,cooperid,type,title,share,explain,bgurl,wx_title,wx_descride,wx_imgurl,wx_linkurl FROM T_ActivityConfig where cooperid=@cooperid";
+        public DataTable GetActivityZb(int cooperid,int type) {
+            string sql = "SELECT id,cooperid,type,title,share,explain,bgurl,wx_title,wx_descride,wx_imgurl,wx_linkurl FROM T_ActivityConfig where cooperid=@cooperid and type=@type";
             SqlParameter[] parameter = new[]
             {
-                new SqlParameter("@cooperid",SqlDbType.Int)
+                new SqlParameter("@cooperid",SqlDbType.Int),
+                new SqlParameter("@type",SqlDbType.Int)
             };
             parameter[0].Value = cooperid;
+            parameter[1].Value = type;
             DataTable dt = dal.ExtSql(sql, parameter);
             return dt;
-        }
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="cooperid"></param>
-        /// <param name="virtualpath"></param>
-        /// <returns></returns>
-        public int UpdateDzpBgUrlByCooperid(int cooperid,string virtualpath) {
-            string sql = "UPDATE T_ActivityConfig SET bgurl=@bgurl WHERE cooperid=@cooperid";
-            SqlParameter[] parameter = new[]
-            {
-                new SqlParameter("@bgurl",SqlDbType.NVarChar,250),
-                new SqlParameter("@cooperid",SqlDbType.Int)
-            };
-            parameter[0].Value = virtualpath;
-            parameter[1].Value = cooperid;
-            int result = dal.IntExtSql(sql, parameter);
-            return result;
         }
         public int AddConfig(int cooperid,int type,string title,int share,string explain,string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl) {
             string sql = "INSERT INTO [T_ActivityConfig]([cooperid],[type],[title],[share],[explain],[bgurl],[wx_title],[wx_descride],[wx_imgurl],[wx_linkurl])";
