@@ -2,6 +2,8 @@
 using FJSZ.OA.Common.DEncrypt;
 using FJSZ.OA.Common.Web;
 using FrameWork;
+using FrameWork.Common;
+using Model.ViewModel;
 using Model.WxModel;
 using System;
 using System.Collections.Generic;
@@ -15,7 +17,11 @@ namespace WebNdQn.Controllers
     {
         CommonBLL bll = new CommonBLL();
         WeiXinBLL wxll = new WeiXinBLL();
-        // GET: Zxdt
+        ZxdtBLL zbll = new ZxdtBLL();
+        /// <summary>
+        /// 展示给客户的页面
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
             if (Request["ctype"] == null || Request["issue"] == null)
@@ -26,7 +32,7 @@ namespace WebNdQn.Controllers
                 return Content("配置为空");
             if (Request["p"] == null)
             {
-                string c = "&c=" + DEncrypt.DESEncrypt1("CGI|1|" + WebHelp.GetCurHttpHost() + "/Home/Index");   //c参数进行加密
+                string c = "&c=" + DEncrypt.DESEncrypt1("CGI|1|" + WebHelp.GetCurHttpHost() + "/Zxdt/Index");   //c参数进行加密
                 string param = Request.Url.Query + c;   //参数串,例如:http://wx.ndll800.com/home/default?ctype=1&issue=1 取的param为:   ?ctype=1&issue=1
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     param： " + param);
                 string state = "";                  //state的值暂时为空,如果后面有需要验签,再用起来,现在就直接用参数来做校验
@@ -64,5 +70,79 @@ namespace WebNdQn.Controllers
 
             return View();
         }
+
+        #region 题库部分
+        /// <summary>
+        /// 查询题库页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult TopicPortal() {
+            ViewBag.CooperDrop = bll.GetCooperConfigDrop(1);    //取得配置信息列表
+            return View();
+        }
+        /// <summary>
+        /// 设置题库页面
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SetTopicPortal() {
+            T_TopicBank dto = new T_TopicBank();
+            if (Request["id"] != null)
+            {
+                int id = Convert.ToInt32(Request["id"]);
+                dto = zbll.GetTopicById(id);
+            }
+            //新增的时候需要cooperid值
+            if (Request["cooperid"] != null) {
+                dto.cooperid = Convert.ToInt32(Request["cooperid"]);
+            }
+            return View(dto);
+        }
+        /// <summary>
+        /// 题库翻页列表查询
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult TopicListPage()
+        {
+            string id = Request["id"].ToString();       //用户手机号码
+            string title = Request["title"].ToString();     //公司类型
+            int pageIndex = Convert.ToInt32(Request["pageIndex"]);
+            int pageSize = Convert.ToInt32(Request["pageSize"]);
+            int Total = 0;
+            var list = zbll.FindTopicList_Page(Convert.ToInt32(id), title, pageSize, pageIndex, ref Total);
+            if (list.Count > 0)
+                return JsonFormat(new ExtJsonPage { success = true, code = 1000, msg = "查询成功", total = Total, list = list });
+            else
+                return JsonFormat(new ExtJsonPage { success = false, code = -1000, msg = "查询失败" });
+        }
+        /// <summary>
+        /// 设置题库
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SetZxdtTopic() {
+            int id = Convert.ToInt32(Request.Form["id"]);                //id,如果没有为0是新增
+            int cooperid = Convert.ToInt32(Request.Form["cooperid"]);           //cooperid
+            string topic = Request.Form["topic"];                               //题目
+            string answer = Request.Form["answer"];                             //答案列表
+            int keyanswer = Convert.ToInt32(Request.Form["keyanswer"]);         //答案值
+            int result = zbll.SetZxdtTopic(id, cooperid, topic, answer, keyanswer);
+            if (result > 0)
+                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "操作成功." });
+            else
+                return JsonFormat(new ExtJson { success = false, code = -1000, msg = "操作失败." });
+        }
+        /// <summary>
+        /// 删除题库
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult RemoveTopic() {
+            string data = Request.Form["data"];  //用户的IDS数组
+            IList<IdListDto> list = SerializeJson<IdListDto>.JSONStringToList(data);
+            int result = zbll.RemoveTopics(list);
+            if (result == list.Count)
+                return JsonFormat(new ExtJson { success = true, msg = "删除成功！共删除" + result });
+            else
+                return JsonFormat(new ExtJson { success = false, msg = "删除失败！共" + list.Count + " 成功" + result });
+        }
+        #endregion
     }
 }

@@ -319,6 +319,8 @@
     <Content Include="Views\Activity\ActivitySharePortal.cshtml" />
     <Content Include="Views\Home\SIndex.cshtml" />
     <Content Include="Views\Zxdt\Index.cshtml" />
+    <Content Include="Views\Zxdt\TopicPortal.cshtml" />
+    <Content Include="Views\Zxdt\SetTopicPortal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

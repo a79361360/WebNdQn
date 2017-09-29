@@ -52,6 +52,7 @@
     <Compile Include="WxModel\T_LoginLogCache.cs" />
     <Compile Include="WxModel\T_ShareLog.cs" />
     <Compile Include="WxModel\T_TakeFlowLog.cs" />
+    <Compile Include="WxModel\T_TopicBank.cs" />
     <Compile Include="WxModel\T_WxUserInfo.cs" />
     <Compile Include="WxModel\Wx_Share.cs" />
   </ItemGroup>

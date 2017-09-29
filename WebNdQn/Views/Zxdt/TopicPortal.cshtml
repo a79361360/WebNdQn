@@ -1,0 +1,180 @@
+﻿
+@{
+    Layout = null;
+}
+@using Model.WxModel
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>TopicPortal</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <link href="/Content/mricode.pagination.css" rel="stylesheet" />
+    <script src="/Content/mricode.pagination.js"></script>
+    <script src="~/Scripts/commonaction.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#search").click(function () {
+                var field = $("#field").attr("v_val");  //id
+                var fieldv = $("#fieldv").val();        //topic
+                var url = "/Zxdt/TopicListPage";
+                var data = { id: field, title: fieldv };
+                pagelist(url, data);
+            })
+            $('.dropdown-menu a').click(function () {
+                var txt = $(this).text(); var val = $(this).attr("v_val");
+                var objdrop = $(this).parent().parent().siblings("button").eq(0);
+                objdrop.text(txt); objdrop.attr("v_val", val);
+            })
+        })
+        //翻页列表
+        pagelist = function (url, data) {
+            var isInited = $("#page").pagination();
+            if (isInited) $("#page").pagination('destroy');
+            $("#ulist").html("");   //清空
+            $("#page").pagination({
+                firstBtnText: '首页',
+                lastBtnText: '尾页',
+                prevBtnText: '上一页',
+                nextBtnText: '下一页',
+                showInfo: true,
+                showJump: true,
+                jumpBtnText: '跳转',
+                showPageSizes: true,
+                infoFormat: '{start} ~ {end}条，共{total}条',
+                debug: true,
+                pageElementSort: ['$page', '$size', '$jump', '$info'],
+                remote: {
+                    url: url,  //请求地址
+                    params: data,       //自定义请求参数
+                    success: function (data) {
+                        if (data.code == 1000) {
+                            var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:200px;\">题目</th><th style=\"width:300px;\">答案选项列表</th><th style=\"width:45px;\">答案</th><th style=\"width:45px;\">添加时间</th></tr></thead>";
+                            $.each(data.list, function (i, o) {
+                                str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td>" + o.topic + "</td><td>" + o.answer + "</td><td>" + o.keyanswer + "</td><td>" + o.addtime + "</td></tr>";
+                            })
+                            str += "</table>";
+                            $("#ulist").html(str);
+                            $("#allqx").click(function () { togglechg(); })
+                        }
+                    },
+                    totalName: 'total'              //指定返回数据的总数据量的字段名
+                }
+            });
+        }
+        //点击全选
+        togglechg = function () {
+            var qx = $("#allqx");
+            var tr = $("#ulist tbody tr")
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (qx.prop("checked")) eachobj.prop("checked", true); else eachobj.prop("checked", false);
+            })
+        }
+        //新增
+        NewRedrit = function () {
+            window.open("/Zxdt/SetPortal", "_blank");
+        }
+        //编辑
+        EditRedrit = function () {
+            var tr = $("#ulist tbody tr");
+            var checknum = 0; var id = 0;
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (eachobj.prop("checked")) {
+                    checknum++;
+                    id = eachobj.val();   //题库记录的ID
+                }
+            })
+            if (checknum > 1 || checknum == 0) {
+                tips("只能选择一行", 2);
+                return;
+            }
+            window.open("/Zxdt/SetTopicPortal?id=" + id, "_blank");
+        }
+        //删除Zxdt
+        RemoveById = function () {
+            if (confirm("确定要清空数据吗?")) {
+                var list = [];      //数组对象，将
+                var data;           //元素对象
+                var tr = $("#ulist tbody tr");
+                $.each(tr, function (i, e) {
+                    var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                    if (eachobj.prop("checked")) {
+                        data = new Object();    //元素对象实例
+                        data.id = eachobj.val();
+                        list.push(data);
+                    }
+                })
+                $.ajax({
+                    type: "POST",
+                    url: '/Zxdt/RemoveTopic',
+                    data: { data: JSON.stringify(list) },
+                    dataType: 'json',
+                    success: function (data) {
+                        if (data.success) {
+                            tips(data.msg, 2);
+                        } else {
+                            tips(data.msg, 2);
+                        }
+                    }
+                });
+            }
+        }
+        //弹于信息tips
+        tips = function (content, timeout) {
+            var tipsobj = $("#myModal");
+            if (tipsobj.length > 0)
+                tipsobj.remove();
+            var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
+            tipsobj = $(BootDialog); tipsobj.modal('show');
+            if (timeout > 0) { setTimeout(function () { tipsobj.modal('hide') }, timeout * 1000); }
+        }
+    </script>
+</head>
+<body>
+    <div class="container" style="margin-left:0px; padding-left:0px">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <form action="" class="bs-example bs-example-form" role="form">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="input-group" style="float:left;">
+                                <div class="btn-group" style="float: left;">
+                                    <button id="field" type="button" v_val="-1" class="btn btn-default">默认</button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">切换下拉菜单</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" v_val="-1">默认</a></li>
+                                        @foreach (var item in (List<T_CooperConfig>)ViewBag.CooperDrop)
+                                        {
+                                            <li><a href="#" v_val="@item.id">@item.title</a></li>
+                                        }
+                                    </ul>
+                                </div>
+                                <input id="fieldv" type="text" placeholder="请输入题目" class="form-control" style="width: 220px;margin:0 5px" />
+                            </div><!-- /input-group -->
+                            <button id="search" type="button" style="float:left; margin-left:5px;" class="btn btn-default">查询</button>
+                        </div><!-- /.col-lg-6 -->
+                    </div><!-- /.row -->
+                </form>
+            </div>
+            <div class="panel-body">
+                <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="NewRedrit('/Home/CooperIndex')">新增</button></div>
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="EditRedrit()">编辑</button></div>
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="RemoveById()">删除</button></div>
+                </div>
+                <div id="ulist"></div>
+                <div id="page" class="m-pagination"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
