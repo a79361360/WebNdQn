@@ -13,7 +13,8 @@
                 average: '一般般了。',
                 bad: '太可怜了！',
                 poor: '好可怕啊！',
-                worst: '悲痛欲绝！'
+                worst: '悲痛欲绝！',
+                empty: ''
             }
         };
         var config = $.extend(defaults, settings);
@@ -73,13 +74,14 @@
         }
         function judgeSkills(score) {
             var returnString;
-            if (score === 100) return config.resultComments.perfect;
-            else if (score > 90) return config.resultComments.excellent;
-            else if (score > 70) return config.resultComments.good;
-            else if (score > 50) return config.resultComments.average;
-            else if (score > 35) return config.resultComments.bad;
-            else if (score > 20) return config.resultComments.poor;
-            else return config.resultComments.worst;
+            //if (score === 100) return config.resultComments.perfect;
+            //else if (score > 90) return config.resultComments.excellent;
+            //else if (score > 70) return config.resultComments.good;
+            //else if (score > 50) return config.resultComments.average;
+            //else if (score > 35) return config.resultComments.bad;
+            //else if (score > 20) return config.resultComments.poor;
+            //else return config.resultComments.worst;
+            return config.resultComments.empty;
         }
         console.log(progressWidth)
         progressKeeper.hide();
@@ -187,7 +189,8 @@
                 }
                 resultSet += '</ul></div></div>';
             }
-            score = roundReloaded(trueCount / questionLength * 100, 2);
+            //score = roundReloaded(trueCount / questionLength * 100, 2);
+            score = roundReloaded(trueCount * 10, 2);
             
             resultSet = '<h2 class="qTitle">' + judgeSkills(score) + '<br/> 您的分数： ' + score + '</h2>' + shareButton + '<div class="jquizzy-clear"></div>' + resultSet + '<div class="jquizzy-clear"></div>';
             superContainer.find('.result-keeper').html(resultSet).show(500);

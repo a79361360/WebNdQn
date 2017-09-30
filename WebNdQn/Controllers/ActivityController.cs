@@ -252,7 +252,7 @@ namespace WebNdQn.Controllers
             int pageSize = Convert.ToInt32(Request["pageSize"]);
             int Total = 0;
 
-            var list = adbll.GetActivity_Page(1, name, value, pageSize, pageIndex, ref Total);
+            var list = Abll.GetActivity_Page(1, name, value, pageSize, pageIndex, ref Total);
             if (list.Count > 0)
                 return JsonFormat(new ExtJsonPage { success = true, code = 1000, msg = "查询成功", total = Total, list = list });
             else

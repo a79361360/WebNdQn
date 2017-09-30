@@ -126,7 +126,7 @@
             })
         }
         //设置大转盘
-        setdzpconfig = function () {
+        setdzpconfig = function (type) {
             var tr = $("#ulist tbody tr");
             var checknum = 0; var cooperid = 0;
             $.each(tr, function (i, e) {
@@ -140,7 +140,9 @@
                 tips("只能选择一行", 2);
                 return;
             }
-            window.open("/Activity/SetDzpPortal?cooperid=" + cooperid, "_blank");
+            if (type == 1) window.open("/Activity/SetDzpPortal?cooperid=" + cooperid, "_blank");
+            if (type == 2) window.open("/Zxdt/SetZxdtPortal?cooperid=" + cooperid, "_blank");
+                
         }
         //添加超端记录
         addlogincache = function () {
@@ -227,7 +229,8 @@
                         <div class="btn-group"><button type="button" class="btn btn-default" onclick="NewRedrit()">新增</button></div>
                         <div class="btn-group"><button type="button" class="btn btn-default" onclick="EditRedrit()">编辑</button></div>
                         <div class="btn-group"><button type="button" class="btn btn-default" onclick="RemoveById()">删除</button></div>
-                        <div class="btn-group"><button type="button" class="btn btn-default" onclick="setdzpconfig()">设置大转盘</button></div>
+                        <div class="btn-group"><button type="button" class="btn btn-default" onclick="setdzpconfig(1)">设置大转盘</button></div>
+                        <div class="btn-group"><button type="button" class="btn btn-default" onclick="setdzpconfig(2)">设置在线答题</button></div>
                         <div class="btn-group"><button type="button" class="btn btn-default" onclick="addlogincache()">添加到超端</button></div>
                     </div>
                 <div id="ulist">

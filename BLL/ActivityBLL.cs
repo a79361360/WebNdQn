@@ -277,6 +277,8 @@ namespace BLL
             //新增
             if (configid == 0)
             {
+                int result_1 = adal.IsExistActivity(cooperid, 1);
+                if (result_1 > 0) return -2;    //已经存在当前配置,不能再添加了
                 configid = adal.AddConfig(cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl); //主表ID
                 result = configid;
             }
@@ -344,6 +346,42 @@ namespace BLL
         /// <returns></returns>
         public IList<T_ActivityDrawLog> GetDrawList(int cooperid,int type,string openid) {
             IList<T_ActivityDrawLog> list = DataTableToList.ModelConvertHelper<T_ActivityDrawLog>.ConvertToModel(adal.ActivityDrawList(cooperid, type, openid));
+            return list;
+        }
+        /// <summary>
+        /// 查询活动主表配置列表
+        /// </summary>
+        /// <param name="type">1大转盘,2在线答题</param>
+        /// <param name="name">条件name</param>
+        /// <param name="value">条件value</param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="Total"></param>
+        /// <returns></returns>
+        public IList<T_ActivityConfig> GetActivity_Page(int type, string name, string value, int pageSize, int pageIndex, ref int Total)
+        {
+            string filter = "";
+            if (name != "-1")
+            {
+                filter += name + " like '%" + value + "%'";
+            }
+            if (type > 0)
+            {
+                if (!string.IsNullOrEmpty(filter))
+                    filter += " and type=" + type;
+                else
+                    filter += " type=" + type;
+            }
+            SqlPageParam param = new SqlPageParam();
+            param.TableName = "V_ActivityConfig";
+            param.PrimaryKey = "id";
+            param.Fields = "id,cooperid,ctype,type,title,share,explain,bgurl";
+            param.PageSize = pageSize;
+            param.PageIndex = pageIndex;
+            param.Filter = filter;
+            param.Group = "";
+            param.Order = "id";
+            IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(adal.PageResult(ref Total, param));
             return list;
         }
     }

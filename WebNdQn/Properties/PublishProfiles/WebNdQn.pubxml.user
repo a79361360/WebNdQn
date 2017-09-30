@@ -13,13 +13,13 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/BLL.dll">
-      <publishTime>09/25/2017 10:51:08</publishTime>
+      <publishTime>09/29/2017 20:49:54</publishTime>
     </File>
     <File Include="bin/Common.dll">
       <publishTime>09/20/2017 16:29:27</publishTime>
     </File>
     <File Include="bin/DAL.dll">
-      <publishTime>09/21/2017 17:11:02</publishTime>
+      <publishTime>09/29/2017 20:49:54</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -73,7 +73,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/Model.dll">
-      <publishTime>09/21/2017 17:11:02</publishTime>
+      <publishTime>09/29/2017 20:49:54</publishTime>
     </File>
     <File Include="bin/MySql.Data.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -112,7 +112,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/WebNdQn.dll">
-      <publishTime>09/29/2017 09:47:02</publishTime>
+      <publishTime>09/29/2017 20:49:55</publishTime>
     </File>
     <File Include="bin/zh-Hans/EntityFramework.resources.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -659,6 +659,12 @@
     </File>
     <File Include="Views/Zxdt/Index.cshtml">
       <publishTime>09/14/2017 14:48:57</publishTime>
+    </File>
+    <File Include="Views/Zxdt/SetTopicPortal.cshtml">
+      <publishTime>09/29/2017 17:12:17</publishTime>
+    </File>
+    <File Include="Views/Zxdt/TopicPortal.cshtml">
+      <publishTime>09/29/2017 15:36:39</publishTime>
     </File>
     <File Include="Views/_ViewStart.cshtml">
       <publishTime>09/04/2017 14:18:26</publishTime>

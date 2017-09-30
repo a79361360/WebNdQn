@@ -13,6 +13,7 @@ namespace BLL
     public class ZxdtBLL
     {
         ZxdtDAL zdal = new ZxdtDAL();
+        ActivityDAL adal = new ActivityDAL();
         #region 题库部分
         /// <summary>
         /// 取得T_TopicBank用户表ID
@@ -39,7 +40,7 @@ namespace BLL
         {
             string filter = "";
             if (cooperid != -1)
-                filter += " cooperid=@cooperid";
+                filter += " cooperid=" + cooperid;
             if (!string.IsNullOrEmpty(title))
             {
                 if (!string.IsNullOrEmpty(filter))
@@ -104,5 +105,83 @@ namespace BLL
             return sresult;
         }
         #endregion
+        /// <summary>
+        /// 取得活动主表配置信息
+        /// </summary>
+        /// <param name="cooper"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public T_ActivityConfig GetByCooperId(int cooperid,int type) {
+            IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(adal.GetActivityZb(cooperid, type));
+            T_ActivityConfig dto = new T_ActivityConfig();
+            if (list.Count > 0)
+                dto = list[0];
+            return dto;
+        }
+        /// <summary>
+        /// 设置在线答题配置
+        /// </summary>
+        /// <param name="configid"></param>
+        /// <param name="cooperid"></param>
+        /// <param name="title"></param>
+        /// <param name="share"></param>
+        /// <param name="explain"></param>
+        /// <param name="bgurl"></param>
+        /// <param name="wxtitle"></param>
+        /// <param name="wxdescride"></param>
+        /// <param name="wximgurl"></param>
+        /// <param name="wxlinkurl"></param>
+        /// <returns></returns>
+        public int SetZxdtConfig(int configid, int cooperid, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl) {
+            int result = 0;
+            if (string.IsNullOrEmpty(bgurl)) { bgurl = "/Content/Activity/Dzp/images/body_bg1.jpg"; }
+            //新增
+            if (configid == 0)
+            {
+                int result_1 = adal.IsExistActivity(cooperid, 2);
+                if (result_1 > 0) return -2;    //已经存在当前配置,不能再添加了
+                configid = adal.AddConfig(cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl); //主表ID
+                result = configid;
+            }
+            else
+                result = adal.UpdateConfig(configid, cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl);
+            return result;
+        }
+        /// <summary>
+        /// 查询活动主表配置列表
+        /// </summary>
+        /// <param name="type">1大转盘,2在线答题</param>
+        /// <param name="name">条件name</param>
+        /// <param name="value">条件value</param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="Total"></param>
+        /// <returns></returns>
+        public IList<T_ActivityConfig> GetActivity_Page(int type, string name, string value, int pageSize, int pageIndex, ref int Total)
+        {
+            string filter = "";
+            if (name != "-1")
+            {
+                filter += name + " like '%" + value + "%'";
+            }
+            if (type > 0)
+            {
+                if (!string.IsNullOrEmpty(filter))
+                    filter += " and type=" + type;
+                else
+                    filter += " type=" + type;
+            }
+            SqlPageParam param = new SqlPageParam();
+            param.TableName = "V_ActivityConfig";
+            param.PrimaryKey = "id";
+            param.Fields = "id,cooperid,ctype,type,title,share,explain,bgurl";
+            param.PageSize = pageSize;
+            param.PageIndex = pageIndex;
+            param.Filter = filter;
+            param.Group = "";
+            param.Order = "id";
+            IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(adal.PageResult(ref Total, param));
+            return list;
+        }
     }
 }

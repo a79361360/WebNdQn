@@ -12,6 +12,11 @@ namespace DAL
     public class ActivityDAL
     {
         SqlDal dal = new SqlDal();
+        public DataTable PageResult(ref int Total, SqlPageParam Param)
+        {
+            DataTable dt = dal.PageResult(Param.TableName, Param.PrimaryKey, Param.Fields, Param.PageSize, Param.PageIndex, Param.Filter, Param.Group, Param.Order, ref Total);
+            return dt;
+        }
         public DataTable GetActivityConfigList(int configid)
         {
             string sql = "SELECT id,prizename,count,number,winprob FROM T_ActivityConfigList WHERE configid=@configid ORDER BY id";
@@ -41,6 +46,25 @@ namespace DAL
             var result = dal.ExtScalarSql(sql, parameter);
             if (result == null) return 0;
             return Convert.ToInt32(result);
+        }
+        /// <summary>
+        /// 判断活动配置表是否存在
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="type">1大转盘2在线答题</param>
+        /// <returns></returns>
+        public int IsExistActivity(int cooperid, int type)
+        {
+            string sql = "SELECT COUNT(*) id FROM T_ActivityConfig WHERE cooperid=@cooperid and type=@type";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@cooperid",SqlDbType.Int),
+                new SqlParameter("@type",SqlDbType.Int)
+            };
+            parameter[0].Value = cooperid;
+            parameter[1].Value = type;
+            int result = Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
+            return result;
         }
         /// <summary>
         /// 前三个都可以通用这个方法来进行调用

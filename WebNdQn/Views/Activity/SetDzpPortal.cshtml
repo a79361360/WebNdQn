@@ -25,13 +25,29 @@
                 $("#fx_Path_txt").val($(this).val());
             });
         })
-
+        //查看图片
         showtx = function (img) {
             var content = "<img src='" + img + "'/>";
             var imgSrc = $(content).attr("src");
             getImageWidth(imgSrc, function (w, h) {
                 qiu_confirm("q_showtx", "查看头像", content, w + 50, h + 50);
             });
+        }
+        //取得图片长宽
+        function getImageWidth(url, callback) {
+            var img = new Image();
+            img.src = url;
+
+            // 如果图片被缓存，则直接返回缓存数据
+            if (img.complete) {
+                callback(img.width, img.height);
+            } else {
+                // 完全加载完毕的事件
+                img.onload = function () {
+                    callback(img.width, img.height);
+                }
+            }
+
         }
         //弹于信息tips
         tips = function (content, timeout) {
@@ -60,22 +76,6 @@
             obj.find("#Tj").click(function () {
                 edittx();
             })
-        }
-        //取得图片长宽
-        function getImageWidth(url, callback) {
-            var img = new Image();
-            img.src = url;
-
-            // 如果图片被缓存，则直接返回缓存数据
-            if (img.complete) {
-                callback(img.width, img.height);
-            } else {
-                // 完全加载完毕的事件
-                img.onload = function () {
-                    callback(img.width, img.height);
-                }
-            }
-
         }
         //点击选中txt里面的内容
         txtselect = function (obj) {

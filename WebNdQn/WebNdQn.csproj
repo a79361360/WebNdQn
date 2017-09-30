@@ -321,6 +321,8 @@
     <Content Include="Views\Zxdt\Index.cshtml" />
     <Content Include="Views\Zxdt\TopicPortal.cshtml" />
     <Content Include="Views\Zxdt\SetTopicPortal.cshtml" />
+    <Content Include="Views\Zxdt\SetZxdtPortal.cshtml" />
+    <Content Include="Views\Zxdt\ZxdtPortal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

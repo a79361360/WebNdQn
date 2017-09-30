@@ -63,27 +63,6 @@ namespace BLL
             IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.PageResult(ref Total, param));
             return list;
         }
-        public IList<T_ActivityConfig> GetActivity_Page(int type, string name, string value, int pageSize, int pageIndex, ref int Total)
-        {
-            string filter = "";
-            if (name != "-1")
-            {
-                filter += name + " like '%" + value + "%'";
-            }
-            //if (!string.IsNullOrEmpty(filter))
-            //    filter = " where " + filter;
-            SqlPageParam param = new SqlPageParam();
-            param.TableName = "V_ActivityConfig";
-            param.PrimaryKey = "id";
-            param.Fields = "id,cooperid,ctype,type,title,share,explain,bgurl";
-            param.PageSize = pageSize;
-            param.PageIndex = pageIndex;
-            param.Filter = filter;
-            param.Group = "";
-            param.Order = "id";
-            IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(dal.PageResult(ref Total, param));
-            return list;
-        }
         public IList<T_ActivityDrawLog> GetActivityDrawList_Search(int cooperid, string phone, int state)
         {
             string filter = "";
