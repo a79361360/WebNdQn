@@ -183,5 +183,6 @@ namespace BLL
             IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(adal.PageResult(ref Total, param));
             return list;
         }
+
     }
 }
