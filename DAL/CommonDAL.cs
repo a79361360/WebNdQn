@@ -21,7 +21,7 @@ namespace DAL
         /// <returns></returns>
         public DataTable GetCooperConfig(int ctype,int issue)
         {
-            string sql = "SELECT [id],[ctype],[issue],[areatype],areatypen='',[gener],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state=1";
+            string sql = "SELECT [id],[ctype],[issue],[areatype],areatypen='',[gener],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state in(1,2)";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
@@ -40,16 +40,16 @@ namespace DAL
         /// </summary>
         /// <param name="phone">校验的手机号码</param>
         /// <returns></returns>
-        public DataTable GetCooperConfig(string phone) {
-            string sql = "SELECT top 1 [id],[ctype],[issue],[areatype],[gener],[title],[descride],[imgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE signphone=@phone and state=1 order by id desc";
-            SqlParameter[] parameter = new[]
-            {
-                new SqlParameter("@phone",SqlDbType.NVarChar,20)
-            };
-            parameter[0].Value = phone;
-            DataTable dt = dal.ExtSql(sql, parameter);
-            return dt;
-        }
+        //public DataTable GetCooperConfig(string phone) {
+        //    string sql = "SELECT top 1 [id],[ctype],[issue],[areatype],[gener],[title],[descride],[imgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE signphone=@phone and state=1 order by id desc";
+        //    SqlParameter[] parameter = new[]
+        //    {
+        //        new SqlParameter("@phone",SqlDbType.NVarChar,20)
+        //    };
+        //    parameter[0].Value = phone;
+        //    DataTable dt = dal.ExtSql(sql, parameter);
+        //    return dt;
+        //}
         /// <summary>
         /// 取得公司的活动配置信息，下拉列表
         /// </summary>

@@ -17,9 +17,30 @@ namespace DAL
             DataTable dt = dal.PageResult(Param.TableName, Param.PrimaryKey, Param.Fields, Param.PageSize, Param.PageIndex, Param.Filter, Param.Group, Param.Order, ref Total);
             return dt;
         }
+        /// <summary>
+        /// 取得当前活动已经中奖的人数
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="type"></param>
+        /// <returns></returns>
+        public int GetDrawCount(int cooperid,int type) {
+            string sql = "SELECT COUNT(*) FROM T_ActivityDrawLog WHERE cooperid=@cooperid AND type=@type";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@cooperid",SqlDbType.Int),
+                new SqlParameter("@type",SqlDbType.Int)
+            };
+            parameter[0].Value = cooperid;
+            parameter[1].Value = type;
+            int result = Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
+            return result;
+        }
         public DataTable GetActivityConfigList(int configid)
         {
-            string sql = "SELECT id,prizename,count,number,winprob FROM T_ActivityConfigList WHERE configid=@configid ORDER BY id";
+            string sql = "SELECT b.id,b.prizename,b.count,b.number,b.winprob,";
+            sql += "(SELECT COUNT(*) FROM T_ActivityDrawLog WHERE configlistid=b.id) drowcount";
+            sql += " FROM T_ActivityConfigList b WHERE b.configid=@configid ORDER BY b.id";
+
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@configid",SqlDbType.Int)
