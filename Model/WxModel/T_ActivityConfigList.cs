@@ -14,5 +14,9 @@ namespace Model.WxModel
         public int count { get; set; }
         public int number { get; set; }
         public string winprob { get; set; }
+        /// <summary>
+        /// 已经开奖的次数
+        /// </summary>
+        public int drowcount { get; set; }
     }
 }
