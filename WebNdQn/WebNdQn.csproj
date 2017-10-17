@@ -305,7 +305,6 @@
     <Content Include="Views\Home\TestShare.cshtml" />
     <Content Include="Views\Home\SendLoginPost.cshtml" />
     <Content Include="Views\Home\Default.cshtml" />
-    <Content Include="Views\Home\OppoIndex.cshtml" />
     <Content Include="Views\Flow\Index.cshtml" />
     <Content Include="Views\Activity\Dzp.cshtml" />
     <Content Include="Views\Mobile\Index.cshtml" />
@@ -317,7 +316,6 @@
     <Content Include="Views\Cooper\SetCooperPortal.cshtml" />
     <Content Include="Views\Activity\ActivityDrawPortal.cshtml" />
     <Content Include="Views\Activity\ActivitySharePortal.cshtml" />
-    <Content Include="Views\Home\SIndex.cshtml" />
     <Content Include="Views\Zxdt\Index.cshtml" />
     <Content Include="Views\Zxdt\TopicPortal.cshtml" />
     <Content Include="Views\Zxdt\SetTopicPortal.cshtml" />

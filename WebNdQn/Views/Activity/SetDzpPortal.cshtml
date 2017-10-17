@@ -198,6 +198,7 @@
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" value=\"" + o.count + "\"></div>";
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" value=\"" + o.number + "\"></div>";
                             str += "<div class=\"col-sm-2\"><input onclick=\"txtselect(this)\" type=\"text\" class=\"form-control\" value=\"" + o.winprob + "\"></div>";
+                            str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" disabled style=\"font-weight: bolder;color: red;\" value=\"" + (o.count - o.drowcount) + "\"></div>";
                             str += "</div>";
                             cnum++;
                         })
@@ -208,6 +209,7 @@
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
                             str += "<div class=\"col-sm-2\"><input onclick=\"txtselect(this)\" type=\"text\" class=\"form-control\"></div>";
+                            str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
                             str += "</div>";
                         }
                         divobj.html(str);
@@ -220,7 +222,7 @@
             var inputobj = $("#div1").find("input");
             var zjlz = 0;
             for (var i = 0; i < 10; i++) {
-                var jlz = $(inputobj[i * 4 + 3]).val();
+                var jlz = $(inputobj[i * 5 + 3]).val();
                 zjlz = parseFloat(zjlz) + parseFloat(jlz);
             }
             $("#lab_jl").text(zjlz.toFixed(2));
@@ -241,15 +243,15 @@
             var _datalist = [];
             var labelobj = $("#div1").find("label");
             var inputobj = $("#div1").find("input");
-            if (labelobj.length == 10 & inputobj.length == 40) {
+            if (labelobj.length == 10 & inputobj.length == 50) {
                 var aprob = 0;
                 for (var i = 0; i < 10; i++) {
                     var obj = new Object();
                     obj.id = $(labelobj[i]).text();
-                    obj.prizename = $(inputobj[i * 4]).val();
-                    obj.count = $(inputobj[i * 4 + 1]).val();
-                    obj.number = $(inputobj[i * 4 + 2]).val();
-                    obj.winprob = $(inputobj[i * 4 + 3]).val();
+                    obj.prizename = $(inputobj[i * 5]).val();
+                    obj.count = $(inputobj[i * 5 + 1]).val();
+                    obj.number = $(inputobj[i * 5 + 2]).val();
+                    obj.winprob = $(inputobj[i * 5 + 3]).val();
                     aprob = parseFloat(aprob) + parseFloat(obj.winprob);
                     _datalist.push(obj);  //添加
                 }
@@ -362,6 +364,7 @@
                     <label for="lastname" class="col-sm-2 control-label">将品数量</label>
                     <label for="lastname" class="col-sm-2 control-label">流量大小</label>
                     <label for="lastname" class="col-sm-2 control-label">中奖概率</label>
+                    <label for="lastname" class="col-sm-2 control-label">剩余数量</label>
                     <div class="col-sm-2"><input onclick="configlist(this)" type="button" class="btn btn-default" value="展开" /><span style="color:red" id="lab_jl"></span></div>
                 </div>
                 <div id="div1"></div>

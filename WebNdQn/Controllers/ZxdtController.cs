@@ -18,6 +18,7 @@ namespace WebNdQn.Controllers
         CommonBLL bll = new CommonBLL();
         WeiXinBLL wxll = new WeiXinBLL();
         ZxdtBLL zbll = new ZxdtBLL();
+        ActivityBLL Abll = new ActivityBLL();
         /// <summary>
         /// 展示给客户的页面
         /// </summary>
@@ -67,13 +68,46 @@ namespace WebNdQn.Controllers
 
             //    //业务细节,参考大转盘
             //}
-
+            ViewBag.explain ="游戏规则Test";
             return View();
         }
+        public ActionResult SubmitZxdt() {
+            int cooperid = 0;string openid = ""; string phone = ""; string area = "";
+            if (Request.Form["cooperid"] != null && Request.Form["openid"] != null && Request.Form["phone"] != null && Request.Form["area"] != null)
+            {
+                cooperid = Convert.ToInt32(Request.Form["cooperid"]);
+                openid = Request.Form["openid"];
+                phone = Request.Form["phone"];
+                area = Request.Form["area"];
+                //验证手机号码
+                string txtpath = "/Content/Txt/pwebconfig.txt";
+                if (area == "2") txtpath = "/Content/Txt/putianconfig.txt";
+                string path = Server.MapPath(txtpath);
+                bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
+                if (!result)
+                    return JsonFormat(new ExtJson { success = false, code = -1000, msg = "手机号码不符合活动规则." });
+                //验证摇奖次数,2可答题次数
+                int lotteyn = Abll.GetOpenidCount(cooperid, 2, openid);
+                if (lotteyn < 1)
+                    return JsonFormat(new ExtJson { success = false, code = -1000, msg = "已无摇奖次数.", jsonresult = 0 });
+                //查询配置
+                T_ActivityConfig dto = Abll.FindActivityConfigByCooperid(cooperid);
+                float f = Abll.GetWinProb(dto.id);
+                if (f != Convert.ToSingle(0.99))
+                    return JsonFormat(new ExtJson { success = false, code = -1000, msg = "参数配置错误.", jsonresult = 0 });
+                //取得摇奖结果
+                int resultnum = Abll.Getprob(cooperid, openid, phone);
+                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功.", jsonresult = resultnum });
+            }
+            return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败.", jsonresult = 0 });
+        }
+
+
+
 
         #region 题库部分
         /// <summary>
-        /// 查询题库页面
+        /// 后台查询题库页面
         /// </summary>
         /// <returns></returns>
         public ActionResult TopicPortal() {
@@ -81,7 +115,7 @@ namespace WebNdQn.Controllers
             return View();
         }
         /// <summary>
-        /// 设置题库页面
+        /// 后台设置题库页面
         /// </summary>
         /// <returns></returns>
         public ActionResult SetTopicPortal() {
@@ -98,7 +132,7 @@ namespace WebNdQn.Controllers
             return View(dto);
         }
         /// <summary>
-        /// 题库翻页列表查询
+        /// 后台题库翻页列表查询
         /// </summary>
         /// <returns></returns>
         public ActionResult TopicListPage()
@@ -115,7 +149,7 @@ namespace WebNdQn.Controllers
                 return JsonFormat(new ExtJsonPage { success = false, code = -1000, msg = "查询失败" });
         }
         /// <summary>
-        /// 设置题库
+        /// 后台设置题库方法
         /// </summary>
         /// <returns></returns>
         public ActionResult SetZxdtTopic() {
@@ -131,7 +165,7 @@ namespace WebNdQn.Controllers
                 return JsonFormat(new ExtJson { success = false, code = -1000, msg = "操作失败." });
         }
         /// <summary>
-        /// 删除题库
+        /// 后台删除题库方法
         /// </summary>
         /// <returns></returns>
         public ActionResult RemoveTopic() {
@@ -145,7 +179,7 @@ namespace WebNdQn.Controllers
         }
         #endregion
 
-        //设置在线答题页面
+        //后台设置在线答题页面
         public ActionResult SetZxdtPortal() {
             T_ActivityConfig dto = new T_ActivityConfig();
             if (Request["cooperid"] != null)
@@ -156,11 +190,11 @@ namespace WebNdQn.Controllers
             }
             return View(dto);
         }
-        //查询在线答题页面
+        //后台查询在线答题页面
         public ActionResult ZxdtPortal() {
             return View();
         }
-        //提交在线答题
+        //后台提交在线答题方法
         public ActionResult SetZxdtConfig() {
             string configid = Request.Form["configid"];             //配置ID,0新增,其他更新
             string cooperid = Request.Form["cooperid"];             //客户的ID号
@@ -182,7 +216,7 @@ namespace WebNdQn.Controllers
             }else
                 return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败." });
         }
-        //列表查询
+        //后台列表查询方法
         public ActionResult ZxdtListSearch()
         {
             string name = Request["name"].ToString();       //用户手机号码
@@ -197,5 +231,6 @@ namespace WebNdQn.Controllers
             else
                 return JsonFormat(new ExtJsonPage { success = false, code = -1000, msg = "查询失败" });
         }
+        
     }
 }
