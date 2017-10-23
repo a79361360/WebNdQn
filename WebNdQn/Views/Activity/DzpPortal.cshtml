@@ -140,7 +140,7 @@
                 $.ajax({
                     type: "POST",
                     url: '/Activity/RemoveActivity',
-                    data: { data: JSON.stringify(list) },
+                    data: { data: JSON.stringify(list), type: 1 },
                     dataType: 'json',
                     success: function (data) {
                         if (data.success) {

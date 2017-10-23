@@ -13,16 +13,35 @@
     <link href="~/Content/Activity/Zxdt/style.css?v=2" rel="stylesheet" />
     @*<link href="~/Content/bootstrap.min.css" rel="stylesheet" />*@
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    <script src="~/Content/Activity/Zxdt/quiz.js?v=2"></script>
+    <script src="~/Content/Activity/Zxdt/quiz.js?v=5"></script>
     <script type="text/javascript">
-        var init = { 'questions': [{ 'question': 'jQuery是什么？', 'answers': ['JavaScript库', 'CSS库', 'PHP框架', '以上都不是'], 'correctAnswer': 1 }, { 'question': '找出不同类的一项?', 'answers': ['写字台', '沙发', '电视', '桌布'], 'correctAnswer': 3 }, { 'question': '国土面积最大的国家是：', 'answers': ['美国', '中国', '俄罗斯', '加拿大'], 'correctAnswer': 3 }, { 'question': '月亮距离地球多远？', 'answers': ['18万公里', '38万公里', '100万公里', '180万公里'], 'correctAnswer': 2}] };
-
+        var cooperid = '@ViewBag.cooperid';
+        var openid = '@ViewBag.openid';
+        var lotteyn = '@ViewBag.lotteyn';   //答题次数
+        var area = '@ViewBag.areatype'
+        //var init = { 'questions': [{ 'question': 'jQuery是什么？', 'answers': ['JavaScript库', 'CSS库', 'PHP框架', '以上都不是'], 'correctAnswer': 1 }, { 'question': '找出不同类的一项?', 'answers': ['写字台', '沙发', '电视', '桌布'], 'correctAnswer': 3 }, { 'question': '国土面积最大的国家是：', 'answers': ['美国', '中国', '俄罗斯', '加拿大'], 'correctAnswer': 3 }, { 'question': '月亮距离地球多远？', 'answers': ['18万公里', '38万公里', '100万公里', '180万公里'], 'correctAnswer': 2}] };
+        function HTMLDecode(text) {
+            var temp = document.createElement("div");
+            temp.innerHTML = text;
+            var output = temp.innerText || temp.textContent;
+            temp = null;
+            return output;
+        }
+        var l = HTMLDecode('@ViewBag.json');
+        var init1 = "{\"questions\":" + l + "}";
+        var init = JSON.parse(init1);
+        var tmfs = @ViewBag.score;  //题目分数
         $(function () {
             $('#quiz-container').jquizzy({
                 questions: init.questions
             });
             $(".demo").hide();  //先隐藏答题部分
             $("#btn").click(function () {
+                if(parseFloat(lotteyn)<1){alert("没有可答题的次数");return;}
+                alert($("#txt_curphone").val())
+                if($("#txt_curphone").val()==""){_system._guide("guide");return;}
+                if(openid==""){alert("微信授权失败,重新点击链接");return;}
+
                 $(".demo").show();
                 $(".bg").hide();
                 $(".nav-start").click();
@@ -35,7 +54,7 @@
         }
         //点击排行榜
         getranklist = function () {
-
+            
         }
 
     </script>

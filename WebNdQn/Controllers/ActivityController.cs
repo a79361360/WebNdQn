@@ -300,8 +300,9 @@ namespace WebNdQn.Controllers
         }
         public ActionResult RemoveActivity() {
             string data = Request.Form["data"];  //用户的IDS数组
+            string type = Request.Form["type"];  //1大转盘,2在线答题
             IList<IdListDto> list = SerializeJson<IdListDto>.JSONStringToList(data);
-            int result = Abll.RemoveActivitys(list);
+            int result = Abll.RemoveActivitys(list, Convert.ToInt32(type));
             if (result == list.Count)
                 return JsonFormat(new ExtJson { success = true, msg = "删除成功！共删除" + result });
             else

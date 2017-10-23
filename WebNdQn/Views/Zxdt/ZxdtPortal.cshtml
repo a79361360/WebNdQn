@@ -127,7 +127,7 @@
                 $.ajax({
                     type: "POST",
                     url: '/Activity/RemoveActivity',
-                    data: { data: JSON.stringify(list) },
+                    data: { data: JSON.stringify(list), type: 2 },  //2在线答题
                     dataType: 'json',
                     success: function (data) {
                         if (data.success) {

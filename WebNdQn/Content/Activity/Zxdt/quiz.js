@@ -5,7 +5,7 @@
             startImg: '/content/activity/zxdt/images/start.gif',
             endText: '已结束!',
             shortURL: null,
-            sendResultsURL: null,
+            sendResultsURL: "/Zxdt/SubmitZxdt",
             resultComments: {
                 perfect: '你是爱因斯坦么?',
                 excellent: '非常优秀!',
@@ -33,7 +33,14 @@
         for (questionsIteratorIndex = 0; questionsIteratorIndex < config.questions.length; questionsIteratorIndex++) {
             contentFob += '<div class="slide-container"><div class="question-number">' + (questionsIteratorIndex + 1) + '/' + config.questions.length + '</div><div class="question">' + config.questions[questionsIteratorIndex].question + '</div><ul class="answers">';
             for (answersIteratorIndex = 0; answersIteratorIndex < config.questions[questionsIteratorIndex].answers.length; answersIteratorIndex++) {
-                contentFob += '<li>' + config.questions[questionsIteratorIndex].answers[answersIteratorIndex] + '</li>';
+                //console.log(config.questions[questionsIteratorIndex].correctAnswer)
+                var text = 0;
+                if (answersIteratorIndex == config.questions[questionsIteratorIndex].correctAnswer - 1) {
+                    text = "<span style=\"font-weight: bold;\">" + config.questions[questionsIteratorIndex].answers[answersIteratorIndex] + "</span>";
+                } else {
+                    text = config.questions[questionsIteratorIndex].answers[answersIteratorIndex];
+                }
+                contentFob += '<li><span style=\"color: red;font-weight: bold;\">' + backletter(answersIteratorIndex) + '</span>' + text + '</li>';
             }
             contentFob += '</ul><div class="nav-container">';
             if (questionsIteratorIndex !== 0) {
@@ -83,7 +90,6 @@
             //else return config.resultComments.worst;
             return config.resultComments.empty;
         }
-        console.log(progressWidth)
         progressKeeper.hide();
         notice.hide();
         slidesList.hide().first().fadeIn(500);
@@ -104,11 +110,8 @@
             });
             return false;
         });
+        //点击下一题
         superContainer.find('.next').click(function () {
-            console.log(progressWidth)
-            console.log(questionLength)
-
-            console.log(Math.round(progressWidth / questionLength))
             if ($(this).parents('.slide-container').find('li.selected').length === 0) {
                 notice.fadeIn(300);
                 return false;
@@ -124,6 +127,7 @@
             500);
             return false;
         });
+        //点击上一题
         superContainer.find('.prev').click(function() {
             notice.hide();
             $(this).parents('.slide-container').fadeOut(500,
@@ -136,6 +140,7 @@
             500);
             return false;
         });
+        //点击完成
         superContainer.find('.final').click(function() {
             if ($(this).parents('.slide-container').find('li.selected').length === 0) {
                 notice.fadeIn(300);
@@ -149,6 +154,7 @@
                 for (r = 0; r < userAnswers.length; r++) {
                     collate.push('{"questionNumber":"' + parseInt(r + 1, 10) + '", "userAnswer":"' + userAnswers[r] + '"}');
                 }
+                console.log(collate);
                 $.ajax({
                     type: 'POST',
                     url: config.sendResultsURL,
@@ -190,7 +196,7 @@
                 resultSet += '</ul></div></div>';
             }
             //score = roundReloaded(trueCount / questionLength * 100, 2);
-            score = roundReloaded(trueCount * 10, 2);
+            score = roundReloaded(trueCount * tmfs, 2);
             
             resultSet = '<h2 class="qTitle">' + judgeSkills(score) + '<br/> 您的分数： ' + score + '</h2>' + shareButton + '<div class="jquizzy-clear"></div>' + resultSet + '<div class="jquizzy-clear"></div>';
             superContainer.find('.result-keeper').html(resultSet).show(500);
@@ -209,3 +215,16 @@
         });
     };
 })(jQuery);
+
+
+
+backletter = function (number) {
+    if (number == 0) return "A.";
+    if (number == 1) return "B.";
+    if (number == 2) return "C.";
+    if (number == 3) return "D.";
+    if (number == 4) return "E.";
+    if (number == 5) return "F.";
+    if (number == 6) return "G.";
+}
+
