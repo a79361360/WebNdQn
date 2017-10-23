@@ -279,11 +279,11 @@ namespace BLL
             {
                 int result_1 = adal.IsExistActivity(cooperid, 1);
                 if (result_1 > 0) return -2;    //已经存在当前配置,不能再添加了
-                configid = adal.AddConfig(cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl); //主表ID
+                configid = adal.AddConfig(cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, 0, 0); //主表ID
                 result = configid;
             }
             else
-                result = adal.UpdateConfig(configid, cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl);
+                result = adal.UpdateConfig(configid, cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, 0, 0);
             if (result < 1) return result;    //如果异常就直接返回
             foreach (var item in list)
             {
@@ -293,7 +293,7 @@ namespace BLL
             }
             return result;
         }
-        public int RemoveActivitys(IList<IdListDto> ids)
+        public int RemoveActivitys(IList<IdListDto> ids,int type)
         {
             int sresult = 0;    //成功的数量
             if (ids.Count == 0)
@@ -306,6 +306,12 @@ namespace BLL
                     {
                         int gid = item.id;        //ID
                         int result = adal.ActivityRemoveById(gid);
+                        //大转盘
+                        if (result > 0 && type == 1)
+                            adal.ActivityListRemoveById(gid);
+                        //在线答题
+                        if (result > 0 && type == 2)
+                            adal.ZxdtScoreRemoveById(gid);
                         sresult = sresult + result;
                     }
                 }

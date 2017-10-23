@@ -16,7 +16,7 @@ namespace BLL
         ActivityDAL adal = new ActivityDAL();
         #region 题库部分
         /// <summary>
-        /// 取得T_TopicBank用户表ID
+        /// 取得T_TopicBank表ID
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
@@ -104,7 +104,18 @@ namespace BLL
             }
             return sresult;
         }
+        /// <summary>
+        /// 随机取得设置条数的题目
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="tmts"></param>
+        /// <returns></returns>
+        public IList<T_TopicBank> GetDttsTopic(int cooperid,int tmts) {
+            IList<T_TopicBank> list = DataTableToList.ModelConvertHelper<T_TopicBank>.ConvertToModel(zdal.GetDttsTopic(cooperid, tmts));
+            return list;
+        }
         #endregion
+
         /// <summary>
         /// 取得活动主表配置信息
         /// </summary>
@@ -132,19 +143,27 @@ namespace BLL
         /// <param name="wximgurl"></param>
         /// <param name="wxlinkurl"></param>
         /// <returns></returns>
-        public int SetZxdtConfig(int configid, int cooperid, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl) {
-            int result = 0;
+        public int SetZxdtConfig(int configid, int cooperid, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl,int tmfs,int tmts, IList<T_ZxdtScore> list) {
+            int result = 0; int resultnum = 0;
             if (string.IsNullOrEmpty(bgurl)) { bgurl = "/Content/Activity/Dzp/images/body_bg1.jpg"; }
             //新增
             if (configid == 0)
             {
                 int result_1 = adal.IsExistActivity(cooperid, 2);
                 if (result_1 > 0) return -2;    //已经存在当前配置,不能再添加了
-                configid = adal.AddConfig(cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl); //主表ID
+                configid = adal.AddConfig(cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts); //主表ID
                 result = configid;
             }
             else
-                result = adal.UpdateConfig(configid, cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl);
+                result = adal.UpdateConfig(configid, cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts);
+            if (result < 1) return result;    //如果异常就直接返回
+            foreach (var item in list)
+            {
+                result = zdal.SetZxdtScore(item.id, configid, item.number, item.lower, item.upper);
+                if (result > 0)
+                    resultnum++;
+            }
+
             return result;
         }
         /// <summary>
@@ -183,6 +202,14 @@ namespace BLL
             IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(adal.PageResult(ref Total, param));
             return list;
         }
-
+        /// <summary>
+        /// 取得在线答题流量设置
+        /// </summary>
+        /// <param name="configid"></param>
+        /// <returns></returns>
+        public IList<T_ZxdtScore> GetZxdtScore(int configid) {
+            IList<T_ZxdtScore> list = DataTableToList.ModelConvertHelper<T_ZxdtScore>.ConvertToModel(zdal.GetZxdtScore(configid));
+            return list;
+        }
     }
 }
