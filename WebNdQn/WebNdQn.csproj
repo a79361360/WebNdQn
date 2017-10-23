@@ -204,6 +204,15 @@
     <Content Include="Content\Activity\Dzp\images\telbtn.png" />
     <Content Include="Content\Activity\Dzp\images\turnplate-bg.png" />
     <Content Include="Content\Activity\Dzp\images\turnplate-pointer.png" />
+    <Content Include="Content\Activity\Zxdt\content\answer.js" />
+    <Content Include="Content\Activity\Zxdt\content\base.css" />
+    <Content Include="Content\Activity\Zxdt\content\randomQ.js" />
+    <Content Include="Content\Activity\Zxdt\content\reset.font.js" />
+    <Content Include="Content\Activity\Zxdt\content\sha1.js" />
+    <Content Include="Content\Activity\Zxdt\content\style.css" />
+    <Content Include="Content\Activity\Zxdt\content\test.html" />
+    <Content Include="Content\Activity\Zxdt\content\touch.js" />
+    <Content Include="Content\Activity\Zxdt\content\wxshare.js" />
     <Content Include="Content\Activity\Zxdt\images\b1g.png" />
     <Content Include="Content\Activity\Zxdt\images\bg.png" />
     <Content Include="Content\Activity\Zxdt\images\btn_1.png" />
@@ -302,10 +311,8 @@
     <Content Include="Views\Account\Manage.cshtml" />
     <Content Include="Views\Account\Register.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />
-    <Content Include="Views\Home\TestShare.cshtml" />
     <Content Include="Views\Home\SendLoginPost.cshtml" />
     <Content Include="Views\Home\Default.cshtml" />
-    <Content Include="Views\Home\OppoIndex.cshtml" />
     <Content Include="Views\Flow\Index.cshtml" />
     <Content Include="Views\Activity\Dzp.cshtml" />
     <Content Include="Views\Mobile\Index.cshtml" />
@@ -317,8 +324,11 @@
     <Content Include="Views\Cooper\SetCooperPortal.cshtml" />
     <Content Include="Views\Activity\ActivityDrawPortal.cshtml" />
     <Content Include="Views\Activity\ActivitySharePortal.cshtml" />
-    <Content Include="Views\Home\SIndex.cshtml" />
     <Content Include="Views\Zxdt\Index.cshtml" />
+    <Content Include="Views\Zxdt\TopicPortal.cshtml" />
+    <Content Include="Views\Zxdt\SetTopicPortal.cshtml" />
+    <Content Include="Views\Zxdt\SetZxdtPortal.cshtml" />
+    <Content Include="Views\Zxdt\ZxdtPortal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

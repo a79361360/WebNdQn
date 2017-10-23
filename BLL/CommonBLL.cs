@@ -130,37 +130,37 @@ namespace BLL
         /// 发送登入短信验证码
         /// </summary>
         /// <returns></returns>
-        public bool HttpCliendSendMsg(int ctype,int issue) {
-            HttpClient cache = (HttpClient)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_state" + issue.ToString()); //Session状态是否存在
-            if (cache == null) {
-                IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
-                if (list.Count > 0)
-                {
-                    T_CooperConfig dto = list[0];
-                    WebHttp web = new WebHttp();
-                    web.HttpCliendSendMsg(dto.corpid, dto.username);
-                    //web.SendLoginPost(dto.corpid, dto.username, dto.userpwd, ctype, issue);   //生成登入cache,等待短信
-                    //HelpWebLogin(dto.corpid, dto.username, dto.userpwd, ctype, issue);
-                }
-            }
-            return true;
-        }
+        //public bool HttpCliendSendMsg(int ctype,int issue) {
+        //    HttpClient cache = (HttpClient)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_state" + issue.ToString()); //Session状态是否存在
+        //    if (cache == null) {
+        //        IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
+        //        if (list.Count > 0)
+        //        {
+        //            T_CooperConfig dto = list[0];
+        //            WebHttp web = new WebHttp();
+        //            web.HttpCliendSendMsg(dto.corpid, dto.username);
+        //            //web.SendLoginPost(dto.corpid, dto.username, dto.userpwd, ctype, issue);   //生成登入cache,等待短信
+        //            //HelpWebLogin(dto.corpid, dto.username, dto.userpwd, ctype, issue);
+        //        }
+        //    }
+        //    return true;
+        //}
         /// <summary>
         /// HttpClient形式取得短信登入
         /// </summary>
         /// <param name="ctype"></param>
         /// <param name="issue"></param>
         /// <returns></returns>
-        public bool HttpCliendGetMsg(int ctype,int issue) {
-            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
-            if (list.Count > 0)
-            {
-                T_CooperConfig dto = list[0];
-                WebHttp web = new WebHttp();
-                web.HttpCliendGetMsg(dto.corpid, dto.username, dto.userpwd);
-            }
-            return true;
-        }
+        //public bool HttpCliendGetMsg(int ctype,int issue) {
+        //    IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
+        //    if (list.Count > 0)
+        //    {
+        //        T_CooperConfig dto = list[0];
+        //        WebHttp web = new WebHttp();
+        //        web.HttpCliendGetMsg(dto.corpid, dto.username, dto.userpwd);
+        //    }
+        //    return true;
+        //}
         /// <summary>
         /// 发送充值流量短信验证码
         /// </summary>
@@ -184,24 +184,24 @@ namespace BLL
         /// 保存需要模拟POST提交需要的数据信息
         /// </summary>
         /// <returns></returns>
-        public int SaveLoginState(string phone,int code) {
-            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(phone));
-            if (list.Count > 0) {
-                T_CooperConfig dto = list[0];
-                int ctype = dto.ctype;int issue = dto.issue;    //公司类型，活动期号
-                //HttpClient cache = (HttpClient)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_cache" + issue.ToString());    //登入cache
-                HttpClient cache = (HttpClient)HttpContext.Current.Session[ctype.ToString() + "login_cache" + issue.ToString()];
-                if (cache == null)
-                {
-                    return -1005;   //登入cache已经失效，接收到登入的短信也没有用了
-                }
-                string result = (string)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_cache" + issue.ToString() + "str");
-                WebHttp web = new WebHttp();
-                //web.TakeCodeSaveLoginState(cache, code, result);
-                web.TakeCodeSaveLoginState(cache, code, result);
-            }
-            return 1;
-        }
+        //public int SaveLoginState(string phone,int code) {
+        //    IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(phone));
+        //    if (list.Count > 0) {
+        //        T_CooperConfig dto = list[0];
+        //        int ctype = dto.ctype;int issue = dto.issue;    //公司类型，活动期号
+        //        //HttpClient cache = (HttpClient)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_cache" + issue.ToString());    //登入cache
+        //        HttpClient cache = (HttpClient)HttpContext.Current.Session[ctype.ToString() + "login_cache" + issue.ToString()];
+        //        if (cache == null)
+        //        {
+        //            return -1005;   //登入cache已经失效，接收到登入的短信也没有用了
+        //        }
+        //        string result = (string)FJSZ.OA.Common.CacheAccess.GetFromCache(ctype.ToString() + "login_cache" + issue.ToString() + "str");
+        //        WebHttp web = new WebHttp();
+        //        //web.TakeCodeSaveLoginState(cache, code, result);
+        //        web.TakeCodeSaveLoginState(cache, code, result);
+        //    }
+        //    return 1;
+        //}
         /// <summary>
         /// 取得公司的活动配置信息，下拉列表
         /// </summary>
@@ -295,83 +295,83 @@ namespace BLL
 
 
 
-        public void HelpWebSend(int ctype, int issue) {
-            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
-            if (list.Count > 0)
-            {
-                T_CooperConfig dto = list[0];
-                string baseurl = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t";
-                //访问首页
-                HttpHelper helpweb = new HttpHelper();
-                HttpItem item = new HttpItem()
-                {
-                    URL = baseurl,//URL     必需项    
-                    Method = "GET",//URL     可选项 默认为Get   
-                    ProxyIp = "ieproxy",
-                    ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
-                };
-                HttpResult result = helpweb.GetHtml(item);
-                string cookie = result.Cookie;
-                //选择短信登入
-                helpweb = new HttpHelper();
-                item = new HttpItem()
-                {
-                    URL = baseurl,//URL     必需项    
-                    Method = "POST",//URL     可选项 默认为Get   
-                    ProxyIp = "ieproxy",
-                    Cookie = cookie.ToString(),
-                    ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
-                    Postdata = "__EVENTTARGET=rbl_PType%241&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=&__VIEWSTATEGENERATOR=CC3279BD&__VIEWSTATEENCRYPTED=&LoginType=1&SMSTimes=90&SMSAliasTimes=90&txtCorpCode=&txtUserName=&rbl_PType=2&txtPd=&txtCheckCode=&txtQDLRegisterUrl=%2FADCQDLPortal%2FProduction%2FProductOrderControl.aspx"
-                };
-                //请求的返回值对象
-                result = helpweb.GetHtml(item);
-                //发送短信
-                helpweb = new HttpHelper();
-                item = new HttpItem()
-                {
-                    URL = baseurl,//URL     必需项    
-                    Method = "POST",//URL     可选项 默认为Get   
-                    ProxyIp = "ieproxy",
-                    Cookie = cookie.ToString(),
-                    ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
-                    Postdata = "__EVENTTARGET=lbtn_GetSMS&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=&__VIEWSTATEGENERATOR=CC3279BD&__VIEWSTATEENCRYPTED=&LoginType=1&SMSTimes=90&SMSAliasTimes=90&txtCorpCode=" + dto.corpid + "&txtUserName=" + dto.username + "&rbl_PType=2&SMSP=&txtCheckCode=&txtQDLRegisterUrl=%2FADCQDLPortal%2FProduction%2FProductOrderControl.aspx"
-                };
-                result = helpweb.GetHtml(item);
-                //获取请请求的Html
-                string html = result.Html;
-                //获取请求的Cookie
-                //string cookie = result.Cookie;
-                FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(dto.corpid + "_cookie", cookie.ToString(), 3600);
-            }
-        }
-        public void HelpWebLogin(int ctype, int issue) {
-            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
-            if (list.Count > 0)
-            {
-                T_CooperConfig dto = list[0];
-                string strCookies = (string)FJSZ.OA.Common.CacheAccess.GetFromCache(dto.corpid + "_cookie");
-                HttpHelper helpweb = (HttpHelper)FJSZ.OA.Common.CacheAccess.GetFromCache(dto.corpid + "_helpweb");
-                HttpItem item = new HttpItem()
-                {
-                    URL = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t",//URL     必需项    
-                    Method = "post",//URL     可选项 默认为Get
-                    ProxyIp = "ieproxy",
-                    ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值
-                    Postdata = "__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=&__VIEWSTATEGENERATOR=CC3279BD&__VIEWSTATEENCRYPTED=&LoginType=1&SMSTimes=25&SMSAliasTimes=90&txtCorpCode=" + dto.corpid + "&txtUserName=" + dto.username + "&rbl_PType=2&SMSP=" + dto.userpwd + "&txtCheckCode=&button3=%E7%99%BB%E5%BD%95&txtQDLRegisterUrl=%2FADCQDLPortal%2FProduction%2FProductOrderControl.aspx",//Post要发送的数据
-                    //Cookie = strCookies,
-                    Allowautoredirect = true,//自动跳转
-                    AutoRedirectCookie = true//是否自动处理Cookie 
-                    ,Referer= "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t"
-                };
-                //请求的返回值对象
-                HttpResult result = helpweb.GetHtml(item);
-                //获取请请求的Html
-                string html = result.Html;
-                //获取请求的Cookie
-                string cookie1 = result.Cookie;
-                string curcookie = HttpHelper.MergerCookies(strCookies, cookie1);
-            }
-        }
+        //public void HelpWebSend(int ctype, int issue) {
+        //    IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
+        //    if (list.Count > 0)
+        //    {
+        //        T_CooperConfig dto = list[0];
+        //        string baseurl = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t";
+        //        //访问首页
+        //        HttpHelper helpweb = new HttpHelper();
+        //        HttpItem item = new HttpItem()
+        //        {
+        //            URL = baseurl,//URL     必需项    
+        //            Method = "GET",//URL     可选项 默认为Get   
+        //            ProxyIp = "ieproxy",
+        //            ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
+        //        };
+        //        HttpResult result = helpweb.GetHtml(item);
+        //        string cookie = result.Cookie;
+        //        //选择短信登入
+        //        helpweb = new HttpHelper();
+        //        item = new HttpItem()
+        //        {
+        //            URL = baseurl,//URL     必需项    
+        //            Method = "POST",//URL     可选项 默认为Get   
+        //            ProxyIp = "ieproxy",
+        //            Cookie = cookie.ToString(),
+        //            ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
+        //            Postdata = "__EVENTTARGET=rbl_PType%241&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=&__VIEWSTATEGENERATOR=CC3279BD&__VIEWSTATEENCRYPTED=&LoginType=1&SMSTimes=90&SMSAliasTimes=90&txtCorpCode=&txtUserName=&rbl_PType=2&txtPd=&txtCheckCode=&txtQDLRegisterUrl=%2FADCQDLPortal%2FProduction%2FProductOrderControl.aspx"
+        //        };
+        //        //请求的返回值对象
+        //        result = helpweb.GetHtml(item);
+        //        //发送短信
+        //        helpweb = new HttpHelper();
+        //        item = new HttpItem()
+        //        {
+        //            URL = baseurl,//URL     必需项    
+        //            Method = "POST",//URL     可选项 默认为Get   
+        //            ProxyIp = "ieproxy",
+        //            Cookie = cookie.ToString(),
+        //            ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
+        //            Postdata = "__EVENTTARGET=lbtn_GetSMS&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=&__VIEWSTATEGENERATOR=CC3279BD&__VIEWSTATEENCRYPTED=&LoginType=1&SMSTimes=90&SMSAliasTimes=90&txtCorpCode=" + dto.corpid + "&txtUserName=" + dto.username + "&rbl_PType=2&SMSP=&txtCheckCode=&txtQDLRegisterUrl=%2FADCQDLPortal%2FProduction%2FProductOrderControl.aspx"
+        //        };
+        //        result = helpweb.GetHtml(item);
+        //        //获取请请求的Html
+        //        string html = result.Html;
+        //        //获取请求的Cookie
+        //        //string cookie = result.Cookie;
+        //        FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(dto.corpid + "_cookie", cookie.ToString(), 3600);
+        //    }
+        //}
+        //public void HelpWebLogin(int ctype, int issue) {
+        //    IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(dal.GetCooperConfig(ctype, issue));
+        //    if (list.Count > 0)
+        //    {
+        //        T_CooperConfig dto = list[0];
+        //        string strCookies = (string)FJSZ.OA.Common.CacheAccess.GetFromCache(dto.corpid + "_cookie");
+        //        HttpHelper helpweb = (HttpHelper)FJSZ.OA.Common.CacheAccess.GetFromCache(dto.corpid + "_helpweb");
+        //        HttpItem item = new HttpItem()
+        //        {
+        //            URL = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t",//URL     必需项    
+        //            Method = "post",//URL     可选项 默认为Get
+        //            ProxyIp = "ieproxy",
+        //            ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值
+        //            Postdata = "__EVENTTARGET=&__EVENTARGUMENT=&__LASTFOCUS=&__VIEWSTATE=&__VIEWSTATEGENERATOR=CC3279BD&__VIEWSTATEENCRYPTED=&LoginType=1&SMSTimes=25&SMSAliasTimes=90&txtCorpCode=" + dto.corpid + "&txtUserName=" + dto.username + "&rbl_PType=2&SMSP=" + dto.userpwd + "&txtCheckCode=&button3=%E7%99%BB%E5%BD%95&txtQDLRegisterUrl=%2FADCQDLPortal%2FProduction%2FProductOrderControl.aspx",//Post要发送的数据
+        //            //Cookie = strCookies,
+        //            Allowautoredirect = true,//自动跳转
+        //            AutoRedirectCookie = true//是否自动处理Cookie 
+        //            ,Referer= "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t"
+        //        };
+        //        //请求的返回值对象
+        //        HttpResult result = helpweb.GetHtml(item);
+        //        //获取请请求的Html
+        //        string html = result.Html;
+        //        //获取请求的Cookie
+        //        string cookie1 = result.Cookie;
+        //        string curcookie = HttpHelper.MergerCookies(strCookies, cookie1);
+        //    }
+        //}
 
 
 

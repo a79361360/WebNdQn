@@ -1,0 +1,154 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>SetTopicPortal</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            InitSet();
+        })
+        //选项值需要处理
+        InitSet = function () {
+            var answer = '@Model.answer';     //答案付值
+            var str = answer.split("|");
+            for (var i = 1; i < str.length + 1; i++) {
+                $("#txt_answer" + i).val(str[i - 1]);
+            }
+        }
+        //提交
+        tj = function () {
+            var id = '@Model.id'; //如果这个为0就为新增
+            var topic = $("#txt_topic").val();
+            var cooperid = $("#txt_cooperid").val();
+            var answer = MergeAnswer();
+            var kanswer = $("#txt_keyanswer").val();
+            if (answer == "-1") {
+                tips("选项里面不能出现\" | \"符号", -1);
+                return;
+            }
+            var data = {
+                id:id,
+                topic: topic,
+                cooperid: cooperid,
+                answer: answer,
+                keyanswer: kanswer
+            }
+            $.ajax({
+                type: "post",
+                url: "/Zxdt/SetZxdtTopic",
+                data: data,
+                success: function (ret) {
+                    if (ret.success)
+                        tips("提交成功", 1);
+                    else
+                        tips("提交失败", 1);
+                }
+            });
+        }
+        //合并answer
+        MergeAnswer = function () {
+            var answer1 = $("#txt_answer1").val();
+            var answer2 = $("#txt_answer2").val();
+            var answer3 = $("#txt_answer3").val();
+            var answer4 = $("#txt_answer4").val();
+            var answer5 = $("#txt_answer5").val();
+            if (!IsTextRule(answer1) || !IsTextRule(answer2) || !IsTextRule(answer3)
+                || !IsTextRule(answer4) || !IsTextRule(answer5)) {
+                return -1;
+            }
+            var result = "";
+            if (answer1 != "") 
+                result += answer1;
+            if (answer2 != "")
+                result += "|" + answer2;
+            if (answer3 != "")
+                result += "|" + answer3;
+            if (answer4 != "")
+                result += "|" + answer4;
+            if (answer5 != "")
+                result += "|" + answer5;
+            return result;
+        }
+        //判断选项中是否有"|"符号存在
+        IsTextRule = function (text) {
+            //如果存在-1,就是错误的
+            if (text.indexOf("|") > 0) 
+                return false;
+            return true;
+        }
+        //弹于信息tips
+        tips = function (content, timeout) {
+            var tipsobj = $("#myModal");
+            if (tipsobj.length > 0)
+                tipsobj.remove();
+            var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
+            tipsobj = $(BootDialog); tipsobj.modal('show');
+            if (timeout > 0) { setTimeout(function () { tipsobj.modal('hide') }, timeout * 1000); }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <form class="form-horizontal" role="form" action="/TUser/EditTUser" method="post">
+            <input type="hidden" id="txt_cooperid" value="@Model.cooperid" />
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">题目</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_topic" name="txt_topic" value="@Model.topic" placeholder="请输入题目,最多300个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">选项1</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_answer1" name="txt_answer1" placeholder="请输入选项描述,最多100个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">选项2</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_answer2" name="txt_answer2" placeholder="请输入选项描述,最多100个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">选项3</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_answer3" name="txt_answer3" placeholder="请输入选项描述,最多100个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">选项4</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_answer4" name="txt_answer4" placeholder="请输入选项描述,最多100个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">选项5</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_answer5" name="txt_answer5" placeholder="请输入选项描述,最多100个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">正确选项</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_keyanswer" name="txt_keyanswer" value="@Model.keyanswer" placeholder="请输入答案选项数字">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input type="button" onclick="tj()" class="btn btn-default" value="确认提交">
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

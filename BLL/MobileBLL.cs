@@ -300,6 +300,13 @@ namespace BLL
                         ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
                     };
                     result = helpweb.GetHtml(item);
+                    doc = NSoup.NSoupClient.Parse(result.Html);
+                    string sf_index = doc.Select(".sf_index").Html();
+                    if (string.IsNullOrEmpty(sf_index)|| string.IsNullOrEmpty(result.Cookie))
+                    {
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "GetHtmlByLoginCache 3_1_7 访问IFrame页面失败result.Cookie: " + result.Cookie + "HTML:"+ result.Html);
+                        return -6;
+                    }
                 }
                 catch (Exception er) {
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "GetHtmlByLoginCache 3_1_6 访问充值页面Iframe页面异常" + er.Message);
@@ -309,7 +316,6 @@ namespace BLL
                 //访问完token页面后得到cookie值，并取得“立即办理”这个虚拟路径URL
                 //dto.cookie += ";" + result.Cookie;  //
                 string CzCookie = result.Cookie;  //保存一个临时
-                doc = NSoup.NSoupClient.Parse(result.Html);
                 string blhref = doc.Select(".sf_index a")[0].Attr("href");      //取得虚拟路径URL
                 if (string.IsNullOrEmpty(czhost) && string.IsNullOrEmpty(blhref)) {
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "GetHtmlByLoginCache 3_1_7 获取IFrame页面上'立即办理'的URL失败");
@@ -978,11 +984,12 @@ namespace BLL
         /// <param name="lx">1为登入Session,2为充值Session</param>
         public int KeepSessionUsered(int ctype,int issue,int lx) {
             //登入
+            NSoup.Nodes.Document doc;
             if (lx == 1)
             {
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 1 类型: " + ctype + " 期号：" + issue + " 开始验证登入的有效性");
                 IList<T_LoginLogCache> list = DataTableToList.ModelConvertHelper<T_LoginLogCache>.ConvertToModel(mdal.GetLoginCache(ctype, issue));
-                string baseurl = "http://www.fj.10086.cn/power/ADCECPortal/power/PowerCheckCookier.aspx";
+                string baseurl = "http://www.fj.10086.cn/power/ADCECPortal/PowerLogin.aspx?ReturnUrl=ADCQDLPortal&test=t";
                 if (list.Count > 0)
                 {
                     T_LoginLogCache dto = list[0];
@@ -999,21 +1006,20 @@ namespace BLL
                     try
                     {
                         result = helpweb.GetHtml(item);
+                        doc = NSoup.NSoupClient.Parse(result.Html);
+                        string text = doc.Select("#pnWelCome").Html();
+                        if (string.IsNullOrEmpty(text))
+                        {
+                            Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 3  类型: " + ctype + " 期号：" + issue + " 解析登入HMTL,失败 ");
+                            return -1;
+                        }
                     }
                     catch (Exception er) {
                         Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 2 类型: " + ctype + " 期号：" + issue + "访问异常:" + er.Message);
                         return -3;
                     }
-                    if (result.StatusDescription == "OK" && result.RedirectUrl == "")
-                    {
-                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 3 类型: " + ctype + " 期号：" + issue + "登入Session有效");
-                        return 1;
-                    }
-                    else
-                    {
-                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 3  类型: " + ctype + " 期号：" + issue + " 解析登入HMTL,失败 ");
-                        return -1;
-                    }
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 3 类型: " + ctype + " 期号：" + issue + "登入Session有效");
+                    return 1;
                 }
                 else {
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 1 类型: " + ctype + " 期号：" + issue + " 超端记录异常 ");
@@ -1037,11 +1043,12 @@ namespace BLL
                     try
                     {
                         result = helpweb.GetHtml(item);
-                        if (result.StatusDescription == "OK")
+                        doc = NSoup.NSoupClient.Parse(result.Html);
+                        string content = doc.Select("#tabContenth2").Html();     //取得序列号字符串
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 1 类型: " + ctype + " 期号：" + issue + " HTML: " + result.Html);
+                        if (result.StatusDescription == "OK" && !string.IsNullOrEmpty(content))
                         {
-                            Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 1 类型: " + ctype + " 期号：" + issue + " HTML: " + result.Html);
                             return 1;   //一旦他非空,那么这个CZCookie肯定是有效的
-
                         }
                         else
                         {
@@ -1116,7 +1123,18 @@ namespace BLL
 
 
 
-
+        /// <summary>
+        /// 临时添加更新一下密码值
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="issue"></param>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public int testuppwd(int type, int issue, string code)
+        {
+            int result = mdal.UpdateConfigPwd(type, issue, code);
+            return result;
+        }
     }
     public class czcachedto {
         public string czurl { get; set; }

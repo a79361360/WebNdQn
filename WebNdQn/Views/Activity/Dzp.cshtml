@@ -25,7 +25,7 @@
         .banner{display:block;width:75%;margin-left:auto;margin-right:auto;margin-bottom: 20px;}
         .banner .turnplate{display:block;width:100%;position:relative;}
         .banner .turnplate canvas.item{width:100%;}
-        .banner .turnplate img.pointer{position:absolute;width:36%;height:40%;left:32%;top:28%;}
+        .banner .turnplate img.pointer{position:absolute;width:36%;height:40%;left:32%;top:26%;}
         .more{display: block;width: 100%;position: fixed;top: 0;left: 0;height: 150px;}
         /*.cloud{position: fixed;left: 0;top: 70%;width: 150px;}
         .cloud2{position: fixed;right: 0;top: 32%;width: 50px;}
@@ -153,6 +153,7 @@
         var cooperid = '@ViewBag.cooperid'
         var openid = '@ViewBag.openid'
         var lotteyn = '@ViewBag.lotteyn'
+        var area = '@ViewBag.areatype'
         var turnplate={
             restaraunts:[],				//大转盘奖品名称
             colors:[],					//大转盘奖品区块对应背景颜色
@@ -198,7 +199,7 @@
                     animateTo:angles+1800,
                     duration:8000,
                     callback:function (){	//回调
-                        alert('恭喜中了 ' + txt);
+                        alert('您摇中了 ' + txt+', 记得分享到朋友圈，让更多人领取到流量！');
                         turnplate.bRotate = !turnplate.bRotate;
                     }
                 });
@@ -213,7 +214,12 @@
                 //获取随机数(奖品个数范围内)
                 //var item = rnd(1,turnplate.restaraunts.length);
                 var item = takenum();   //结果
-                if(item<0){alert("摇奖失败");return}
+                if(item<0){
+                    if(item==-1002||item==-1003){alert("活动已结束!");return;}
+                    else {
+                        alert("摇奖失败");return;
+                    }
+                }
                 //奖品数量等于10,指针落在对应奖品区域的中心角度[252, 216, 180, 144, 108, 72, 36, 360, 324, 288]
                 rotateFn(item, turnplate.restaraunts[item-1]);
             });
@@ -389,14 +395,14 @@
             $.ajax({
                 type: "post",
                 url: "/Activity/DzpProb",
-                data:{cooperid:cooperid,openid:openid,phone:$("#txt_curphone").val()},
+                data:{cooperid:cooperid,openid:openid,phone:$("#txt_curphone").val(),area:area},
                 async: false,
                 success: function (ret) {
                     if(ret.success){
                         result = ret.jsonresult;    //结果附值
                         lotteyn--                   //摇奖次数减1
                     }else{
-                        result = -1;
+                        result = ret.code;
                     }
                 }
             });
@@ -417,7 +423,7 @@
                 }
             });
         }
-        //更新中奖记录手机号码
+        //添加分享记录
         activityshare = function(sharetype){
             $.ajax({
                 type: "post",
@@ -426,19 +432,40 @@
                 async: false,
                 success: function (ret) {
                     if(ret.success){
-                        alert("分享成功");
+                        location.reload();
                     }
                 }
             });
         }
         //提交手机号码
         tjphone = function(){
-            var p = checkSubmitMobil("#txt_curphone")
-            if(p){
+            var p = checkSubmitMobil("#txt_curphone");
+            var a = areaphone();    //手机号码是否符合服务器验证
+            if(p&a){
                 hidemask("guide");
             }else{
+                //框框变色
                 $("#div_curphone").addClass("has-warning");
+                var areastr=areaname(area);     //区域名称
+                alert("请输入"+areastr+"移动号码");
             }
+        }
+        //区域验证
+        areaphone = function(){
+            var phone = $("#txt_curphone").val();
+            var result = false;
+            $.ajax({
+                type: "get",
+                url: "/Activity/SignPhoneArea",
+                data:{phone:phone,area:area},
+                async: false,
+                success: function (ret) {
+                    if(ret.success){
+                        result = ret.jsonresult;
+                    }
+                }
+            });
+            return result;
         }
         //隐藏遮层
         hidemask = function(id){
@@ -449,7 +476,7 @@
         getdrawlist = function(){
             $.getJSON("/Activity/DzpDrawLog",{cooperid:cooperid,openid:openid},function(ret){
                 if(ret.success){
-                    var str="<table><tr><td>奖品名称</td><td>中奖时间</td></tr>";
+                    var str="<table><tr><td>摇奖记录</td><td>中奖时间</td></tr>";
                     $.each(ret.jsonresult,function(i,o){
                         str+="<tr><td style=\"width:40%\">"+o.prizename+"</td><td style=\"width:60%\">"+o.addtime+"</td></tr>";
                     })

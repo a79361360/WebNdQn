@@ -1,0 +1,320 @@
+﻿@model Model.WxModel.T_ActivityConfig
+@{
+    Layout = null;
+}
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>SetZxdtPortal</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#showtx,#fx_showtx").click(function () {
+                var img = $(this).attr("v");
+                if (img == null || img == "") tips("没有可以查看的图片", 1);
+                showtx(img);
+            })
+            $("#path").change(function () {
+                $("#docPath").val($(":file").val());
+            });
+            $("#fx_Path_file").change(function () {
+                $("#fx_Path_txt").val($(this).val());
+            });
+        })
+        //弹于信息tips
+        tips = function (content, timeout) {
+            var tipsobj = $("#myModal");
+            if (tipsobj.length > 0)
+                tipsobj.remove();
+            var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
+            tipsobj = $(BootDialog); tipsobj.modal('show');
+            if (timeout > 0) { setTimeout(function () { tipsobj.modal('hide') }, timeout * 1000); }
+        }
+        //弹出窗体
+        qiu_confirm = function (id, title, content, width, height) {
+            var iframe = $("#" + id);
+            if (iframe.length > 0)
+                iframe.remove();
+            if (width != null)
+                width = "style=\"width:" + width + "px\"";
+            if (height != null)
+                height = "style=\"height:" + height + "px;overflow:auto;text-align: center;\"";
+            var header = "<div class=\"modal-header\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\" id=\"myModalLabel\">" + title + "</h4></div>"
+            var footer = "<div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">关闭</button><button id=\"Tj\" type=\"button\" class=\"btn btn-primary\">修改</button></div>";
+            var BootDialog = "<div class=\"modal fade\" id=\"" + id + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"" + width + ">" + header + "<div class=\"modal-body\"" + height + ">" + content + "</div>" + footer + "</div></div></div>";
+            var obj = $(BootDialog); obj.modal('show');
+            obj.find("#Tj").click(function () {
+                alert("修改功能不在这里")
+            })
+        }
+        //展示图片
+        showtx = function (img) {
+            var content = "<img src='" + img + "'/>";
+            var imgSrc = $(content).attr("src");
+            getImageWidth(imgSrc, function (w, h) {
+                qiu_confirm("q_showtx", "查看图片", content, w + 50, h + 50);
+            });
+        }
+        //取得图片长宽
+        function getImageWidth(url, callback) {
+            var img = new Image();
+            img.src = url;
+
+            // 如果图片被缓存，则直接返回缓存数据
+            if (img.complete) {
+                callback(img.width, img.height);
+            } else {
+                // 完全加载完毕的事件
+                img.onload = function () {
+                    callback(img.width, img.height);
+                }
+            }
+
+        }
+        //点击确定上传图片,返回图片地址放到查看的按钮上
+        updateimg = function (type, fileid, showid) {
+            var vurl = $("#" + showid).attr("v");
+            if (vurl == null) vurl = "";
+            else vurl = getfilename(vurl);
+            var formData = new FormData();
+            formData.append(fileid, document.getElementById(fileid).files[0]);
+            formData.append("myfile", fileid);
+            formData.append("type", type);
+            formData.append("vurl", vurl);
+            $.ajax({
+                url: "/Cooper/UpdateImg",
+                type: "POST",
+                data: formData,
+                /**
+                *必须false才会自动加上正确的Content-Type
+                */
+                contentType: false,
+                /**
+                * 必须false才会避开jQuery对 formdata 的默认处理
+                * XMLHttpRequest会对 formdata 进行正确的处理
+                */
+                processData: false,
+                success: function (data) {
+                    if (data.success) {
+                        var text = "背景图片更新成功";
+                        if (type == "2") text = "微信分享小图标更新成功";
+                        if (type == "3") text = "公众号二维码更新成功";
+                        tips(text, 1);
+                        $("#" + showid).attr("v", data.jsonresult);
+                    }
+                },
+                error: function () {
+                    alert("上传失败！");
+                }
+            });
+        }
+        //取得图片地址的名称与后缀名
+        getfilename = function (url) {
+            url = url.split("?")[0];    //将问号部分分离掉
+            var str = url.substring(url.lastIndexOf("/") + 1, url.length);
+            if (str.lastIndexOf(".") == -1) return "";
+            //var str1 = url.substr(url.lastIndexOf("/") + 1, url.length - url.lastIndexOf("/"));
+            return str;
+        }
+        //提交部分
+        tj = function () {
+            var configid = '@Model.id'; //如果这个为0就为新增
+            var cooperid = '@ViewBag.cooperid'; //
+            var title = $("#txt_title").val();
+            var share = $("#txt_share").val();
+            var explain = $("#txt_explain").val();
+            var bgurl = $("#showtx").attr("v");
+
+            var wxtitle = $("#txt_wxtitle").val();
+            var wxdescride = $("#txt_wxdescride").val();
+            var wximgurl = $("#fx_showtx").attr("v");
+            var wxlinkurl = $("#txt_wxlinkurl").val();
+            var tmfs = $("#txt_tmfs").val();
+            var tmts = $("#txt_tmts").val();
+            var list = JSON.stringify(getlist());       //会员列表
+
+            var data = {
+                configid: configid,
+                cooperid: cooperid,
+                title: title,
+                share: share,
+                explain: explain,
+                bgurl: bgurl,
+                wxtitle: wxtitle,
+                wxdescride: wxdescride,
+                wximgurl: wximgurl,
+                wxlinkurl: wxlinkurl,
+                tmfs: tmfs,
+                tmts: tmts,
+                list: list
+            }
+            $.ajax({
+                type: "post",
+                url: "/Zxdt/SetZxdtConfig",
+                data: data,
+                success: function (ret) {
+                    if (ret.success)
+                        tips("提交成功", 1);
+                    else
+                        tips("提交失败", 1);
+                }
+            });
+        }
+        //AddList
+        addlist = function (obj) {
+            var str = "";
+            str += "<div><label class=\"col-sm-2 control-label\">0</label>";
+            str += "<div class=\"col-sm-10\">";
+            str += "<div class=\"col-sm-3\" style=\"text-align:center\"><input type=\"text\" class=\"form-control\"></div>";
+            str += "<span for=\"lastname\" class=\"col-sm-1 control-label\" style=\"text-align:center\"></span>";
+            str += "<div class=\"col-sm-3\" style=\"text-align:center\"><input type=\"text\" class=\"form-control\" value=\"1\"></div>";
+            str += "<div class=\"col-sm-3\" style=\"text-align:center\"><input type=\"text\" class=\"form-control\"></div>";
+            str += "<div class=\"col-sm-2\" style=\"text-align:center\"><input onclick=\"dellist(this)\" type=\"button\" class=\"btn btn-default\" value=\"删除\" /></div>";
+            str += "</div></div>";
+            $("#div1").append(str);
+        }
+        //前端移除list
+        dellist = function (obj) {
+            var p = $(obj).parent().parent().parent();
+            p.remove();
+        }
+        //取列表值
+        getlist = function () {
+            var _datalist = [];
+            var labelobj = $("#div1").find("label");
+            var inputobj = $("#div1").find("input:text");
+            var len = inputobj.length / 3;
+            for (var i = 0; i < len; i++) {
+                var obj = new Object();
+                obj.id = $(labelobj[i]).text();
+                obj.lower = $(inputobj[i * 3]).val();
+                obj.upper = $(inputobj[i * 3 + 1]).val();
+                obj.number = $(inputobj[i * 3 + 2]).val();
+                _datalist.push(obj);  //添加
+            }
+            return _datalist;
+        }
+
+    </script>
+</head>
+<body>
+    <div class="container">
+        <form class="form-horizontal" role="form" action="/TUser/EditTUser" method="post">
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">标题</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_title" name="txt_title" value="@Model.title" placeholder="请输入标题,最多20个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">分享</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_share" name="txt_share" value="@Model.share" placeholder="成功分享之前当前用户增加几次摇奖机会">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">说明</label>
+                <div class="col-sm-10">
+                    <textarea type="text" rows="3" class="form-control" id="txt_explain" name="txt_explain" value="@Model.explain" placeholder="说明备注,允许输入400字">@Model.explain</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">背景图片</label>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <input id="docPath" type="text" class="form-control">
+                        <span id="scan" style="position: relative" class="btn btn-primary input-group-addon">浏览<input id="path" style="width: 60px;height:40px; position: absolute;top:-6px;left: -4px;opacity: 0; filter:alpha(opacity=0)" class="form-control" type="file"></span>
+                    </div>
+                </div>
+                <div class="col-sm-1">
+                    <input id="qdxgtx" onclick="updateimg(1, 'path', 'showtx')" type="button" class="btn btn-default" value="确定" />
+                </div>
+                <div class="col-sm-3">
+                    <input id="showtx" v="@Model.bgurl" type="button" class="btn btn-default" value="查看" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">微信标题</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_wxtitle" name="txt_title" value="@Model.wx_title" placeholder="请输入标题,最多20个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">微信描述</label>
+                <div class="col-sm-10">
+                    <textarea type="text" rows="3" class="form-control" id="txt_wxdescride" name="txt_descride" value="@Model.wx_descride" placeholder="说明备注">@Model.wx_descride</textarea>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">微信分享小图标</label>
+                <div class="col-sm-6">
+                    <div class="input-group">
+                        <input id="fx_Path_txt" type="text" class="form-control">
+                        <span style="position: relative" class="btn btn-primary input-group-addon">浏览<input id="fx_Path_file" style="width: 60px;height:40px; position: absolute;top:-6px;left: -4px;opacity: 0; filter:alpha(opacity=0)" class="form-control" type="file"></span>
+                    </div>
+                </div>
+                <div class="col-sm-1">
+                    <input id="fx_qd" onclick="updateimg(2, 'fx_Path_file', 'fx_showtx')" type="button" class="btn btn-default" value="确定" />
+                </div>
+                <div class="col-sm-3">
+                    <input id="fx_showtx" v="@Model.wx_imgurl" type="button" class="btn btn-default" value="查看" />
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">微信分享链接</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_wxlinkurl" name="txt_linkurl" value="@Model.wx_linkurl" placeholder="请输入在微信分享时需要分享的链接">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">题目分数</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_tmfs" name="txt_tmfs" value="@Model.dt_fs" placeholder="请输入每一题的题目分数">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">题目条数</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_tmts" name="txt_tmts" value="@Model.dt_tmts" placeholder="请输入每次答题的条数">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">流量设置</label>
+                <div class="col-sm-10">
+                    <label for="lastname" class="col-sm-3 control-label" style="text-align:center">下限区间</label>
+                    <label for="lastname" class="col-sm-1 control-label" style="text-align:center"><=</label>
+                    <label for="lastname" class="col-sm-3 control-label" style="text-align:center">上限区间</label>
+                    <label for="lastname" class="col-sm-3 control-label" style="text-align:center">流量大小</label>
+                    <div class="col-sm-2" style="text-align:center"><input onclick="addlist(this)" type="button" class="btn btn-default" value="添加" /></div>
+                </div>
+                <div id="div1">
+                    @foreach (var item in ViewBag.list)
+                    {
+                        <div>
+                            <label class="col-sm-2 control-label">@item.id</label>
+                            <div class="col-sm-10">
+                                <div class="col-sm-3" style="text-align:center"><input type="text" class="form-control" value="@item.lower"></div>
+                                <span for="lastname" class="col-sm-1 control-label" style="text-align:center"></span>
+                                <div class="col-sm-3" style="text-align:center"><input type="text" class="form-control" value="@item.upper"></div>
+                                <div class="col-sm-3" style="text-align:center"><input type="text" class="form-control" value="@item.number"></div>
+                                <div class="col-sm-2" style="text-align:center"><input onclick="dellist(this)" type="button" class="btn btn-default" value="删除" /></div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input type="button" onclick="tj()" class="btn btn-default" value="确认提交">
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

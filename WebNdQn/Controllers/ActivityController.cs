@@ -19,7 +19,10 @@ namespace WebNdQn.Controllers
         WeiXinBLL wxll = new WeiXinBLL();
         AdminBLL adbll = new AdminBLL();
         CommonBLL bll = new CommonBLL();
-        // GET: Activity
+        /// <summary>
+        /// 大转盘这里是入口/activity/index?ctype=1&issue=1
+        /// </summary>
+        /// <returns></returns>
         public ActionResult Index()
         {
             int ctype = 0, issue = 1;
@@ -69,6 +72,7 @@ namespace WebNdQn.Controllers
                 ViewBag.timestamp = timestamp;
                 ViewBag.noncestr = noncestr;
                 ViewBag.signatrue = signatrue;
+                ViewBag.areatype = dto.areatype;        //1为宁德2为莆田
 
                 //ViewBag.title = dto.title;              //标题
                 //ViewBag.desc = dto.descride;            //描述
@@ -111,28 +115,64 @@ namespace WebNdQn.Controllers
             return View();
         }
         /// <summary>
+        /// 验证手机号
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SignPhoneArea() {
+            if (Request["area"] == null || Request["phone"] == null) {
+                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            }
+            string area = Request["area"].ToString();
+            string phone = Request["phone"].ToString();
+            string txtpath = "/Content/Txt/pwebconfig.txt";
+            if (area == "2") txtpath = "/Content/Txt/putianconfig.txt";
+            string path = Server.MapPath(txtpath);
+            bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
+            return JsonFormat(new ExtJson { success = true, msg = "返回结果", jsonresult = result });
+        }
+        /// <summary>
         /// 摇奖
         /// </summary>
         /// <returns></returns>
         public ActionResult DzpProb() {
             int cooperid = 0;
-            string openid = ""; string phone = "";
-            if (Request.Form["cooperid"] != null && Request.Form["openid"] != null && Request.Form["phone"] != null)
+            string openid = ""; string phone = "";string area = "";
+            if (Request.Form["cooperid"] != null && Request.Form["openid"] != null && Request.Form["phone"] != null && Request.Form["area"] != null)
             {
                 cooperid = Convert.ToInt32(Request.Form["cooperid"]);
                 openid = Request.Form["openid"];
                 phone = Request.Form["phone"];
+                area = Request.Form["area"];
+                //验证手机号码
+                string txtpath = "/Content/Txt/pwebconfig.txt";
+                if (area == "2") txtpath = "/Content/Txt/putianconfig.txt";
+                string path = Server.MapPath(txtpath);
+                bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
+                if (!result)
+                    return JsonFormat(new ExtJson { success = false, code = -1000, msg = "手机号码不符合活动规则." });
+                //验证摇奖次数
                 int lotteyn = Abll.GetOpenidCount(cooperid, 1, openid);
                 if (lotteyn < 1) 
-                    return JsonFormat(new ExtJson { success = false, code = -1000, msg = "已无摇奖次数.", jsonresult = 0 });
+                    return JsonFormat(new ExtJson { success = false, code = -1001, msg = "已无摇奖次数.", jsonresult = 0 });
+                //查询配置
                 T_ActivityConfig dto = Abll.FindActivityConfigByCooperid(cooperid);
+                //奖品抽完
+                var list = Abll.FindConfigList(dto.id);
+                int pcount = 0, dcount = 0;
+                foreach (var item in list) {
+                    pcount += item.count;dcount += item.drowcount;
+                }
+                if (pcount == dcount)
+                    return JsonFormat(new ExtJson { success = false, code = -1002, msg = "活动已结束.", jsonresult = 0 });
+                //概率非等于0.99
                 float f = Abll.GetWinProb(dto.id);
                 if (f != Convert.ToSingle(0.99))
-                    return JsonFormat(new ExtJson { success = false, code = -1000, msg = "参数配置错误.", jsonresult = 0 });
+                    return JsonFormat(new ExtJson { success = false, code = -1003, msg = "参数配置错误,或者活动结束.", jsonresult = 0 });
+                //取得摇奖结果
                 int resultnum = Abll.Getprob(cooperid, openid, phone);
                 return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功.", jsonresult = resultnum });
             }
-            return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败.", jsonresult = 0 });
+            return JsonFormat(new ExtJson { success = false, code = -1004, msg = "失败.", jsonresult = 0 });
         }
         /// <summary>
         /// 取得当前活动的奖品记录
@@ -252,7 +292,7 @@ namespace WebNdQn.Controllers
             int pageSize = Convert.ToInt32(Request["pageSize"]);
             int Total = 0;
 
-            var list = adbll.GetActivity_Page(1, name, value, pageSize, pageIndex, ref Total);
+            var list = Abll.GetActivity_Page(1, name, value, pageSize, pageIndex, ref Total);
             if (list.Count > 0)
                 return JsonFormat(new ExtJsonPage { success = true, code = 1000, msg = "查询成功", total = Total, list = list });
             else
@@ -260,8 +300,9 @@ namespace WebNdQn.Controllers
         }
         public ActionResult RemoveActivity() {
             string data = Request.Form["data"];  //用户的IDS数组
+            string type = Request.Form["type"];  //1大转盘,2在线答题
             IList<IdListDto> list = SerializeJson<IdListDto>.JSONStringToList(data);
-            int result = Abll.RemoveActivitys(list);
+            int result = Abll.RemoveActivitys(list, Convert.ToInt32(type));
             if (result == list.Count)
                 return JsonFormat(new ExtJson { success = true, msg = "删除成功！共删除" + result });
             else

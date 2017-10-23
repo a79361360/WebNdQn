@@ -46,6 +46,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlPageParam.cs" />
     <Compile Include="WeiXinDAL.cs" />
+    <Compile Include="ZxdtDAL.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Common\Common.csproj">

@@ -234,7 +234,8 @@ namespace BLL
             return result;
         }
         public T_ActivityConfig FindActivityConfigByCooperid(int cooperid) {
-            IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(adal.GetActivityZb(cooperid));
+            //1为大转盘
+            IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(adal.GetActivityZb(cooperid, 1));
             T_ActivityConfig dto = new T_ActivityConfig();
             if (list.Count > 0){
                 dto = list[0];
@@ -276,11 +277,13 @@ namespace BLL
             //新增
             if (configid == 0)
             {
-                configid = adal.AddConfig(cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl); //主表ID
+                int result_1 = adal.IsExistActivity(cooperid, 1);
+                if (result_1 > 0) return -2;    //已经存在当前配置,不能再添加了
+                configid = adal.AddConfig(cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, 0, 0); //主表ID
                 result = configid;
             }
             else
-                result = adal.UpdateConfig(configid, cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl);
+                result = adal.UpdateConfig(configid, cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, 0, 0);
             if (result < 1) return result;    //如果异常就直接返回
             foreach (var item in list)
             {
@@ -290,7 +293,7 @@ namespace BLL
             }
             return result;
         }
-        public int RemoveActivitys(IList<IdListDto> ids)
+        public int RemoveActivitys(IList<IdListDto> ids,int type)
         {
             int sresult = 0;    //成功的数量
             if (ids.Count == 0)
@@ -303,6 +306,12 @@ namespace BLL
                     {
                         int gid = item.id;        //ID
                         int result = adal.ActivityRemoveById(gid);
+                        //大转盘
+                        if (result > 0 && type == 1)
+                            adal.ActivityListRemoveById(gid);
+                        //在线答题
+                        if (result > 0 && type == 2)
+                            adal.ZxdtScoreRemoveById(gid);
                         sresult = sresult + result;
                     }
                 }
@@ -343,6 +352,42 @@ namespace BLL
         /// <returns></returns>
         public IList<T_ActivityDrawLog> GetDrawList(int cooperid,int type,string openid) {
             IList<T_ActivityDrawLog> list = DataTableToList.ModelConvertHelper<T_ActivityDrawLog>.ConvertToModel(adal.ActivityDrawList(cooperid, type, openid));
+            return list;
+        }
+        /// <summary>
+        /// 查询活动主表配置列表
+        /// </summary>
+        /// <param name="type">1大转盘,2在线答题</param>
+        /// <param name="name">条件name</param>
+        /// <param name="value">条件value</param>
+        /// <param name="pageSize"></param>
+        /// <param name="pageIndex"></param>
+        /// <param name="Total"></param>
+        /// <returns></returns>
+        public IList<T_ActivityConfig> GetActivity_Page(int type, string name, string value, int pageSize, int pageIndex, ref int Total)
+        {
+            string filter = "";
+            if (name != "-1")
+            {
+                filter += name + " like '%" + value + "%'";
+            }
+            if (type > 0)
+            {
+                if (!string.IsNullOrEmpty(filter))
+                    filter += " and type=" + type;
+                else
+                    filter += " type=" + type;
+            }
+            SqlPageParam param = new SqlPageParam();
+            param.TableName = "V_ActivityConfig";
+            param.PrimaryKey = "id";
+            param.Fields = "id,cooperid,ctype,type,title,share,explain,bgurl";
+            param.PageSize = pageSize;
+            param.PageIndex = pageIndex;
+            param.Filter = filter;
+            param.Group = "";
+            param.Order = "id";
+            IList<T_ActivityConfig> list = DataTableToList.ModelConvertHelper<T_ActivityConfig>.ConvertToModel(adal.PageResult(ref Total, param));
             return list;
         }
     }
