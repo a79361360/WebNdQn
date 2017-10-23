@@ -54,6 +54,7 @@
     <Compile Include="WxModel\T_TakeFlowLog.cs" />
     <Compile Include="WxModel\T_TopicBank.cs" />
     <Compile Include="WxModel\T_WxUserInfo.cs" />
+    <Compile Include="WxModel\T_ZxdtScore.cs" />
     <Compile Include="WxModel\Wx_Share.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
