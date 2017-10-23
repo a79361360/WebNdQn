@@ -1038,7 +1038,11 @@ namespace BLL
                     {
                         result = helpweb.GetHtml(item);
                         if (result.StatusDescription == "OK")
+                        {
+                            Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 1 类型: " + ctype + " 期号：" + issue + " HTML: " + result.Html);
                             return 1;   //一旦他非空,那么这个CZCookie肯定是有效的
+
+                        }
                         else
                         {
                             FJSZ.OA.Common.CacheAccess.RemoveCache(ctype + "_czcache_" + issue);
