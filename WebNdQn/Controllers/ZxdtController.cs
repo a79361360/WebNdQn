@@ -64,54 +64,50 @@ namespace WebNdQn.Controllers
                     }
                 }
                 if (string.IsNullOrEmpty(openid))
-                {
                     return Content("授权失败");
-                }
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
+                #region 获取微信用户的openid
+                ViewBag.openid = openid;
+                #endregion
+                ViewBag.cooperid = dto.id;
+                //取得当前用户还可摇几次，需要用到openid
+                ViewBag.lotteyn = Abll.GetOpenidCount(dto.id, 2, ViewBag.openid);
+                //手机号码
+                ViewBag.curphone = Abll.GetActivityPhone(dto.id, 2, ViewBag.openid);
+                #region 分享到朋友
+                if (dto != null)
+                {
+                    long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
+                    string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
+                    string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
+                    ViewBag.appid = Wx_config.appid;        //分享到朋友，这里的appid用的是自己公司的，域名只能自己操作
+                    ViewBag.timestamp = timestamp;
+                    ViewBag.noncestr = noncestr;
+                    ViewBag.signatrue = signatrue;
+                    ViewBag.areatype = dto.areatype;        //1为宁德2为莆田
+                }
+                #endregion
 
-                //业务细节,参考大转盘
+                var dto_act = zbll.GetByCooperId(dto.id, 2);                //取得在线答题配置信息
+                ViewBag.score = dto_act.dt_fs;      //每个题目的分数
+                ViewBag.explain = dto_act.explain;  //答题的说明
+                #region 取得题目列表b
+                var list = zbll.GetDttsTopic(39, dto_act.dt_tmts);
+                List<questions> qdtolist = new List<questions>();
+                questions qdto;
+                foreach (var item in list)
+                {
+                    qdto = new questions();
+                    qdto.question = item.topic;
+                    string[] sstr = item.answer.Split('|');
+                    qdto.answers = sstr;
+                    qdto.correctAnswer = item.keyanswer;
+                    qdtolist.Add(qdto);
+                }
+                string json = JsonConvert.SerializeObject(qdtolist);
+                ViewBag.json = json;
+                #endregion 取得题目列表e
             }
-            #region 获取微信用户的openid
-            WxJsApi_token dto1 = wxll.Wx_Auth_AccessToken(dto.wx_appid, dto.wx_secret, code);
-            if (dto1.openid == null)
-                return Redirect("/Activity/Index?ctype=" + ctype + "&issue=" + issue);  //进行一次重新跳转
-            //return JsonFormat(new ExtJson { success = false, msg = "微信用户信息不正确" });
-            ViewBag.openid = dto1.openid;
-            Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "dto1.openid :" + dto1.openid);
-            //ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkY";
-            #endregion
-            #region 分享到朋友
-            if (dto != null)
-            {
-                long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
-                string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
-                string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
-                ViewBag.appid = Wx_config.appid;        //分享到朋友，这里的appid用的是自己公司的，域名只能自己操作
-                ViewBag.timestamp = timestamp;
-                ViewBag.noncestr = noncestr;
-                ViewBag.signatrue = signatrue;
-                ViewBag.areatype = dto.areatype;        //1为宁德2为莆田
-            }
-            #endregion
-            ViewBag.explain = "游戏规则Test";
-            var dto_act = zbll.GetByCooperId(39, 2);                //取得在线答题配置信息
-            ViewBag.score = dto_act.dt_fs;  //每个题目的分数
-
-            #region 取得题目列表b
-            var list = zbll.GetDttsTopic(39, dto_act.dt_tmts);
-            List<questions> qdtolist = new List<questions>();
-            questions qdto;
-            foreach (var item in list) {
-                qdto = new questions();
-                qdto.question = item.topic;
-                string[] sstr = item.answer.Split('|');
-                qdto.answers = sstr;
-                qdto.correctAnswer = item.keyanswer;
-                qdtolist.Add(qdto);
-            }
-            string json = JsonConvert.SerializeObject(qdtolist);
-            ViewBag.json = json;
-            #endregion 取得题目列表e
 
             return View();
         }
