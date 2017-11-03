@@ -68,13 +68,15 @@ namespace WebNdQn.Controllers
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
                 #region 获取微信用户的openid
                 ViewBag.openid = openid;
+                //ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkL";
                 #endregion
+                //cooperid
                 ViewBag.cooperid = dto.id;
                 //取得当前用户还可摇几次，需要用到openid
                 ViewBag.lotteyn = Abll.GetOpenidCount(dto.id, 2, ViewBag.openid);
                 //手机号码
                 ViewBag.curphone = Abll.GetActivityPhone(dto.id, 2, ViewBag.openid);
-                #region 分享到朋友
+                #region 分享到朋友 基础数据
                 if (dto != null)
                 {
                     long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
@@ -89,10 +91,25 @@ namespace WebNdQn.Controllers
                 #endregion
 
                 var dto_act = zbll.GetByCooperId(dto.id, 2);                //取得在线答题配置信息
+                if (dto_act == null) 
+                    return Content("在线答题配置为空");
+                string ptitle = "在线答题"; string bgurl = "/Content/Img/bg/body_bg2.png"; string explain = "暂时没有游戏说明";
+                ptitle = dto_act.title; bgurl = string.IsNullOrEmpty(dto_act.bgurl) == false ? bgurl = dto_act.bgurl : ""; explain = dto_act.explain.Replace("\n", "<br/>");
+                ViewBag.ptitle = ptitle;            //页面的标题
+                ViewBag.bgurl = bgurl;              //页面的背景
+                ViewBag.explain = explain;          //答题的说明
                 ViewBag.score = dto_act.dt_fs;      //每个题目的分数
-                ViewBag.explain = dto_act.explain;  //答题的说明
+                ViewBag.sright = dto_act.sright;    //是否显化答案
+
+                #region 分享到朋友 具体数据
+                ViewBag.title = dto_act.wx_title;              //标题
+                ViewBag.desc = dto_act.wx_descride;            //描述
+                ViewBag.imgurl = WebHelp.GetCurHttpHost() + dto_act.wx_imgurl;            //图片地址
+                ViewBag.linkurl = dto_act.wx_linkurl;          //链接地址
+                #endregion
+
                 #region 取得题目列表b
-                var list = zbll.GetDttsTopic(39, dto_act.dt_tmts);
+                var list = zbll.GetDttsTopic(dto.id, dto_act.dt_tmts);
                 List<questions> qdtolist = new List<questions>();
                 questions qdto;
                 foreach (var item in list)
@@ -108,17 +125,17 @@ namespace WebNdQn.Controllers
                 ViewBag.json = json;
                 #endregion 取得题目列表e
             }
-
             return View();
         }
         public ActionResult SubmitZxdt() {
-            int cooperid = 0; string openid = ""; string phone = ""; string area = "";
-            if (Request.Form["cooperid"] != null && Request.Form["openid"] != null && Request.Form["phone"] != null && Request.Form["area"] != null)
+            int cooperid = 0, score = 0; string openid = ""; string phone = ""; string area = "";
+            if (Request.Form["cooperid"] != null && Request.Form["openid"] != null && Request.Form["phone"] != null && Request.Form["area"] != null && Request.Form["score"] != null)
             {
                 cooperid = Convert.ToInt32(Request.Form["cooperid"]);
                 openid = Request.Form["openid"];
                 phone = Request.Form["phone"];
                 area = Request.Form["area"];
+                score = Convert.ToInt32(Request.Form["score"]);
                 //验证手机号码
                 string txtpath = "/Content/Txt/pwebconfig.txt";
                 if (area == "2") txtpath = "/Content/Txt/putianconfig.txt";
@@ -130,18 +147,50 @@ namespace WebNdQn.Controllers
                 int lotteyn = Abll.GetOpenidCount(cooperid, 2, openid);
                 if (lotteyn < 1)
                     return JsonFormat(new ExtJson { success = false, code = -1000, msg = "已无摇奖次数.", jsonresult = 0 });
-                //查询配置
-                T_ActivityConfig dto = Abll.FindActivityConfigByCooperid(cooperid);
-                float f = Abll.GetWinProb(dto.id);
-                if (f != Convert.ToSingle(0.99))
-                    return JsonFormat(new ExtJson { success = false, code = -1000, msg = "参数配置错误.", jsonresult = 0 });
                 //取得摇奖结果
-                int resultnum = Abll.Getprob(cooperid, openid, phone);
-                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功.", jsonresult = resultnum });
+                int resultnum = zbll.SubmitZxdt(cooperid, openid, phone, score);
+                if (resultnum > 0)
+                    return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功.", jsonresult = resultnum });
+                return JsonFormat(new ExtJson { success = false, code = -1000, msg = "提交失败.", jsonresult = 0 });
             }
             return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败.", jsonresult = 0 });
         }
+        /// <summary>
+        /// 在线答题分享
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ZxdtShare()
+        {
+            int cooperid = 0; string openid = ""; int sharetype = 0;
+            if (Request.Form["cooperid"] != null && Request.Form["openid"] != null && Request.Form["sharetype"] != null)
+            {
+                cooperid = Convert.ToInt32(Request.Form["cooperid"]);
+                openid = Request.Form["openid"];
+                sharetype = Convert.ToInt32(Request.Form["sharetype"]);
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "方法ZxdtShare cooperid :" + cooperid + " openid: " + openid + " sharetype: " + sharetype);
+                int result = Abll.ActivityeShare(cooperid, 2, openid, sharetype);
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "方法ZxdtShare result :" + result);
+                if (result == 1) return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功." });
+                else return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败." });
+            }
+            return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败." });
+        }
+        /// <summary>
+        /// 查询答题记录
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult ZxdtDrawLog() {
+            if (Request["cooperid"] == null || Request["openid"] == null)
+                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
 
+            string cooperid = Request["cooperid"].ToString();       //cooperid
+            string openid = Request["openid"].ToString();            //微信的openid
+            var list = zbll.GetDrawList(Convert.ToInt32(cooperid), 2, openid);
+            if (list.Count > 0)
+                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "查询成功.", jsonresult = list });
+            else
+                return JsonFormat(new ExtJson { success = false, code = -1000, msg = "没有中奖记录.", jsonresult = null });
+        }
         #region 题库部分
         /// <summary>
         /// 后台查询题库页面
@@ -233,7 +282,7 @@ namespace WebNdQn.Controllers
         public ActionResult ZxdtPortal() {
             return View();
         }
-        //后台提交在线答题方法
+        //后台提交设置在线答题方法
         public ActionResult SetZxdtConfig() {
             string configid = Request.Form["configid"];             //配置ID,0新增,其他更新
             string cooperid = Request.Form["cooperid"];             //客户的ID号
@@ -248,10 +297,11 @@ namespace WebNdQn.Controllers
             string wxlinkurl = Request.Form["wxlinkurl"];           //微信分享时的链接地址
             string tmfs = Request.Form["tmfs"];                     //每题的分数
             string tmts = Request.Form["tmts"];                     //随机抽取题库的条数
+            string sright = Request.Form["sright"];                 //是否显化答案
             string list = Request.Form["list"];                     //流量配置列表
 
             IList<T_ZxdtScore> Configlist = FrameWork.Common.SerializeJson<T_ZxdtScore>.JSONStringToList(list);    //流量配置列表
-            int result = zbll.SetZxdtConfig(Convert.ToInt32(configid), Convert.ToInt32(cooperid), title, Convert.ToInt32(share), explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, Convert.ToInt32(tmfs), Convert.ToInt32(tmts), Configlist);
+            int result = zbll.SetZxdtConfig(Convert.ToInt32(configid), Convert.ToInt32(cooperid), title, Convert.ToInt32(share), explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, Convert.ToInt32(tmfs), Convert.ToInt32(tmts), Convert.ToInt32(sright), Configlist);
             if (result > 0)
                 return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功." });
             else if (result == -2) {
@@ -259,7 +309,7 @@ namespace WebNdQn.Controllers
             }else
                 return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败." });
         }
-        //后台列表查询方法
+        //后台查询在线答题的方法
         public ActionResult ZxdtListSearch()
         {
             string name = Request["name"].ToString();       //用户手机号码
@@ -274,7 +324,20 @@ namespace WebNdQn.Controllers
             else
                 return JsonFormat(new ExtJsonPage { success = false, code = -1000, msg = "查询失败" });
         }
-        
+        //查询在线答题的答题记录
+        public ActionResult ZxdtDrawPortal() {
+            ViewBag.CooperDrop = bll.GetCooperConfigDrop(1);    //取得配置信息列表
+            return View();
+        }
+        //查询在线答题的方法
+        public ActionResult ZxdtDrawSearch() {
+            string cooperid = Request["cooperid"].ToString();     //cooperid
+            string phone = Request["phone"].ToString();     //用户手机号码
+            string state = Request["state"].ToString();    //状态
+
+            var list = zbll.ZxdtDrawList_Search(Convert.ToInt32(cooperid), phone, Convert.ToInt32(state));
+            return JsonFormat(new ExtJson { success = true, code = 1000, msg = "查询成功", jsonresult = list });
+        }
     }
     public class questions {
         public string question { get; set; }

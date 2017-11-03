@@ -85,6 +85,34 @@ namespace BLL
             return dal.TakeFlowLog(ctype, issue, phone, openid);
         }
         /// <summary>
+        /// 删除flow记录
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public int RemoveFlowLog(IList<IdListDto> ids)
+        {
+            int sresult = 0;    //成功的数量
+            if (ids.Count == 0)
+                throw new ArgumentNullException();
+            else
+            {
+                try
+                {
+                    foreach (var item in ids)
+                    {
+                        int gid = item.id;        //ID
+                        int result = dal.RemoveFlowLog(gid);
+                        sresult = sresult + result;
+                    }
+                }
+                catch
+                {
+                    return -1000;
+                }
+            }
+            return sresult;
+        }
+        /// <summary>
         /// 取得传送过来的验证码信息
         /// </summary>
         /// <param name="type">1登入验证码，2充值验证码</param>

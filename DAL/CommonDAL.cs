@@ -238,6 +238,20 @@ namespace DAL
             parameter[3].Value = openid;
             return dal.IntExtSql(sql, parameter);
         }
+        /// <summary>
+        /// 删除flow记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int RemoveFlowLog(int id) {
+            string sql = "DELETE FROM [T_TakeFlowLog] WHERE id=@id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@id",SqlDbType.Int)
+            };
+            parameter[0].Value = id;
+            return dal.IntExtSql(sql, parameter);
+        }
         public DataTable FindFlowLogByCtype(int ctype, int issue)
         {
             string sql = "SELECT [ctype],[issue],[phone],[state],[addtime] FROM [T_TakeFlowLog] Where ctype=@ctype and issue=@issue and state=0";

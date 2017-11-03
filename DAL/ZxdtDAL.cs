@@ -37,7 +37,7 @@ namespace DAL
         /// </summary>
         /// <returns></returns>
         public DataTable GetDttsTopic(int cooperid, int tmts) {
-            string sql = "SELECT TOP "+ tmts + " [id],[cooperid],[topic],[answer],[keyanswer],[addtime] FROM T_TopicBank WHERE cooperid = @cooperid ORDER BY NEWID()";
+            string sql = "SELECT TOP "+ tmts + " [id],[cooperid],[topic],[answer],[keyanswer],[addtime] FROM T_TopicBank WHERE cooperid = @cooperid ORDER BY id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@cooperid",SqlDbType.Int),
@@ -130,6 +130,45 @@ namespace DAL
                 new SqlParameter("@configid",SqlDbType.Int)
             };
             parameter[0].Value = configid;
+            return dal.ExtSql(sql, parameter);
+        }
+        /// <summary>
+        /// 取得在线答题的列表
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="type"></param>
+        /// <param name="openid"></param>
+        /// <returns></returns>
+        public DataTable ZxdtDrawList(int cooperid, int type, string openid)
+        {
+            string sql = "SELECT configlistid score,Convert(nvarchar(19),addtime,120) addtime FROM T_ActivityDrawLog";
+            sql += " WHERE cooperid = @cooperid and openid = @openid and type = @type";
+            SqlParameter[] parameter = new[]
+                        {
+                new SqlParameter("@cooperid",SqlDbType.Int),
+                new SqlParameter("@openid",SqlDbType.NVarChar,50),
+                new SqlParameter("@type",SqlDbType.Int),
+            };
+            parameter[0].Value = cooperid;
+            parameter[1].Value = openid;
+            parameter[2].Value = type;
+            return dal.ExtSql(sql, parameter);
+        }
+        public DataTable ZxdtDrawList_Search(string filter, int cooperid, string phone, int state)
+        {
+            string sql = "SELECT a.id,a.type,a.openid,a.phone,a.configlistid score,c.number,a.state,Convert(nvarchar(19),a.addtime,120) addtime";
+            sql += " FROM T_ActivityDrawLog a";
+            sql += " INNER JOIN T_ActivityConfig b ON a.cooperid = b.cooperid";
+            sql += " INNER JOIN T_ZxdtScore c ON b.id = c.configid" + filter;
+            SqlParameter[] parameter = new[]
+                        {
+                new SqlParameter("@cooperid",SqlDbType.Int),
+                new SqlParameter("@phone",SqlDbType.NVarChar,20),
+                new SqlParameter("@state",SqlDbType.Int)
+            };
+            parameter[0].Value = cooperid;
+            parameter[1].Value = phone;
+            parameter[2].Value = state;
             return dal.ExtSql(sql, parameter);
         }
     }

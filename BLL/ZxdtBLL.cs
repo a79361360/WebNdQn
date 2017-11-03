@@ -143,19 +143,19 @@ namespace BLL
         /// <param name="wximgurl"></param>
         /// <param name="wxlinkurl"></param>
         /// <returns></returns>
-        public int SetZxdtConfig(int configid, int cooperid, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl,int tmfs,int tmts, IList<T_ZxdtScore> list) {
+        public int SetZxdtConfig(int configid, int cooperid, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl,int tmfs, int tmts, int sright, IList<T_ZxdtScore> list) {
             int result = 0; int resultnum = 0;
-            if (string.IsNullOrEmpty(bgurl)) { bgurl = "/Content/Activity/Dzp/images/body_bg1.jpg"; }
+            if (string.IsNullOrEmpty(bgurl)) bgurl = "";
             //新增
             if (configid == 0)
             {
                 int result_1 = adal.IsExistActivity(cooperid, 2);
                 if (result_1 > 0) return -2;    //已经存在当前配置,不能再添加了
-                configid = adal.AddConfig(cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts); //主表ID
+                configid = adal.AddConfig(cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts, sright); //主表ID
                 result = configid;
             }
             else
-                result = adal.UpdateConfig(configid, cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts);
+                result = adal.UpdateConfig(configid, cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts, sright);
             if (result < 1) return result;    //如果异常就直接返回
             foreach (var item in list)
             {
@@ -209,6 +209,49 @@ namespace BLL
         /// <returns></returns>
         public IList<T_ZxdtScore> GetZxdtScore(int configid) {
             IList<T_ZxdtScore> list = DataTableToList.ModelConvertHelper<T_ZxdtScore>.ConvertToModel(zdal.GetZxdtScore(configid));
+            return list;
+        }
+        /// <summary>
+        /// 提交答题信息
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="openid"></param>
+        /// <param name="phone">手机号码</param>
+        /// <param name="score">答题分数</param>
+        /// <returns></returns>
+        public int SubmitZxdt(int cooperid, string openid, string phone,int score) {
+            int result = adal.HandleActivity(1, cooperid, 2, openid, phone, score);
+            return result;
+        }
+        /// <summary>
+        /// 取得用户在线答题的列表
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="type"></param>
+        /// <param name="openid"></param>
+        /// <returns></returns>
+        public IList<T_ActivityDrawLog> GetDrawList(int cooperid, int type, string openid)
+        {
+            IList<T_ActivityDrawLog> list = DataTableToList.ModelConvertHelper<T_ActivityDrawLog>.ConvertToModel(zdal.ZxdtDrawList(cooperid, type, openid));
+            return list;
+        }
+        /// <summary>
+        /// 后台查询在线答题记录
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="phone"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public IList<T_ActivityDrawLog> ZxdtDrawList_Search(int cooperid, string phone, int state)
+        {
+            string filter = " WHERE a.type=2 AND (a.configlistid>c.lower AND a.configlistid<=c.upper)";
+            if (cooperid != -1)
+                filter += " and a.cooperid=@cooperid";
+            if (!string.IsNullOrEmpty(phone))
+                filter += " and a.phone=@phone";
+            if (state != -1)
+                filter += " and a.state=@state";
+            IList<T_ActivityDrawLog> list = DataTableToList.ModelConvertHelper<T_ActivityDrawLog>.ConvertToModel(zdal.ZxdtDrawList_Search(filter, cooperid, phone, state));
             return list;
         }
     }

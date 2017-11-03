@@ -33,6 +33,7 @@ namespace BLL
             }
             if (!string.IsNullOrEmpty(filter))
                 filter = "where" + filter;
+            filter += " order by addtime";
             IList<T_TakeFlowLog> list = DataTableToList.ModelConvertHelper<T_TakeFlowLog>.ConvertToModel(dal.FlowList(filter, ctype, issue, phone));
             return list;
         }
@@ -108,6 +109,23 @@ namespace BLL
             if (!string.IsNullOrEmpty(filter))
                 filter = "where" + filter;
             IList<T_ShareLog> list = DataTableToList.ModelConvertHelper<T_ShareLog>.ConvertToModel(dal.ActivityShareList(filter, cooperid, atype, sharetype));
+            return list;
+        }
+        public IList<T_MsgCode> GetMsgCodeList(int type,string phone) {
+            string filter = "";
+            if (type != -1)
+                filter += " type=@type";
+            if (!string.IsNullOrEmpty(phone))
+            {
+                if (!string.IsNullOrEmpty(filter))
+                    filter += " and phone=@phone";
+                else
+                    filter += " phone=@phone";
+            }
+            if (!string.IsNullOrEmpty(filter))
+                filter = "where" + filter;
+            filter += " order by addtime desc";
+            IList<T_MsgCode> list = DataTableToList.ModelConvertHelper<T_MsgCode>.ConvertToModel(dal.MsgCodeList(filter, type, phone));
             return list;
         }
     }

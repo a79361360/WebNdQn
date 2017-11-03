@@ -112,5 +112,19 @@ namespace WebNdQn.Controllers
             else
                 return JsonFormat(new ExtJson { success = false, msg = "删除失败！共" + list.Count + " 成功" + result });
         }
+        //查询短信页面
+        public ActionResult MsgCodePortal() {
+            return View();
+        }
+        public ActionResult MsgCodeAction() {
+            string phone = Request["phone"].ToString();     //用户手机号码
+            string type = Request["type"].ToString();     //公司类型
+
+            if (!type.IsInt())
+                return JsonFormat(new ExtJson { success = false, msg = "输入的条件格式错误" });
+
+            var list = abll.GetMsgCodeList(Convert.ToInt32(type), phone);
+            return JsonFormat(new ExtJson { success = true, code = 1000, msg = "查询成功", jsonresult = list });
+        }
     }
 }

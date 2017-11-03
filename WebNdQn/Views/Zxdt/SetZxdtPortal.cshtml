@@ -24,6 +24,8 @@
             $("#fx_Path_file").change(function () {
                 $("#fx_Path_txt").val($(this).val());
             });
+            //初始化调用
+            init();
         })
         //弹于信息tips
         tips = function (content, timeout) {
@@ -137,6 +139,7 @@
             var wxlinkurl = $("#txt_wxlinkurl").val();
             var tmfs = $("#txt_tmfs").val();
             var tmts = $("#txt_tmts").val();
+            var sright = $("input[name='sright']:checked").val();
             var list = JSON.stringify(getlist());       //会员列表
 
             var data = {
@@ -152,6 +155,7 @@
                 wxlinkurl: wxlinkurl,
                 tmfs: tmfs,
                 tmts: tmts,
+                sright: sright,
                 list: list
             }
             $.ajax({
@@ -200,7 +204,11 @@
             }
             return _datalist;
         }
-
+        //初始化调用
+        init = function () {
+            var right = '@Model.sright';
+            $("input:radio[value='" + right + "']").attr('checked', 'true');
+        }
     </script>
 </head>
 <body>
@@ -282,6 +290,17 @@
                 <label for="firstname" class="col-sm-2 control-label">题目条数</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="txt_tmts" name="txt_tmts" value="@Model.dt_tmts" placeholder="请输入每次答题的条数">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">显化答案</label>
+                <div class="col-sm-10">
+                    <label class="radio-inline">
+                        <input type="radio" name="sright" id="optionsRadios3" value="1">是
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="sright" id="optionsRadios4" value="2" checked>否
+                    </label>
                 </div>
             </div>
             <div class="form-group">

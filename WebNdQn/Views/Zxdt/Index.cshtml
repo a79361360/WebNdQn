@@ -8,17 +8,20 @@
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
-    <title>Index</title>
+    <title>@ViewBag.ptitle</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/Activity/Zxdt/style.css?v=4" rel="stylesheet" />
     
-    <link href="~/Content/Activity/Zxdt/style.css?v=2" rel="stylesheet" />
-    @*<link href="~/Content/bootstrap.min.css" rel="stylesheet" />*@
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    <script src="~/Content/Activity/Zxdt/quiz.js?v=5"></script>
+    <script src="~/Content/Activity/Zxdt/quiz.js?v=10"></script>
+    <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js" type="text/javascript"></script>
+    <script src="~/Scripts/commonaction.js?v=1"></script>
     <script type="text/javascript">
         var cooperid = '@ViewBag.cooperid';
         var openid = '@ViewBag.openid';
         var lotteyn = '@ViewBag.lotteyn';   //答题次数
         var area = '@ViewBag.areatype'
+        var sright = '@ViewBag.sright';     //是否显化答案
         //var init = { 'questions': [{ 'question': 'jQuery是什么？', 'answers': ['JavaScript库', 'CSS库', 'PHP框架', '以上都不是'], 'correctAnswer': 1 }, { 'question': '找出不同类的一项?', 'answers': ['写字台', '沙发', '电视', '桌布'], 'correctAnswer': 3 }, { 'question': '国土面积最大的国家是：', 'answers': ['美国', '中国', '俄罗斯', '加拿大'], 'correctAnswer': 3 }, { 'question': '月亮距离地球多远？', 'answers': ['18万公里', '38万公里', '100万公里', '180万公里'], 'correctAnswer': 2}] };
         function HTMLDecode(text) {
             var temp = document.createElement("div");
@@ -38,7 +41,6 @@
             $(".demo").hide();  //先隐藏答题部分
             $("#btn").click(function () {
                 if(parseFloat(lotteyn)<1){alert("没有可答题的次数");return;}
-                alert($("#txt_curphone").val())
                 if($("#txt_curphone").val()==""){_system._guide("guide");return;}
                 if(openid==""){alert("微信授权失败,重新点击链接");return;}
 
@@ -46,7 +48,55 @@
                 $(".bg").hide();
                 $(".nav-start").click();
             })
+            //返回首页
+            $(".back-home").click(function(){
+                window.location.href=window.location.href+"&id="+10000*Math.random();
+            })
         });
+        //添加分享记录
+        activityshare = function(sharetype){
+            $.ajax({
+                type: "post",
+                url: "/Zxdt/ZxdtShare",
+                data:{cooperid:cooperid,openid:openid,sharetype:sharetype},
+                async: false,
+                success: function (ret) {
+                    if(ret.success){
+                        window.location.href=window.location.href+"&id="+10000*Math.random();
+                    }
+                }
+            });
+        }
+        //提交手机号码
+        tjphone = function(){
+            var p = checkSubmitMobil("#txt_curphone");
+            var a = areaphone();    //手机号码是否符合服务器验证
+            if(p&a){
+                hidemask("guide");
+            }else{
+                //框框变色
+                $("#div_curphone").addClass("has-warning");
+                var areastr=areaname(area);     //区域名称
+                alert("请输入"+areastr+"移动号码");
+            }
+        }
+        //区域验证
+        areaphone = function(){
+            var phone = $("#txt_curphone").val();
+            var result = false;
+            $.ajax({
+                type: "get",
+                url: "/Activity/SignPhoneArea",
+                data:{phone:phone,area:area},
+                async: false,
+                success: function (ret) {
+                    if(ret.success){
+                        result = ret.jsonresult;
+                    }
+                }
+            });
+            return result;
+        }
         //隐藏遮层
         hidemask = function (id) {
             _system.$("cover").style.display = "none";
@@ -54,9 +104,18 @@
         }
         //点击排行榜
         getranklist = function () {
-            
+            $.getJSON("/Zxdt/ZxdtDrawLog",{cooperid:cooperid,openid:openid},function(ret){
+                if(ret.success){
+                    var str="<table style=\"width: 100%;\"><tr><td>答题分数</td><td>答题时间</td></tr>";
+                    $.each(ret.jsonresult,function(i,o){
+                        str+="<tr><td style=\"width:40%\">"+o.score+"</td><td style=\"width:60%\">"+o.addtime+"</td></tr>";
+                    })
+                    str+="</table>";
+                    $("#dbox_jp .hdgz-area").html(str);
+                }
+            })
+            _system._guide('dbox_jp');
         }
-
     </script>
     <style type="text/css">
         .bg {
@@ -70,7 +129,7 @@
         }
 
         .div_c {
-            padding-top: 100%;
+            padding-top: 99%;
         }
 
             .div_c div {
@@ -88,7 +147,7 @@
             /*background: url("../Content/Activity/Zxdt/images/btn_1.png") center center no-repeat;*/
             background-size: cover;
             width: 22%;
-            height: 35%;
+            height: 30px;
             margin-right:30px;
             display: inline-block;
         }
@@ -96,7 +155,7 @@
             /*background: url("../Content/Activity/Zxdt/images/btn_1.png") center center no-repeat;*/
             background-size: cover;
             width: 22%;
-            height: 35%;
+            height: 30px;
             margin-left:30px;
             display: inline-block;
         }
@@ -172,6 +231,7 @@
             width: 260px;
             height: 180px;
         }
+        
     </style>
 </head>
 <body>
@@ -209,31 +269,150 @@
         </div>
     </div>
     <div id="dbox_jp" class="dialog-box">
-        <div><h1>查看奖品</h1><span class="btn-close" onclick="hidemask('dbox_jp')">关闭弹窗</span></div>
+        <div><h1>答题详情</h1><span class="btn-close" onclick="hidemask('dbox_jp')">关闭弹窗</span></div>
         <div class="hdgz-area">
-            暂时没有中奖记录
+            暂时没有答题详情
         </div>
     </div>
 
     <div class="bg">
         <form class="form-horizontal div_c" role="form">
-            <div class="form-group">
-                <div class="col-sm-12">
-                    <span id="btn" class="btn_1"></span>
-                </div>
+            <div class="col-sm-12">
+                <span id="btn" class="btn_1"></span>
             </div>
-            <div class="form-group">
+            <div>
                 <span id="btn1" class="btn_2 col-sm-6" onclick="javascript:_system._guide('dbox');"></span>
                 <span id="btn2" class="btn_3 col-sm-6" onclick="getranklist()"></span>
             </div>
         </form>
     </div>
     <div class="demo">
-        <div id='quiz-container'>
-        </div>
+        <div id='quiz-container'></div>
     </div>
     <br />
     <script type="text/javascript">
+        //改变背景
+        chg_bg = function(){
+            var bgurl = '@ViewBag.bgurl';
+            if(bgurl!=""){
+                $(".bg")[0].style.backgroundImage="url("+bgurl+")";
+            }
+        }
+        chg_bg();   //初始调用，改变背景图
+        $(function () {
+            //_system._guide("dbox");
+            wx.config({
+                debug: false,
+                appId: '@ViewBag.appid',
+                timestamp: @ViewBag.timestamp,
+                nonceStr: '@ViewBag.noncestr',
+                signature: '@ViewBag.signatrue',
+                jsApiList: [
+                  'checkJsApi',
+                  'onMenuShareTimeline',
+                  'onMenuShareAppMessage',
+                  'onMenuShareQQ',
+                  'onMenuShareWeibo',
+                  'onMenuShareQZone',
+                  'hideMenuItems',
+                  'showMenuItems',
+                  'hideAllNonBaseMenuItem',
+                  'showAllNonBaseMenuItem',
+                  'translateVoice',
+                  'startRecord',
+                  'stopRecord',
+                  'onVoiceRecordEnd',
+                  'playVoice',
+                  'onVoicePlayEnd',
+                  'pauseVoice',
+                  'stopVoice',
+                  'uploadVoice',
+                  'downloadVoice',
+                  'chooseImage',
+                  'previewImage',
+                  'uploadImage',
+                  'downloadImage',
+                  'getNetworkType',
+                  'openLocation',
+                  'getLocation',
+                  'hideOptionMenu',
+                  'showOptionMenu',
+                  'closeWindow',
+                  'scanQRCode',
+                  'chooseWXPay',
+                  'openProductSpecificView',
+                  'addCard',
+                  'chooseCard',
+                  'openCard'
+                ]
+            });
+            wx.ready(function () {
+                // 2. 分享接口
+                // 2.1 监听“分享给朋友”，按钮点击、自定义分享内容及分享结果接口
+                wx.onMenuShareAppMessage({
+                    title: '@ViewBag.title',
+                    desc: '@ViewBag.desc',
+                    link: '@ViewBag.linkurl',
+                    imgUrl: '@ViewBag.imgurl',
+                    trigger: function (res) {
+                        // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+                        //alert('用户点击发送给朋友');
+                    },
+                    success: function (res) {
+                        activityshare(1);   //调用分享后添加摇奖次数的方法
+                        //alert('已分享');
+                    },
+                    cancel: function (res) {
+                        //alert('已取消');
+                    },
+                    fail: function (res) {
+                        alert(JSON.stringify(res));
+                    }
+                });
+                // 2.2 监听“分享到朋友圈”按钮点击、自定义分享内容及分享结果接口
+                wx.onMenuShareTimeline({
+                    title: '@ViewBag.title',
+                    link: '@ViewBag.linkurl',
+                    imgUrl: '@ViewBag.imgurl',
+                    trigger: function (res) {
+                        // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+                        //alert('用户点击分享到朋友圈');
+                    },
+                    success: function (res) {
+                        activityshare(2);   //调用分享后添加摇奖次数的方法
+                        //alert('已分享');
+                    },
+                    cancel: function (res) {
+                        //alert('已取消');
+                    },
+                    fail: function (res) {
+                        alert(JSON.stringify(res));
+                    }
+                });
+                // 2.3 监听“分享到QQ”按钮点击、自定义分享内容及分享结果接口
+                wx.onMenuShareQQ({
+                    title: '@ViewBag.title',
+                    desc: '@ViewBag.desc',
+                    link: '@ViewBag.linkurl',
+                    imgUrl: '@ViewBag.imgurl',
+                    trigger: function (res) {
+                        alert('用户点击分享到QQ');
+                    },
+                    complete: function (res) {
+                        alert(JSON.stringify(res));
+                    },
+                    success: function (res) {
+                        alert('已分享');
+                    },
+                    cancel: function (res) {
+                        alert('已取消');
+                    },
+                    fail: function (res) {
+                        alert(JSON.stringify(res));
+                    }
+                });
+            });
+        })
         var _system = {
             $: function (id) { return document.getElementById(id); },
             _client: function () {

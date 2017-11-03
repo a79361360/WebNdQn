@@ -129,17 +129,10 @@
             })
         }
         window.setInterval(function () { timedown() }, 1000);
+        //定义一个60秒的变量,一分钟内只能发一条充值短信
+        var tsix = 0;
         //每秒减1
         timedown = function () {
-            //var ztimes = $("#btn_ztimes").val();
-            //var curtimes1 = parseFloat(ztimes) - 1;
-            //$("#btn_ztimes").val(curtimes1);
-            //$("#btn_ztimes").text(curtimes1 + '秒');
-            //if (parseFloat(curtimes1) < 0) {
-            //    $("#btn_ztimes").val(1500);
-            //    keepzsession();
-            //}
-
             var ctimes = $("#btn_ctimes").val();
             curtimes1 = parseFloat(ctimes) - 1;
             $("#btn_ctimes").val(curtimes1);
@@ -148,7 +141,14 @@
                 $("#btn_ctimes").val(250);
                 forulist();
             }
+            //60秒短信减少
+            if (tsix > 0) tsix--;
         }
+        //另一种思路,10秒一执行
+        //timedown = function () {
+        //    //60秒短信减少
+        //    if (tsix > 0) tsix--;
+        //}
         var isl = true;     //与lindex一起来判断,当前的ctype是否结束,true为可进行,false为不能进行下一个
         var lindex = 0;     //单子td的索引值
         var len = 0;        //共有几个单子
@@ -159,14 +159,25 @@
             if (text != "监控中") return;      //如果没处于监控中,后面将不执行
             var list = $(".tdcls");
             if (list.length == 0) { tips("没有需要监控的单子", 2); return; }   //没有列表,需要先点击查询,将列表查询出来
-            lindex = 0;len = list.length;       //初始化遍历变量
+            lindex = 0; len = list.length;       //初始化遍历变量
+            clearInterval(ulist_timer);
             ulist_timer = setInterval(function () { execute_one(list) }, 10000);    //定时器初始化,每10秒去调用一次
         }
+        //另一种思路,10秒一执行
+        //forulist = function () {
+        //    var text = $("#monit").text();      //取得监控按钮的值
+        //    if (text != "监控中") return;      //如果没处于监控中,后面将不执行
+        //    var list = $(".tdcls");
+        //    if (list.length == 0) { tips("没有需要监控的单子", 2); return; }   //没有列表,需要先点击查询,将列表查询出来
+        //    lindex = 0; len = list.length;       //初始化遍历变量
+        //    ulist_timer = setInterval(function () { execute_one(list) }, 10000);    //定时器初始化,每10秒去调用一次
+        //}
         //开始调用
         execute_one = function (list) {
             //如果索引已经超过列表最大值,就清空定时器Return
             if (lindex > (len - 1)) {
-                console.log("execute_one > clearInterval"); clearInterval(ulist_timer);
+                console.log("execute_one > clearInterval");
+                clearInterval(ulist_timer);
                 return;
             }
             list.css("background-color", "white");          //清空所有背景色,方便看到目前在执行哪个单子
@@ -174,12 +185,32 @@
             var ctype = $(list[lindex]).text().trim();      //取得当前ctype的值
             var issue = 1;                                  //issue的值
             if (ctype.trim() == "") return;                 //如果出现ctype为空的情况,就直接不做,理论上是不可能出现的
-            console.log("lindex=" + lindex + "(len - 1)=" + (len - 1));
-            if (isl) {
+            console.log("lindex=" + lindex + "(len - 1)=" + (len - 1) + "tsix=" + tsix);
+            if (isl && tsix==0) {
                 isl = false;
                 One(ctype, issue);
             };
         }
+        //另一种思路,10秒一执行
+        //execute_one = function (list) {
+        //    //如果索引已经超过列表最大值,就清空定时器Return
+        //    if (lindex > (len - 1)) {
+        //        console.log("execute_one > clearInterval");
+        //        //另一种思路,不走250秒一次的.就是遍历列表,10秒调用一次,如果遇到成功发送充值短信的我们就等60秒,否则就是10秒走一个index索引
+        //        lindex = 0; len = list.length;
+        //        return;
+        //    }
+        //    list.css("background-color", "white");          //清空所有背景色,方便看到目前在执行哪个单子
+        //    $(list[lindex]).css("background-color", "red"); //当前单了设置成红色
+        //    var ctype = $(list[lindex]).text().trim();      //取得当前ctype的值
+        //    var issue = 1;                                  //issue的值
+        //    if (ctype.trim() == "") return;                 //如果出现ctype为空的情况,就直接不做,理论上是不可能出现的
+        //    console.log("lindex=" + lindex + "(len - 1)=" + (len - 1) + "tsix=" + tsix);
+        //    if (isl && tsix == 0) {
+        //        isl = false;
+        //        One(ctype, issue);
+        //    };
+        //}
         //修改isl标识和lindex索引,认为当前单子结束,可执行下一个单子
         execute_case = function () {
             isl = true;
@@ -191,6 +222,10 @@
             $.getJSON("/Mobile/One", { ctype: ctype, issue: issue }, function (ret) {
                 if (ret.code == -1001) {
                     Two(ctype, issue);  //充值Session失效,
+                } else if (ret.code == 1000) {
+                    tips(ret.msg, 2);
+                    execute_case();
+                    tsix = 60;          //只有这里的充值短信发送成功需要设置一下这个60秒的变量
                 }
                 else {
                     tips(ret.msg, 2);

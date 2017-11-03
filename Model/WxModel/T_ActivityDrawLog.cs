@@ -17,6 +17,8 @@ namespace Model.WxModel
         public string prizename { get; set; }
         public int state { get; set; }
         public string addtime { get; set; }
+        public int score { get; set; }
+        public int number { get; set; }
 
     }
 }

@@ -273,17 +273,18 @@ namespace BLL
         }
         public int SetDzpConfig(int configid,int cooperid,string title,int share,string explain,string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl, IList<T_ActivityConfigList> list) {
             int result = 0;
-            int resultnum = 0; if (string.IsNullOrEmpty(bgurl)) { bgurl = "/Content/Activity/Dzp/images/body_bg1.jpg"; }
+            int resultnum = 0;
+            if (string.IsNullOrEmpty(bgurl)) bgurl = "";
             //新增
             if (configid == 0)
             {
                 int result_1 = adal.IsExistActivity(cooperid, 1);
                 if (result_1 > 0) return -2;    //已经存在当前配置,不能再添加了
-                configid = adal.AddConfig(cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, 0, 0); //主表ID
+                configid = adal.AddConfig(cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, 0, 0, 1); //主表ID
                 result = configid;
             }
             else
-                result = adal.UpdateConfig(configid, cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, 0, 0);
+                result = adal.UpdateConfig(configid, cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, 0, 0, 1);
             if (result < 1) return result;    //如果异常就直接返回
             foreach (var item in list)
             {

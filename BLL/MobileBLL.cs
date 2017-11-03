@@ -517,7 +517,10 @@ namespace BLL
                 {
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "plyhfp 3_2_7 开始解析文件上传返回空值");
                     dlcgdto dto = JsonConvert.DeserializeObject<dlcgdto>(resposeresult);
-                    if (dto.chAmount != null & dto.chAmount.IsNum())
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "plyhfp 3_2_8 dto.model_1"+ dto.model_1);
+                    //List<string> tlist = (List<string>)dto.model_1;
+                    //if (dto.chAmount != null & dto.chAmount.IsNum())
+                    if (dto.model_1.Length == 0)
                     {
                         Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "plyhfp 3_2_8 解析文件上传返回结果正常");
                         IMPORT_CODE = dto.model_2;  //重新附值---只有导入成功以后才会有值
@@ -1142,7 +1145,7 @@ namespace BLL
     }
     public class dlcgdto {
         public int errorCode { get; set; }
-        public object model_1 { get; set; }
+        public string[] model_1 { get; set; }
         public object model_0 { get; set; }
         public string model_2 { get; set; }
         public string chAmount { get; set; }

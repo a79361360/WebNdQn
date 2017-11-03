@@ -26,6 +26,7 @@ namespace Model.WxModel
         public string wx_linkurl { get; set; }
         public int dt_fs { get; set; }
         public int dt_tmts { get; set; }
+        public int sright { get; set; }
 
     }
 }

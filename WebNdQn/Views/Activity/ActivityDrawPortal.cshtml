@@ -89,7 +89,7 @@
                                         <li><a href="#" v_val="-1">默认</a></li>
                                         @foreach (var item in (List<T_CooperConfig>)ViewBag.CooperDrop)
                                         {
-                                            <li><a href="#" v_val="@item.id">@item.title</a></li>
+                                            <li><a href="#" v_val="@item.id">@item.ctype - @item.title</a></li>
                                         }
                                     </ul>
                                 </div>

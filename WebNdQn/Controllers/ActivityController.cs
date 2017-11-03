@@ -99,11 +99,13 @@ namespace WebNdQn.Controllers
             #region 大转盘的背景图和标题,活动说明
             if (dto != null)
             {
-                string ptitle = "大转盘";string bgurl = "/Content/Activity/Dzp/images/bg_oppo.png";string explain = "暂时没有游戏说明";
+                string ptitle = "大转盘";string bgurl = "/Content/img/bg/body_bg1.jpg"; string explain = "暂时没有游戏说明";
                 T_ActivityConfig dtoc = Abll.FindActivityConfigByCooperid(ViewBag.cooperid);
                 if (dtoc != null)
                 {
-                    ptitle = dtoc.title;bgurl = dtoc.bgurl; explain = dtoc.explain.Replace("\n", "<br/>");
+                    ptitle = dtoc.title;
+                    bgurl = string.IsNullOrEmpty(dtoc.bgurl) == false ? bgurl = dtoc.bgurl : "";
+                    explain = dtoc.explain.Replace("\n", "<br/>");
                     ViewBag.title = dtoc.wx_title;              //标题
                     ViewBag.desc = dtoc.wx_descride;            //描述
                     ViewBag.imgurl = WebHelp.GetCurHttpHost() + dtoc.wx_imgurl;            //图片地址

@@ -32,9 +32,9 @@
         //当滚动条的位置处于距顶部100像素以下时，跳转链接出现，否则消失
         showup = function () {
             $(window).scroll(function () {
-                if ($(window).scrollTop() > 100) 
+                if ($(window).scrollTop() > 100)
                     $("#back-to-top").fadeIn(1500);
-                else 
+                else
                     $("#back-to-top").fadeOut(1500);
             });
             //当点击跳转链接后，回到页面顶部位置
@@ -54,12 +54,13 @@
         searchlist = function (url, data) {
             $.getJSON(url, data, function (ret) {
                 if (ret.code == 1000) {
-                    var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:45px;\">序号</th><th style=\"width:119px;\">Ctype</th><th style=\"width:118px;\">手机号码</th><th style=\"width:118px;\">充值状态</th><th style=\"width:118px;\">添加时间</th></tr></thead>";
+                    var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:45px;\">序号</th><th style=\"width:119px;\">Ctype</th><th style=\"width:118px;\">手机号码</th><th style=\"width:118px;\">充值状态</th><th style=\"width:118px;\">添加时间</th></tr></thead>";
                     $.each(ret.jsonresult, function (i, o) {
-                        str += "<tr><td>" + (parseInt(i) + 1) + "</td><td>" + o.ctype + "</td><td>" + o.phone + "</td><td>" + BoolText(o.state) + "</td><td>" + o.addtime + "</td></tr>";
+                        str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td>" + (parseInt(i) + 1) + "</td><td>" + o.ctype + "</td><td>" + o.phone + "</td><td>" + BoolText(o.state) + "</td><td>" + o.addtime + "</td></tr>";
                     })
                     str += "</table>";
                     $("#ulist").html(str);
+                    $("#allqx").click(function () { togglechg(); })
                 }else
                     tips("查询失败.", 1);
             })
@@ -111,8 +112,8 @@
         BoolText = function (v) {
             if (v == 0) return "待充值";
             else if (v == 1) return "充值完成";
-            else if (v == 2) return "充值失败";
-
+            else if (v == 2) return "充值中";
+            else return "充值失败";
         }
         //试玩名称
         function ReUname(utype) {
@@ -145,6 +146,106 @@
                     }
                 }
             })
+        }
+        //随机字符串
+        function randomString(len) {
+            len = len || 32;
+            var $chars = 'ABCDEFGHJKMNPQRSTWXYZabcdefhijkmnprstwxyz2345678';    /****默认去掉了容易混淆的字符oOLl,9gq,Vv,Uu,I1****/
+            var maxPos = $chars.length;
+            var pwd = '';
+            for (i = 0; i < len; i++) {
+                pwd += $chars.charAt(Math.floor(Math.random() * maxPos));
+            }
+            return pwd;
+        }
+        //弹窗ID，标题，文字内容，宽度，高度
+        qiu_confirm = function (id, title, content, width, height) {
+            var iframe = $("#" + id);
+            if (iframe.length > 0) {
+                iframe.modal('show');
+                return;
+            }
+            if (width != null) {
+                width = "style=\"width:" + width + "px\"";
+            }
+            if (height != null) {
+                height = "style=\"height:" + height + "px;overflow:auto\"";
+            }
+            var header = "<div class=\"modal-header\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\" id=\"myModalLabel\">" + title + "</h4></div>"
+            var footer = "<div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">取消</button><button id=\"Tj\" type=\"button\" class=\"btn btn-primary\">确定</button></div>";
+            var BootDialog = "<div class=\"modal fade\" id=\"" + id + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"" + width + ">" + header + "<div class=\"modal-body\"" + height + ">" + content + "</div>" + footer + "</div></div></div>";
+            var obj = $(BootDialog); obj.modal('show');
+            obj.find("#Tj").click(function () {
+                var url = "/Flow/AddFlow";
+                var phone = $("#txt_phone").val();
+                var ctype = $("#field").attr("v_val");  //类型
+                var issue = 1;
+                var openid = randomString(10);      //取得一个字符串当做openid
+                if (phone == "") {
+                    alert("手机号码不能为空"); return;
+                }
+                var data = {
+                    phone: phone,
+                    ctype: ctype,
+                    issue: issue,
+                    openid: openid
+                }
+                $.post(url, data, function (ret) {
+                    if (ret.success) {
+                        tips("添加成功.", 1);
+                    } else {
+                        tips("添加失败.", 1);
+                    }
+                });
+                obj.modal('hide');
+            })
+        }
+        //新增
+        NewFlow = function () {
+            var ctype = $("#field").attr("v_val");  //类型
+            console.log(ctype)
+            if (parseInt(ctype) < 1) {
+                alert("请先选择一个单子类型."); return;
+            }
+            var str = "";
+            str += "<div class=\"form-group\"><label for=\"firstname\" class=\"col-sm-2 control-label\">手机号码</label><div class=\"col-sm-10\"><input type=\"text\" class=\"form-control\" id=\"txt_phone\" name=\"txt_tmts\" placeholder=\"没有做判断限制,请自行输入正确的移动手机号码\"></div></div>";
+            qiu_confirm("q_addflow", "添加充值记录", str, 600, 80);
+        }
+        //点击全选
+        togglechg = function () {
+            var qx = $("#allqx");
+            var tr = $("#ulist tbody tr")
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (qx.prop("checked")) eachobj.prop("checked", true); else eachobj.prop("checked", false);
+            })
+        }
+        //删除充值记录
+        RemoveById = function () {
+            if (confirm("确定要清空数据吗?")) {
+                var list = [];      //数组对象，将
+                var data;           //元素对象
+                var tr = $("#ulist tbody tr");
+                $.each(tr, function (i, e) {
+                    var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                    if (eachobj.prop("checked")) {
+                        data = new Object();    //元素对象实例
+                        data.id = eachobj.val();
+                        list.push(data);
+                    }
+                })
+                if (list.length < 1) {
+                    tips("未选中任何行", 2); return;
+                }
+                $.post("/Flow/RemoveFlow", { data: JSON.stringify(list) }, function (ret) {
+                    if (ret.success) {
+                        tips(ret.msg, 2);
+                        $("#search").click();
+                    } else
+                        tips(ret.msg, 2);
+                })
+            }
         }
     </script>
     <style type="text/css">
@@ -205,7 +306,7 @@
                                         <li><a href="#" v_val="-1">默认</a></li>
                                         @foreach (var item in (List<T_CooperConfig>)ViewBag.CooperDrop)
                                         {
-                                            <li><a href="#" v_val="@item.ctype">@item.title</a></li>
+                                            <li><a href="#" v_val="@item.ctype">@item.ctype -@item.title</a></li>
                                         }
                                     </ul>
                                 </div>
@@ -217,6 +318,10 @@
                 </form>
             </div>
             <div class="panel-body">
+                <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="NewFlow()">新增</button></div>
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="RemoveById()">删除</button></div>
+                </div>
                 <div id="ulist"></div>
                 <div id="page" class="m-pagination"></div>
             </div>

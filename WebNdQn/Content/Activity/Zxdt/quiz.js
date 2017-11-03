@@ -5,6 +5,7 @@
             startImg: '/content/activity/zxdt/images/start.gif',
             endText: '已结束!',
             shortURL: null,
+            //sendResultsURL: null,
             sendResultsURL: "/Zxdt/SubmitZxdt",
             resultComments: {
                 perfect: '你是爱因斯坦么?',
@@ -25,7 +26,7 @@
         var superContainer = $(this),
         answers = [],
         introFob = '	<div class="intro-container slide-container"><a class="nav-start" href="#">正在载入题目？</a></div>	',//<br/><br/><span><img src="'+config.startImg+'"></span>
-        exitFob = '<div class="results-container slide-container"><div class="question-number">' + config.endText + '</div><div class="result-keeper"></div></div><div class="notice">请选择一个选项！</div><div class="progress-keeper" ><div class="progress"></div></div>',
+        exitFob = '<div class="results-container slide-container" style="background-image: url(../Content/Activity/Zxdt/images/last.png);background-repeat: no-repeat;background-size: 100%;height: 700px;"><div class="question-number">' + config.endText + '</div><div class="back-home"></div><div class="result-keeper-title"></div><div class="result-keeper"></div></div><div class="notice">请选择一个选项！</div><div class="progress-keeper" ><div class="progress"></div></div>',
         contentFob = '',
         questionsIteratorIndex,
         answersIteratorIndex;
@@ -36,7 +37,10 @@
                 //console.log(config.questions[questionsIteratorIndex].correctAnswer)
                 var text = 0;
                 if (answersIteratorIndex == config.questions[questionsIteratorIndex].correctAnswer - 1) {
-                    text = "<span style=\"font-weight: bold;\">" + config.questions[questionsIteratorIndex].answers[answersIteratorIndex] + "</span>";
+                    if (sright == 1)
+                        text = "<span style=\"font-weight: bold;\">" + config.questions[questionsIteratorIndex].answers[answersIteratorIndex] + "</span>";
+                    else
+                        text = config.questions[questionsIteratorIndex].answers[answersIteratorIndex];
                 } else {
                     text = config.questions[questionsIteratorIndex].answers[answersIteratorIndex];
                 }
@@ -149,21 +153,28 @@
             superContainer.find('li.selected').each(function(index) {
                 userAnswers.push($(this).parents('.answers').children('li').index($(this).parents('.answers').find('li.selected')) + 1);
             });
-            if (config.sendResultsURL !== null) {
-                var collate = [];
-                for (r = 0; r < userAnswers.length; r++) {
-                    collate.push('{"questionNumber":"' + parseInt(r + 1, 10) + '", "userAnswer":"' + userAnswers[r] + '"}');
-                }
-                console.log(collate);
-                $.ajax({
-                    type: 'POST',
-                    url: config.sendResultsURL,
-                    data: '{"answers": [' + collate.join(",") + ']}',
-                    complete: function() {
-                        console.log("OH HAI");
-                    }
-                });
-            }
+            //提交部分往后移动有分数的位置
+            //if (config.sendResultsURL !== null) {
+            //    var collate = [];
+            //    for (r = 0; r < userAnswers.length; r++) {
+            //        collate.push('{"questionNumber":"' + parseInt(r + 1, 10) + '", "userAnswer":"' + userAnswers[r] + '"}');
+            //    }
+            //    var data = {
+            //        cooperid: cooperid,
+            //        openid: openid,
+            //        phone: $("#txt_curphone").val(),
+            //        area: area,
+
+            //    }
+            //    $.ajax({
+            //        type: 'POST',
+            //        url: config.sendResultsURL,
+            //        data: '{"answers": [' + collate.join(",") + ']}',
+            //        complete: function() {
+            //            console.log("OH HAI");
+            //        }
+            //    });
+            //}
             progressKeeper.hide();
             var results = checkAnswers(),
             resultSet = '',
@@ -197,8 +208,31 @@
             }
             //score = roundReloaded(trueCount / questionLength * 100, 2);
             score = roundReloaded(trueCount * tmfs, 2);
-            
-            resultSet = '<h2 class="qTitle">' + judgeSkills(score) + '<br/> 您的分数： ' + score + '</h2>' + shareButton + '<div class="jquizzy-clear"></div>' + resultSet + '<div class="jquizzy-clear"></div>';
+            //提交移到这里来
+            if (config.sendResultsURL !== null) {
+                var collate = [];
+                for (r = 0; r < userAnswers.length; r++) {
+                    collate.push('{"questionNumber":"' + parseInt(r + 1, 10) + '", "userAnswer":"' + userAnswers[r] + '"}');
+                }
+                var data = {
+                    cooperid: cooperid,
+                    openid: openid,
+                    phone: $("#txt_curphone").val(),
+                    area: area,
+                    score: score
+                }
+                $.ajax({
+                    type: 'POST',
+                    url: config.sendResultsURL,
+                    data: data,
+                    complete: function (ret) {
+                        console.log(ret)
+                    }
+                });
+            }
+            //resultSet = '<h2 class="qTitle">' + judgeSkills(score) + '<br/> 您的分数： ' + score + '</h2>' + shareButton + '<div class="jquizzy-clear"></div>' + resultSet + '<div class="jquizzy-clear"></div>';
+            resultSet = shareButton + '<div class="jquizzy-clear"></div>' + resultSet + '<div class="jquizzy-clear"></div>';
+            superContainer.find('.result-keeper-title').html('<h2 class="qTitle">' + judgeSkills(score) + '<br/> 您的分数： ' + score + '</h2>').show(500);
             superContainer.find('.result-keeper').html(resultSet).show(500);
             superContainer.find('.resultsview-qhover').hide();
             superContainer.find('.result-row').hover(function() {

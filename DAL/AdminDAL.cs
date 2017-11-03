@@ -79,5 +79,24 @@ namespace DAL
             parameter[2].Value = sharetype;
             return dal.ExtSql(sql, parameter);
         }
+        /// <summary>
+        /// 取得短信验证码列表
+        /// </summary>
+        /// <param name="filter">条件</param>
+        /// <param name="type">1登入/2充值</param>
+        /// <param name="phone">号码</param>
+        /// <returns></returns>
+        public DataTable MsgCodeList(string filter, int type, string phone)
+        {
+            string sql = "SELECT [id],[type],[phone],[xh],[code],[text],[state],[addtime] FROM T_MsgCode " + filter;
+            SqlParameter[] parameter = new[]
+                        {
+                new SqlParameter("@type",SqlDbType.Int),
+                new SqlParameter("@phone",SqlDbType.NVarChar,20)
+            };
+            parameter[0].Value = type;
+            parameter[1].Value = phone;
+            return dal.ExtSql(sql, parameter);
+        }
     }
 }
