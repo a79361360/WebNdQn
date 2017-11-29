@@ -49,6 +49,13 @@ namespace BLL
         /// <param name="issue"></param>
         /// <returns></returns>
         public int IsExistsCzList(int ctype,int issue) {
+            //int num = mdal.IsExistsCzList(ctype, issue);
+            //int num_1 = mdal.IsExistsActityList(ctype, issue);
+            ////如果直充为0并且活动的充值也为0就返回0值.其他的情况返回9表示有值就可以了
+            //if (num == 0 && num_1 == 0) {
+            //    return 0;
+            //}
+            //return 9;
             int num = mdal.IsExistsCzList(ctype, issue);
             return num;
         } 
@@ -128,7 +135,8 @@ namespace BLL
         /// <param name="ctype"></param>
         /// <param name="issue"></param>
         public void AfterOverCzSuccess(int ctype,int issue) {
-            mdal.UpdateFlowStateO(ctype, issue);    //充值完成后更新状态1为已完成
+            mdal.UpdateFlowStateO(ctype, issue);        //充值完成后更新状态1为已完成
+            mdal.UpdateActivityFlowState(ctype, issue);     //将活动的充值状态更新为1已完成
             //ExecuteCooperList();    
         }
 
@@ -427,12 +435,17 @@ namespace BLL
                 try
                 {
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "FindDtByCtype 3_1_3 开始读取" + ctype + "期号" + issue + "的直充待充值用户记录");
-                    var dt = mdal.FindFlowLogToExecl(ctype, issue, dto.eachflow, dto.cutdate);  //将直充的用户查询到datatable返回,如果后面大转盘要自动充值,需要在这里做文章
-                    if (dt.Rows.Count > 0)
+                    ////直充
+                    //var dt = mdal.FindFlowLogToExecl(ctype, issue, dto.eachflow, dto.cutdate);  //将直充的用户查询到datatable返回,如果后面大转盘要自动充值,需要在这里做文章
+                    ////活动
+                    //var dt1 = mdal.FindActivityFlowLog(1, dto.id, dto.cutdate);
+                    //var mergedt = mdal.MergeDt(dt, dt1);
+                    var mergedt = mdal.FindFlowLogToExecl(ctype, issue, dto.eachflow, dto.cutdate);  //将直充的用户查询到datatable返回,如果后面大转盘要自动充值,需要在这里做文章
+                    if (mergedt.Rows.Count > 0)
                     {
-                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "FindDtByCtype 3_1_4 读取到" + ctype + "期号" + issue + "的直充待充值用户记录数:" + dt.Rows.Count);
-                        int result = Common.Helper.HmExcelAssist.DataTabletoExcel(dt, AppDomain.CurrentDomain.BaseDirectory + (@"Content\Txt\") + "flowPoolExcel.xls");
-                        if (result == 1) 
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "FindDtByCtype 3_1_4 读取到" + ctype + "期号" + issue + "的直充待充值用户记录数:" + mergedt.Rows.Count);
+                        int result = Common.Helper.HmExcelAssist.DataTabletoExcel(mergedt, AppDomain.CurrentDomain.BaseDirectory + (@"Content\Txt\") + "flowPoolExcel.xls");
+                        if (result == 1)
                             Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "FindDtByCtype 3_1_5 读取到" + ctype + "期号" + issue + "的待充值用户记录生成EXECL表成功");
                         else
                             Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "FindDtByCtype 3_1_5 读取到" + ctype + "期号" + issue + "的待充值用户记录生成EXECL表失败");
@@ -1124,6 +1137,7 @@ namespace BLL
             return sresult;
         }
 
+        
 
 
         /// <summary>

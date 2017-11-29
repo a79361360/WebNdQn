@@ -314,7 +314,16 @@ namespace BLL
             }
             return sresult;
         }
-
+        /// <summary>
+        /// 返回限制地址
+        /// </summary>
+        /// <returns></returns>
+        public string ReturnConfigTxt(string area) {
+            string txtpath = "/Content/Txt/pwebconfig.txt";
+            if (area == "2") txtpath = "/Content/Txt/putianconfig.txt";
+            if (area == "3") txtpath = "/Content/Txt/fujianconfig.txt";
+            return txtpath;
+        }
 
 
 

@@ -150,8 +150,9 @@ namespace WebNdQn.Controllers
             string issue = Request["issue"].ToString();         //活动期号
             string openid = Request["openid"].ToString();       //微信的Openid
             string area = Request["area"].ToString();           //地区1宁德2莆田
-            string txtpath = "/Content/Txt/pwebconfig.txt";
-            if(area=="2") txtpath = "/Content/Txt/putianconfig.txt";
+            //string txtpath = "/Content/Txt/pwebconfig.txt";
+            //if(area=="2") txtpath = "/Content/Txt/putianconfig.txt";
+            string txtpath = bll.ReturnConfigTxt(area); //取得限制号码txt
             string path = Server.MapPath(txtpath);
             bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
             if (result)

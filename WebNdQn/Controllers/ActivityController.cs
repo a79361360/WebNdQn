@@ -126,8 +126,9 @@ namespace WebNdQn.Controllers
             }
             string area = Request["area"].ToString();
             string phone = Request["phone"].ToString();
-            string txtpath = "/Content/Txt/pwebconfig.txt";
-            if (area == "2") txtpath = "/Content/Txt/putianconfig.txt";
+            //string txtpath = "/Content/Txt/pwebconfig.txt";
+            //if (area == "2") txtpath = "/Content/Txt/putianconfig.txt";
+            string txtpath = bll.ReturnConfigTxt(area); //取得限制号码txt
             string path = Server.MapPath(txtpath);
             bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
             return JsonFormat(new ExtJson { success = true, msg = "返回结果", jsonresult = result });
@@ -146,8 +147,9 @@ namespace WebNdQn.Controllers
                 phone = Request.Form["phone"];
                 area = Request.Form["area"];
                 //验证手机号码
-                string txtpath = "/Content/Txt/pwebconfig.txt";
-                if (area == "2") txtpath = "/Content/Txt/putianconfig.txt";
+                //string txtpath = "/Content/Txt/pwebconfig.txt";
+                //if (area == "2") txtpath = "/Content/Txt/putianconfig.txt";
+                string txtpath = bll.ReturnConfigTxt(area); //取得限制号码txt
                 string path = Server.MapPath(txtpath);
                 bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
                 if (!result)

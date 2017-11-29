@@ -122,7 +122,7 @@ namespace DAL
             return Convert.ToInt32(list["@ReturnValue"]);
         }
         public DataTable GetActivityZb(int cooperid,int type) {
-            string sql = "SELECT id,cooperid,type,title,share,explain,bgurl,wx_title,wx_descride,wx_imgurl,wx_linkurl,dt_fs,dt_tmts,sright FROM T_ActivityConfig where cooperid=@cooperid and type=@type";
+            string sql = "SELECT id,cooperid,type,title,share,explain,bgurl,wx_title,wx_descride,wx_imgurl,wx_linkurl,dt_fs,dt_tmts,sright,flowamount FROM T_ActivityConfig where cooperid=@cooperid and type=@type";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@cooperid",SqlDbType.Int),
@@ -133,9 +133,9 @@ namespace DAL
             DataTable dt = dal.ExtSql(sql, parameter);
             return dt;
         }
-        public int AddConfig(int cooperid,int type,string title,int share,string explain,string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl, int tmfs, int tmts, int sright) {
-            string sql = "INSERT INTO [T_ActivityConfig]([cooperid],[type],[title],[share],[explain],[bgurl],[wx_title],[wx_descride],[wx_imgurl],[wx_linkurl],[dt_fs],[dt_tmts],[sright])";
-            sql += "VALUES(@cooperid,@type,@title,@share,@explain,@bgurl,@wxtitle,@wxdescride,@wximgurl,@wxlinkurl,@tmfs,@tmts,@sright) select SCOPE_IDENTITY() as id";
+        public int AddConfig(int cooperid,int type,string title,int share,string explain,string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl, int tmfs, int tmts, int sright, int flowamount) {
+            string sql = "INSERT INTO [T_ActivityConfig]([cooperid],[type],[title],[share],[explain],[bgurl],[wx_title],[wx_descride],[wx_imgurl],[wx_linkurl],[dt_fs],[dt_tmts],[sright],[flowamount])";
+            sql += "VALUES(@cooperid,@type,@title,@share,@explain,@bgurl,@wxtitle,@wxdescride,@wximgurl,@wxlinkurl,@tmfs,@tmts,@sright,@flowamount) select SCOPE_IDENTITY() as id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@cooperid",SqlDbType.Int),
@@ -151,6 +151,7 @@ namespace DAL
                 new SqlParameter("@tmfs",SqlDbType.Int),
                 new SqlParameter("@tmts",SqlDbType.Int),
                 new SqlParameter("@sright",SqlDbType.Int),
+                new SqlParameter("@flowamount",SqlDbType.Int),
             };
             parameter[0].Value = cooperid;
             parameter[1].Value = type;
@@ -165,6 +166,7 @@ namespace DAL
             parameter[10].Value = tmfs;
             parameter[11].Value = tmts;
             parameter[12].Value = sright;
+            parameter[13].Value = flowamount;
             int result = 0;
             try {
                 result = Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
@@ -174,9 +176,9 @@ namespace DAL
             }
             return result;
         }
-        public int UpdateConfig(int configid, int cooperid, int type, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl, int tmfs, int tmts, int sright) {
+        public int UpdateConfig(int configid, int cooperid, int type, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl, int tmfs, int tmts, int sright,int flowamount) {
             string sql = "UPDATE [T_ActivityConfig] SET [cooperid] = @cooperid,[type] = @type,[title] = @title,[share] = @share,[explain] = @explain,[bgurl] = @bgurl ";
-            sql += ",[wx_title] = @wxtitle,[wx_descride] = @wxdescride,[wx_imgurl] = @wximgurl,[wx_linkurl] = @wxlinkurl,[dt_fs] = @tmfs,[dt_tmts] = @tmts,[sright]=@sright where id=@configid";
+            sql += ",[wx_title] = @wxtitle,[wx_descride] = @wxdescride,[wx_imgurl] = @wximgurl,[wx_linkurl] = @wxlinkurl,[dt_fs] = @tmfs,[dt_tmts] = @tmts,[sright]=@sright,[flowamount]=@flowamount where id=@configid";
             SqlParameter[] parameter = new[]
               {
                 new SqlParameter("@cooperid",SqlDbType.Int),
@@ -193,6 +195,7 @@ namespace DAL
                 new SqlParameter("@tmfs",SqlDbType.Int),
                 new SqlParameter("@tmts",SqlDbType.Int),
                 new SqlParameter("@sright",SqlDbType.Int),
+                new SqlParameter("@flowamount",SqlDbType.Int),
             };
             parameter[0].Value = cooperid;
             parameter[1].Value = type;
@@ -208,6 +211,7 @@ namespace DAL
             parameter[11].Value = tmfs;
             parameter[12].Value = tmts;
             parameter[13].Value = sright;
+            parameter[14].Value = flowamount;
             int result = Convert.ToInt32(dal.IntExtSql(sql, parameter));
             return result;
         }

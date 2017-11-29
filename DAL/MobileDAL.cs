@@ -69,6 +69,43 @@ namespace DAL
             return dal.ExtSql(sql, parameter);
         }
         /// <summary>
+        /// 将充值中的T_ActivityDrawLog用户状态修改为已充值完成
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="cooperid"></param>
+        /// <returns></returns>
+        public int UpdateActivityFlowState(int ctype,int issue) {
+            string sql = "UPDATE T_ActivityDrawLog SET state=1 WHERE cooperid in(SELECT id FROM T_CooperConfig WHERE ctype=@ctype AND issue=@issue) AND state=2";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int)
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            return dal.IntExtSql(sql, parameter);
+        }
+        /// <summary>
+        /// 批量导入execl生成SQL语句
+        /// </summary>
+        /// <param name="type">1大转盘,2在线答题</param>
+        /// <param name="cooperid">用户的cooperid</param>
+        /// <param name="jzsj">截止时间</param>
+        /// <returns></returns>
+        public DataTable FindActivityFlowLog(int cztype,int cooperid,string jzsj) {
+            string sql = "SP_ActivityFlowLog";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@CzType",SqlDbType.Int),
+                new SqlParameter("@Cooperid",SqlDbType.Int),
+                new SqlParameter("@jzsj",SqlDbType.NVarChar,50)
+            };
+            parameter[0].Value = cztype;
+            parameter[1].Value = cooperid;
+            parameter[2].Value = jzsj;
+            return dal.ExtProc(sql, parameter);
+        }
+        /// <summary>
         /// 更新用户T_CooperConfig的短信密码字段
         /// </summary>
         /// <param name="ctype"></param>
@@ -241,13 +278,31 @@ namespace DAL
             return dt;
         }
         /// <summary>
-        /// 是否存在待充值的记录
+        /// 是否存在待直充的记录
         /// </summary>
         /// <param name="ctype"></param>
         /// <param name="issue"></param>
         /// <returns></returns>
         public int IsExistsCzList(int ctype,int issue) {
             string sql = "select COUNT(*) from T_TakeFlowLog where ctype=@ctype and issue=@issue and state!=1";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int)
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            return Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
+        }
+        /// <summary>
+        /// 是否存在待充值的活动记录
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int IsExistsActityList(int ctype, int issue)
+        {
+            string sql = "SELECT COUNT(*) FROM T_ActivityDrawLog WHERE state!=1 AND cooperid IN(SELECT id FROM T_CooperConfig WHERE ctype=@ctype AND issue=@issue AND state=1)";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
@@ -304,6 +359,30 @@ namespace DAL
             parameter[0].Value = ctype;
             parameter[1].Value = issue;
             return Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
+        }
+
+
+        /// <summary>
+        /// 合并
+        /// </summary>
+        /// <param name="dt1"></param>
+        /// <param name="dt2"></param>
+        /// <returns></returns>
+        public DataTable MergeDt(DataTable dt1,DataTable dt2) {
+            DataTable newDataTable = dt1.Clone();
+            object[] obj = new object[newDataTable.Columns.Count];
+            for (int i = 0; i < dt1.Rows.Count; i++)
+            {
+                dt1.Rows[i].ItemArray.CopyTo(obj, 0);
+                newDataTable.Rows.Add(obj);
+            }
+
+            for (int i = 0; i < dt2.Rows.Count; i++)
+            {
+                dt2.Rows[i].ItemArray.CopyTo(obj, 0);
+                newDataTable.Rows.Add(obj);
+            }
+            return newDataTable;
         }
     }
 }

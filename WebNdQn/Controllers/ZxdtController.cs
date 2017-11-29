@@ -100,7 +100,8 @@ namespace WebNdQn.Controllers
                 ViewBag.explain = explain;          //答题的说明
                 ViewBag.score = dto_act.dt_fs;      //每个题目的分数
                 ViewBag.sright = dto_act.sright;    //是否显化答案
-
+                ViewBag.flowamount = dto_act.flowamount;    //流量池量
+                ViewBag.curflowcount = zbll.ZxdtDrawNumber(dto_act.cooperid);   //用户流量
                 #region 分享到朋友 具体数据
                 ViewBag.title = dto_act.wx_title;              //标题
                 ViewBag.desc = dto_act.wx_descride;            //描述
@@ -137,8 +138,9 @@ namespace WebNdQn.Controllers
                 area = Request.Form["area"];
                 score = Convert.ToInt32(Request.Form["score"]);
                 //验证手机号码
-                string txtpath = "/Content/Txt/pwebconfig.txt";
-                if (area == "2") txtpath = "/Content/Txt/putianconfig.txt";
+                //string txtpath = "/Content/Txt/pwebconfig.txt";
+                //if (area == "2") txtpath = "/Content/Txt/putianconfig.txt";
+                string txtpath = bll.ReturnConfigTxt(area); //取得限制号码txt
                 string path = Server.MapPath(txtpath);
                 bool result = bll.ReadPhoneFliter(phone, path); //验证手机号码
                 if (!result)
@@ -147,10 +149,12 @@ namespace WebNdQn.Controllers
                 int lotteyn = Abll.GetOpenidCount(cooperid, 2, openid);
                 if (lotteyn < 1)
                     return JsonFormat(new ExtJson { success = false, code = -1000, msg = "已无摇奖次数.", jsonresult = 0 });
-                //取得摇奖结果
+                //提交答题的分数
                 int resultnum = zbll.SubmitZxdt(cooperid, openid, phone, score);
                 if (resultnum > 0)
                     return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功.", jsonresult = resultnum });
+                else if (resultnum == -2) 
+                    return JsonFormat(new ExtJson { success = false, code = -1000, msg = "活动已经结束.", jsonresult = 0 });
                 return JsonFormat(new ExtJson { success = false, code = -1000, msg = "提交失败.", jsonresult = 0 });
             }
             return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败.", jsonresult = 0 });
@@ -298,10 +302,11 @@ namespace WebNdQn.Controllers
             string tmfs = Request.Form["tmfs"];                     //每题的分数
             string tmts = Request.Form["tmts"];                     //随机抽取题库的条数
             string sright = Request.Form["sright"];                 //是否显化答案
+            string flowamount = Request.Form["flowamount"];         //
             string list = Request.Form["list"];                     //流量配置列表
 
             IList<T_ZxdtScore> Configlist = FrameWork.Common.SerializeJson<T_ZxdtScore>.JSONStringToList(list);    //流量配置列表
-            int result = zbll.SetZxdtConfig(Convert.ToInt32(configid), Convert.ToInt32(cooperid), title, Convert.ToInt32(share), explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, Convert.ToInt32(tmfs), Convert.ToInt32(tmts), Convert.ToInt32(sright), Configlist);
+            int result = zbll.SetZxdtConfig(Convert.ToInt32(configid), Convert.ToInt32(cooperid), title, Convert.ToInt32(share), explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, Convert.ToInt32(tmfs), Convert.ToInt32(tmts), Convert.ToInt32(sright), Convert.ToInt32(flowamount), Configlist);
             if (result > 0)
                 return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功." });
             else if (result == -2) {

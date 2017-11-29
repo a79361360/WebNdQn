@@ -139,6 +139,9 @@
             var wxlinkurl = $("#txt_wxlinkurl").val();
             var tmfs = $("#txt_tmfs").val();
             var tmts = $("#txt_tmts").val();
+            var flowamount = $("#txt_flowamount").val();
+
+
             var sright = $("input[name='sright']:checked").val();
             var list = JSON.stringify(getlist());       //会员列表
 
@@ -156,6 +159,7 @@
                 tmfs: tmfs,
                 tmts: tmts,
                 sright: sright,
+                flowamount: flowamount,
                 list: list
             }
             $.ajax({
@@ -290,6 +294,12 @@
                 <label for="firstname" class="col-sm-2 control-label">题目条数</label>
                 <div class="col-sm-10">
                     <input type="text" class="form-control" id="txt_tmts" name="txt_tmts" value="@Model.dt_tmts" placeholder="请输入每次答题的条数">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">流量池流量</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_flowamount" name="txt_flowamount" value="@Model.flowamount" placeholder="请输入流量池流量,M为单位">
                 </div>
             </div>
             <div class="form-group">

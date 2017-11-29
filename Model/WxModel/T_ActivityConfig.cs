@@ -27,6 +27,7 @@ namespace Model.WxModel
         public int dt_fs { get; set; }
         public int dt_tmts { get; set; }
         public int sright { get; set; }
+        public int flowamount { get; set; }
 
     }
 }

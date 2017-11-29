@@ -22,7 +22,8 @@ namespace Model.EnumModel
         public enum AreaType
         {
             宁德地区 = 1,
-            莆田地区 = 2
+            莆田地区 = 2,
+            福建地区 = 3
         }
     }
 }

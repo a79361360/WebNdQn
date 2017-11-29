@@ -171,5 +171,22 @@ namespace DAL
             parameter[2].Value = state;
             return dal.ExtSql(sql, parameter);
         }
+        /// <summary>
+        /// 取得在线用户已经参与人数的流量值
+        /// </summary>
+        /// <returns></returns>
+        public int ZxdtDrawNumber(int cooperid) {
+            string sql = "SELECT SUM(c.number) FROM T_ActivityDrawLog a";
+            sql += " INNER JOIN T_ActivityConfig b ON a.cooperid = b.cooperid";
+            sql += " INNER JOIN T_ZxdtScore c ON b.id = c.configid";
+            sql += " WHERE a.type = 2 AND(a.configlistid > c.lower AND a.configlistid <= c.upper) AND a.cooperid = @cooperid ";
+            SqlParameter[] parameter = new[]
+                        {
+                new SqlParameter("@cooperid",SqlDbType.Int)
+            };
+            parameter[0].Value = cooperid;
+            int result = Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
+            return result;
+        }
     }
 }

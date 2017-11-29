@@ -143,7 +143,7 @@ namespace BLL
         /// <param name="wximgurl"></param>
         /// <param name="wxlinkurl"></param>
         /// <returns></returns>
-        public int SetZxdtConfig(int configid, int cooperid, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl,int tmfs, int tmts, int sright, IList<T_ZxdtScore> list) {
+        public int SetZxdtConfig(int configid, int cooperid, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl,int tmfs, int tmts, int sright, int flowamount, IList<T_ZxdtScore> list) {
             int result = 0; int resultnum = 0;
             if (string.IsNullOrEmpty(bgurl)) bgurl = "";
             //新增
@@ -151,11 +151,11 @@ namespace BLL
             {
                 int result_1 = adal.IsExistActivity(cooperid, 2);
                 if (result_1 > 0) return -2;    //已经存在当前配置,不能再添加了
-                configid = adal.AddConfig(cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts, sright); //主表ID
+                configid = adal.AddConfig(cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts, sright, flowamount); //主表ID
                 result = configid;
             }
             else
-                result = adal.UpdateConfig(configid, cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts, sright);
+                result = adal.UpdateConfig(configid, cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts, sright, flowamount);
             if (result < 1) return result;    //如果异常就直接返回
             foreach (var item in list)
             {
@@ -253,6 +253,15 @@ namespace BLL
                 filter += " and a.state=@state";
             IList<T_ActivityDrawLog> list = DataTableToList.ModelConvertHelper<T_ActivityDrawLog>.ConvertToModel(zdal.ZxdtDrawList_Search(filter, cooperid, phone, state));
             return list;
+        }
+
+        /// <summary>
+        /// 取得在线用户已经参与人数的流量值
+        /// </summary>
+        /// <returns></returns>
+        public int ZxdtDrawNumber(int cooperid) {
+            int result = zdal.ZxdtDrawNumber(cooperid);
+            return result;
         }
     }
 }

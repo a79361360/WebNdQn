@@ -280,11 +280,11 @@ namespace BLL
             {
                 int result_1 = adal.IsExistActivity(cooperid, 1);
                 if (result_1 > 0) return -2;    //已经存在当前配置,不能再添加了
-                configid = adal.AddConfig(cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, 0, 0, 1); //主表ID
+                configid = adal.AddConfig(cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, 0, 0, 1, 0); //主表ID
                 result = configid;
             }
             else
-                result = adal.UpdateConfig(configid, cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, 0, 0, 1);
+                result = adal.UpdateConfig(configid, cooperid, 1, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, 0, 0, 1, 0);
             if (result < 1) return result;    //如果异常就直接返回
             foreach (var item in list)
             {
