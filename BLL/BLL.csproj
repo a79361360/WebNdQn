@@ -52,6 +52,7 @@
     <Compile Include="AdminBLL.cs" />
     <Compile Include="CommonBLL.cs" />
     <Compile Include="MobileBLL.cs" />
+    <Compile Include="MobilePortBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeiXinBLL.cs" />
     <Compile Include="ZxdtBLL.cs" />
