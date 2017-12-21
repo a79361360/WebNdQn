@@ -167,6 +167,7 @@
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\MobileController.cs" />
+    <Compile Include="Controllers\NsoupController.cs" />
     <Compile Include="Controllers\WeiXController.cs" />
     <Compile Include="Controllers\ZxdtController.cs" />
     <Compile Include="Global.asax.cs">
@@ -175,16 +176,6 @@
     <Compile Include="Models\AccountViewModels.cs" />
     <Compile Include="Models\IdentityModels.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Service References\OnlineAdo\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
-    <Compile Include="Service References\TestAdo\Reference.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Compile>
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -300,85 +291,6 @@
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
     <Content Include="Scripts\_references.js" />
-    <None Include="Service References\OnlineAdo\PayFlowService.wsdl" />
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.getpublicsignResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.InitBean.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.InitResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.LLTFMemberAdditionResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.LLTFMemberAdditionResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.LLTFMemberOrderResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.LLTFMemberOrderResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.QueryECLLTFResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.QueryECLLTFResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.QueryECLLTFUsedResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.QueryECLLTFUsedResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.QueryMemberLLTFResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.QueryMemberLLTFResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.QueryMemberLLTFUsedResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.QueryMemberLLTFUsedResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.QueryMoibleInfoResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.QueryMoibleInfoRsp.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.SaleAuthOrderResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.SaleAuthResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.SaleAuthRsp.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.SaleOrderResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\OnlineAdo\WebNdQn.OnlineAdo.SaleOrderRsp.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <None Include="Service References\OnlineAdo\configuration91.svcinfo" />
-    <None Include="Service References\OnlineAdo\configuration.svcinfo" />
-    <None Include="Service References\OnlineAdo\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
-    <None Include="Service References\TestAdo\configuration91.svcinfo" />
-    <None Include="Service References\TestAdo\configuration.svcinfo" />
-    <None Include="Service References\TestAdo\Reference.svcmap">
-      <Generator>WCF Proxy Generator</Generator>
-      <LastGenOutput>Reference.cs</LastGenOutput>
-    </None>
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
@@ -424,79 +336,13 @@
     <Content Include="Views\Zxdt\ZxdtPortal.cshtml" />
     <Content Include="Views\Zxdt\ZxdtDrawPortal.cshtml" />
     <Content Include="Views\Cooper\MsgCodePortal.cshtml" />
-    <None Include="Service References\TestAdo\PayFlowService.wsdl" />
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.getpublicsignResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.InitBean.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.InitResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.LLTFMemberAdditionResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.LLTFMemberAdditionResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.LLTFMemberOrderResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.LLTFMemberOrderResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.QueryECLLTFResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.QueryECLLTFResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.QueryECLLTFUsedResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.QueryECLLTFUsedResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.QueryMemberLLTFResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.QueryMemberLLTFResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.QueryMemberLLTFUsedResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.QueryMemberLLTFUsedResult.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.QueryMoibleInfoResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.QueryMoibleInfoRsp.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.SaleAuthOrderResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.SaleAuthResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.SaleAuthRsp.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.SaleOrderResponse.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
-    <Content Include="Service References\TestAdo\WebNdQn.TestAdo.SaleOrderRsp.datasource">
-      <DependentUpon>Reference.svcmap</DependentUpon>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Content\Img\bg\" />
     <Folder Include="Content\Img\gzh\" />
     <Folder Include="Content\Img\wxico\" />
+    <Folder Include="Views\Nsoup\" />
     <Folder Include="Views\WeiX\" />
   </ItemGroup>
   <ItemGroup>
@@ -523,13 +369,6 @@
       <Project>{8f88859a-264f-45da-9899-e2c4fb32aa1e}</Project>
       <Name>Model</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
-    <WCFMetadataStorage Include="Service References\OnlineAdo\" />
-    <WCFMetadataStorage Include="Service References\TestAdo\" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

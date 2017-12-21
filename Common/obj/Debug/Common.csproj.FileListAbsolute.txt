@@ -18,3 +18,17 @@ G:\NetWorkPace\WebNdQn\Common\bin\Debug\zh-Hans\System.Web.WebPages.Deployment.r
 G:\NetWorkPace\WebNdQn\Common\obj\Debug\Common.dll
 G:\NetWorkPace\WebNdQn\Common\obj\Debug\Common.pdb
 G:\NetWorkPace\WebNdQn\Common\obj\Debug\Common.csprojResolveAssemblyReference.cache
+E:\SignJect\WebNdQn\Common\bin\Debug\Common.dll
+E:\SignJect\WebNdQn\Common\bin\Debug\Common.pdb
+E:\SignJect\WebNdQn\Common\bin\Debug\MySql.Data.dll
+E:\SignJect\WebNdQn\Common\bin\Debug\System.Web.Mvc.dll
+E:\SignJect\WebNdQn\Common\bin\Debug\System.Web.WebPages.dll
+E:\SignJect\WebNdQn\Common\bin\Debug\System.Web.WebPages.Deployment.dll
+E:\SignJect\WebNdQn\Common\bin\Debug\System.Web.Mvc.xml
+E:\SignJect\WebNdQn\Common\bin\Debug\System.Web.WebPages.xml
+E:\SignJect\WebNdQn\Common\bin\Debug\System.Web.WebPages.Deployment.xml
+E:\SignJect\WebNdQn\Common\bin\Debug\zh-Hans\System.Web.Mvc.resources.dll
+E:\SignJect\WebNdQn\Common\bin\Debug\zh-Hans\System.Web.WebPages.resources.dll
+E:\SignJect\WebNdQn\Common\bin\Debug\zh-Hans\System.Web.WebPages.Deployment.resources.dll
+E:\SignJect\WebNdQn\Common\obj\Debug\Common.dll
+E:\SignJect\WebNdQn\Common\obj\Debug\Common.pdb

@@ -10,3 +10,11 @@ G:\NetWorkPace\WebNdQn\FrameWork\bin\Debug\System.Web.Mvc.dll
 G:\NetWorkPace\WebNdQn\FrameWork\obj\Debug\FrameWork.dll
 G:\NetWorkPace\WebNdQn\FrameWork\obj\Debug\FrameWork.pdb
 G:\NetWorkPace\WebNdQn\FrameWork\obj\Debug\FrameWork.csprojResolveAssemblyReference.cache
+E:\SignJect\WebNdQn\FrameWork\bin\Debug\FrameWork.dll
+E:\SignJect\WebNdQn\FrameWork\bin\Debug\FrameWork.pdb
+E:\SignJect\WebNdQn\FrameWork\bin\Debug\System.Web.Mvc.dll
+E:\SignJect\WebNdQn\FrameWork\bin\Debug\System.Web.Mvc.xml
+E:\SignJect\WebNdQn\FrameWork\bin\Debug\zh-Hans\System.Web.Mvc.resources.dll
+E:\SignJect\WebNdQn\FrameWork\obj\Debug\FrameWork.dll
+E:\SignJect\WebNdQn\FrameWork\obj\Debug\FrameWork.pdb
+E:\SignJect\WebNdQn\FrameWork\obj\Debug\FrameWork.csprojResolveAssemblyReference.cache

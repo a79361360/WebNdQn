@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WebNdQn", "WebNdQn\WebNdQn.csproj", "{5A9DF1F1-CF8C-49CC-8486-8597282EF826}"
 EndProject
@@ -16,8 +16,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Model", "Model\Model.csproj", "{8F88859A-264F-45DA-9899-E2C4FB32AA1E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HttpHelper19", "HttpHelper19\HttpHelper19.csproj", "{F6051E31-539A-490F-9698-B2CE58A59C0C}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WService", "WService\WService.csproj", "{81205FB4-6B3C-4AC3-8298-C7D44D55CF85}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -53,10 +51,6 @@ Global
 		{F6051E31-539A-490F-9698-B2CE58A59C0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F6051E31-539A-490F-9698-B2CE58A59C0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F6051E31-539A-490F-9698-B2CE58A59C0C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{81205FB4-6B3C-4AC3-8298-C7D44D55CF85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{81205FB4-6B3C-4AC3-8298-C7D44D55CF85}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{81205FB4-6B3C-4AC3-8298-C7D44D55CF85}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{81205FB4-6B3C-4AC3-8298-C7D44D55CF85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
