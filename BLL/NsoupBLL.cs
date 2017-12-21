@@ -13,6 +13,7 @@ namespace BLL
     public class NsoupBLL
     {
         CommonDAL cdal = new CommonDAL();
+        NsoupDAL ndal = new NsoupDAL();
         public int SendLoginMsg(int ctype,int issue) {
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SendLoginMsg 1 类型: " + ctype + " 期号：" + issue + " 开始发送登入短信");
             string url = "http://www.fj.10086.cn/power/ll800/ht/index.jsp";
@@ -41,6 +42,7 @@ namespace BLL
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 3  类型: " + ctype + " 期号：" + issue + " 解析登入HMTL,失败 ");
                     return -1;
                 }
+                int result_1 = ndal.IsExitsLogCache(ctype, issue);
             }
             catch (Exception er)
             {
