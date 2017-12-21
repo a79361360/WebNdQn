@@ -342,7 +342,6 @@
     <Folder Include="Content\Img\bg\" />
     <Folder Include="Content\Img\gzh\" />
     <Folder Include="Content\Img\wxico\" />
-    <Folder Include="Views\Nsoup\" />
     <Folder Include="Views\WeiX\" />
   </ItemGroup>
   <ItemGroup>
