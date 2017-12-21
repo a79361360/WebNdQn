@@ -1,4 +1,7 @@
-﻿using CsharpHttpHelper;
+﻿using Common;
+using CsharpHttpHelper;
+using DAL;
+using Model.WxModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,9 +12,15 @@ namespace BLL
 {
     public class NsoupBLL
     {
+        CommonDAL cdal = new CommonDAL();
         public int SendLoginMsg(int ctype,int issue) {
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SendLoginMsg 1 类型: " + ctype + " 期号：" + issue + " 开始发送登入短信");
             string url = "http://www.fj.10086.cn/power/ll800/ht/index.jsp";
+            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(cdal.GetCooperConfig(ctype, issue));
+            if (list.Count > 0)
+            {
+
+            }
             NSoup.Nodes.Document doc;
             HttpHelper helpweb = new HttpHelper();  //初始实例化HttpHelper
             HttpResult result = new HttpResult();   //初始实例化HttpResult
@@ -26,10 +35,8 @@ namespace BLL
             {
                 result = helpweb.GetHtml(item);
                 doc = NSoup.NSoupClient.Parse(result.Html);
-                var obj = doc.Select("input");
-                var obj1 = doc.Select("#form2 input[name=_csrf]");
-                string text = doc.Select("#form2 input[name=_csrf]").Val();
-                if (string.IsNullOrEmpty(text))
+                string csrf = doc.Select("#form2 input[name=_csrf]").Val();
+                if (string.IsNullOrEmpty(csrf))
                 {
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 3  类型: " + ctype + " 期号：" + issue + " 解析登入HMTL,失败 ");
                     return -1;
