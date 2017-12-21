@@ -43,6 +43,7 @@
     <Compile Include="AdminDAL.cs" />
     <Compile Include="CommonDAL.cs" />
     <Compile Include="MobileDAL.cs" />
+    <Compile Include="NsoupDAL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SqlPageParam.cs" />
     <Compile Include="WeiXinDAL.cs" />
