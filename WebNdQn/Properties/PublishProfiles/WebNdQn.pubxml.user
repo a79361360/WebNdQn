@@ -13,13 +13,13 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/BLL.dll">
-      <publishTime>11/20/2017 19:48:54</publishTime>
+      <publishTime>12/22/2017 11:08:21</publishTime>
     </File>
     <File Include="bin/Common.dll">
-      <publishTime>09/20/2017 16:29:27</publishTime>
+      <publishTime>12/22/2017 11:08:21</publishTime>
     </File>
     <File Include="bin/DAL.dll">
-      <publishTime>11/20/2017 19:48:54</publishTime>
+      <publishTime>12/22/2017 11:08:21</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -28,10 +28,10 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/FrameWork.dll">
-      <publishTime>09/12/2017 16:09:18</publishTime>
+      <publishTime>12/22/2017 11:08:21</publishTime>
     </File>
     <File Include="bin/HttpHelper19.dll">
-      <publishTime>09/12/2017 16:09:18</publishTime>
+      <publishTime>12/22/2017 11:08:21</publishTime>
     </File>
     <File Include="bin/Microsoft.AspNet.Identity.Core.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -73,7 +73,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/Model.dll">
-      <publishTime>11/20/2017 17:38:45</publishTime>
+      <publishTime>12/22/2017 11:08:20</publishTime>
     </File>
     <File Include="bin/MySql.Data.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -112,7 +112,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="bin/WebNdQn.dll">
-      <publishTime>11/20/2017 19:48:54</publishTime>
+      <publishTime>12/22/2017 11:08:58</publishTime>
     </File>
     <File Include="bin/zh-Hans/EntityFramework.resources.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -715,7 +715,7 @@
       <publishTime>09/04/2017 14:18:26</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>11/15/2017 17:24:05</publishTime>
+      <publishTime>12/22/2017 11:08:22</publishTime>
     </File>
   </ItemGroup>
 </Project>
