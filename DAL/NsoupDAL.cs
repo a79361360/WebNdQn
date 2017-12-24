@@ -67,5 +67,27 @@ namespace DAL
             parameter[4].Value = csrf;
             return dal.IntExtSql(sql, parameter);
         }
+        /// <summary>
+        /// 取得当前正在监控的项
+        /// </summary>
+        /// <returns></returns>
+        public DataTable FindLogCacheState() {
+            string sql = "SELECT ctype,issue,username,phone,csrf,dlyzm,czyzm,dlcookie,czcookie FROM T_LogCache WHERE state=1";
+            return dal.ExtSql(sql);
+        }
+        /// <summary>
+        /// 更新登入的cookie
+        /// </summary>
+        /// <param name="dlcookie"></param>
+        /// <returns></returns>
+        public int UpdateLogCacheDlCookie(string dlcookie) {
+            string sql = "UPDATE T_LogCache SET dlcookie=@dlcookie WHERE state=1";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.NVarChar,2000)
+            };
+            parameter[0].Value = dlcookie;
+            return dal.IntExtSql(sql, parameter);
+        }
     }
 }
