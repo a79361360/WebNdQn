@@ -11,7 +11,7 @@ namespace Model.WxModel
         public int id { get; set; }
         public int ctype { get; set; }
         public int issue { get; set; }
-        public string username { get; set; }
+        public string corpid { get; set; }
         public string phone { get; set; }
         public string csrf { get; set; }
         public int dlyzm { get; set; }

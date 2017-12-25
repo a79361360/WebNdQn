@@ -49,7 +49,7 @@ namespace WebNdQn.Controllers
             if (result == 1)
             {
                 if (type == 1) {
-
+                     int result_1 = nbll.CreateLoginCookie(Convert.ToInt32(code));
                 }
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "TakeMobileCode 4 将短信内容写入数据库成功: ");
             }

@@ -45,11 +45,11 @@ namespace BLL
                         int result_1 = ndal.IsExitsLogCache(ctype, issue);
                         if (result_1 == 1)
                         {
-                            int result_2 = ndal.UpdateLogCacheInfo(ctype, issue, dto.username, dto.signphone, csrf);
+                            int result_2 = ndal.UpdateLogCacheInfo(ctype, issue, dto.corpid, dto.signphone, csrf);
                             if (result_2 == 1)
                             {
                                 url = "http://www.fj.10086.cn/power/ll800/ht/login/checkInfo.do";
-                                string data = "acount=" + dto.username + "&mobile=" + dto.signphone.MD5();
+                                string data = "acount=" + dto.corpid + "&mobile=" + dto.signphone.MD5();
                                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "KeepSessionUsered 3  类型: " + ctype + " 期号：" + issue + " 发短信的参数 "+ data);
                                 WebHttp p = new WebHttp();
                                 string result_3 = p.Post(url, data);
@@ -116,8 +116,8 @@ namespace BLL
             if (list.Count > 0) {
                 T_LogCache dto = list[0];
                 string url = "http://www.fj.10086.cn/power/ll800/ht/login/toLoginUp.do";
-                string data = "acount=" + dto.username + "&vcode=" + code.ToString().MD5() + "&_csrf=" + dto.csrf;
-
+                string data = "acount=" + dto.corpid + "&vcode=" + code.ToString().MD5() + "&_csrf=" + dto.csrf;
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie提交账号与短信动态码 data: " + data);
                 //访问登入页面
                 HttpHelper helpweb = new HttpHelper();  //初始实例化HttpHelper
                 HttpResult result = new HttpResult();   //初始实例化HttpResult
@@ -132,8 +132,9 @@ namespace BLL
                 try
                 {
                     result = helpweb.GetHtml(item);
-                    string cookie = fhcookie(result.Cookie);    //合并Cookie
-                    int result_1 = ndal.UpdateLogCacheDlCookie(cookie);
+                    logindto dto_1 = JsonConvert.DeserializeObject<logindto>(result.Html);
+                    string cookie = fhcookie(result.Cookie);                //合并Cookie
+                    int result_1 = ndal.UpdateLogCacheDlCookie(cookie);     //更新登入cookie
                     if (result_1 == 1) {
                         url = "http://www.fj.10086.cn/power/ll800/ht/flow/toFlowPoolFP.do";
                         helpweb = new HttpHelper();  //初始实例化HttpHelper
@@ -147,17 +148,17 @@ namespace BLL
                         };
                         try {
                             result = helpweb.GetHtml(item);
-                            Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "HelpWebSend 3 登入首页异常");
+                            Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "HelpWebSend 3 登入首页异常");
                         }
                         catch (Exception er) {
-                            Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "HelpWebSend 3 登入首页异常" + er.Message);
+                            Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "HelpWebSend 3 登入首页异常" + er.Message);
                             return -1;
                         }
                     }
                 }
                 catch (Exception er)
                 {
-                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "HelpWebSend 3 登入首页异常" + er.Message);
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "HelpWebSend 3 登入首页异常" + er.Message);
                     return -1;
                 }
             }
