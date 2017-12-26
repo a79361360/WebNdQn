@@ -176,7 +176,7 @@ namespace DAL
         /// </summary>
         /// <returns></returns>
         public int ZxdtDrawNumber(int cooperid) {
-            string sql = "SELECT SUM(c.number) FROM T_ActivityDrawLog a";
+            string sql = "SELECT ISNULL(SUM(c.number),0) FROM T_ActivityDrawLog a";
             sql += " INNER JOIN T_ActivityConfig b ON a.cooperid = b.cooperid";
             sql += " INNER JOIN T_ZxdtScore c ON b.id = c.configid";
             sql += " WHERE a.type = 2 AND(a.configlistid > c.lower AND a.configlistid <= c.upper) AND a.cooperid = @cooperid ";
