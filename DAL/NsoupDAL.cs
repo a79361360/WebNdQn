@@ -47,11 +47,12 @@ namespace DAL
         /// <param name="corpid"></param>
         /// <param name="phone"></param>
         /// <param name="csrf"></param>
+        /// <param name="cookie"></param>
         /// <returns></returns>
-        public int UpdateLogCacheInfo(int ctype, int issue, string corpid, string phone, string csrf)
+        public int UpdateLogCacheInfo(int ctype, int issue, string corpid, string phone, string csrf,string cookie)
         {
             InitT_LogCacheState(); //先进行state初始化，设置为0
-            string sql = "UPDATE [T_LogCache] SET [corpid] = @corpid,[phone] = @phone,[csrf] = @csrf,[state] = 1 WHERE [ctype] = @ctype and [issue] = @issue";
+            string sql = "UPDATE [T_LogCache] SET [corpid] = @corpid,[phone] = @phone,[csrf] = @csrf,[dlcookie] = @dlcookie,[state] = 1 WHERE [ctype] = @ctype and [issue] = @issue";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
@@ -59,12 +60,14 @@ namespace DAL
                 new SqlParameter("@corpid",SqlDbType.NVarChar,20),
                 new SqlParameter("@phone",SqlDbType.NVarChar,20),
                 new SqlParameter("@csrf",SqlDbType.NVarChar,1000),
+                new SqlParameter("@dlcookie",SqlDbType.NVarChar,2000),
             };
             parameter[0].Value = ctype;
             parameter[1].Value = issue;
             parameter[2].Value = corpid;
             parameter[3].Value = phone;
             parameter[4].Value = csrf;
+            parameter[5].Value = cookie;
             return dal.IntExtSql(sql, parameter);
         }
         /// <summary>
@@ -84,7 +87,7 @@ namespace DAL
             string sql = "UPDATE T_LogCache SET dlcookie=@dlcookie WHERE state=1";
             SqlParameter[] parameter = new[]
             {
-                new SqlParameter("@ctype",SqlDbType.NVarChar,2000)
+                new SqlParameter("@dlcookie",SqlDbType.NVarChar,2000)
             };
             parameter[0].Value = dlcookie;
             return dal.IntExtSql(sql, parameter);

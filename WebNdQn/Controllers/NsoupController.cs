@@ -48,12 +48,24 @@ namespace WebNdQn.Controllers
             int result = nbll.TakeMsgCode(type, phone, "0", code, content);
             if (result == 1)
             {
-                if (type == 1) {
-                     int result_1 = nbll.CreateLoginCookie(Convert.ToInt32(code));
+                if (type == 1)
+                {
+                    int result_1 = nbll.CreateLoginCookie(Convert.ToInt32(code));
                 }
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "TakeMobileCode 4 将短信内容写入数据库成功: ");
             }
             return JsonFormat(new ExtJson { success = false, msg = "保存验证码失败" + "结果：" + content });
+        }
+        /// <summary>
+        /// 校验登入Cookie是否有效
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult SignDlCookie() {
+            int result = nbll.SignDlCookie();
+            if (result == 1)
+                return JsonFormat(new ExtJson { success = true, msg = "登入Cookie有效" });
+            else
+                return JsonFormat(new ExtJson { success = false, msg = "登入Cookie无效" });
         }
     }
 }

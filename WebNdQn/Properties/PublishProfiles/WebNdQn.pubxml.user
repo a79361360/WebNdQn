@@ -6,20 +6,20 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <TimeStampOfAssociatedLegacyPublishXmlFile />
-    <_PublishTargetUrl>E:\ProJectRelease\WebNdQnRelease</_PublishTargetUrl>
+    <_PublishTargetUrl>G:\NetWorkPace\Release\WebNdQnRelease</_PublishTargetUrl>
   </PropertyGroup>
   <ItemGroup>
     <File Include="bin/Antlr3.Runtime.dll">
       <publishTime>03/24/2017 00:18:36</publishTime>
     </File>
     <File Include="bin/BLL.dll">
-      <publishTime>12/26/2017 00:59:30</publishTime>
+      <publishTime>12/28/2017 23:07:32</publishTime>
     </File>
     <File Include="bin/Common.dll">
       <publishTime>12/26/2017 00:59:29</publishTime>
     </File>
     <File Include="bin/DAL.dll">
-      <publishTime>12/26/2017 00:59:30</publishTime>
+      <publishTime>12/28/2017 23:07:32</publishTime>
     </File>
     <File Include="bin/EntityFramework.dll">
       <publishTime>03/24/2017 00:18:37</publishTime>
@@ -73,7 +73,7 @@
       <publishTime>03/24/2017 00:18:37</publishTime>
     </File>
     <File Include="bin/Model.dll">
-      <publishTime>12/26/2017 00:59:29</publishTime>
+      <publishTime>12/28/2017 23:07:31</publishTime>
     </File>
     <File Include="bin/MySql.Data.dll">
       <publishTime>09/04/2017 14:18:26</publishTime>
@@ -112,7 +112,7 @@
       <publishTime>03/24/2017 00:18:37</publishTime>
     </File>
     <File Include="bin/WebNdQn.dll">
-      <publishTime>12/26/2017 00:59:31</publishTime>
+      <publishTime>12/28/2017 23:07:32</publishTime>
     </File>
     <File Include="bin/zh-Hans/EntityFramework.resources.dll">
       <publishTime>03/24/2017 00:18:37</publishTime>
@@ -715,7 +715,7 @@
       <publishTime>03/24/2017 00:18:36</publishTime>
     </File>
     <File Include="Web.config">
-      <publishTime>12/26/2017 00:59:31</publishTime>
+      <publishTime>12/28/2017 23:07:33</publishTime>
     </File>
   </ItemGroup>
 </Project>
