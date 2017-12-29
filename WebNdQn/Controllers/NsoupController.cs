@@ -67,5 +67,28 @@ namespace WebNdQn.Controllers
             else
                 return JsonFormat(new ExtJson { success = false, msg = "登入Cookie无效" });
         }
+
+
+        public ActionResult One()
+        {
+            if (Request["ctype"] == null || Request["issue"] == null)
+                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            int ctype = Convert.ToInt32(Request["ctype"].ToString());
+            int issue = Convert.ToInt32(Request["issue"].ToString());
+            //判断是否有待充值记录
+            int result_1 = mbll.IsExistsCzList(ctype, issue);
+            if (result_1 == 0)
+                return JsonFormat(new ExtJson { success = false, msg = "没有待充值的记录", code = -1000, jsonresult = "" });
+            int result_2 = mbll.KeepSessionUsered(ctype, issue, 2);
+            if (result_2 == -1)
+                return JsonFormat(new ExtJson { success = false, msg = "充值Session已经失效,需要重新获取", code = -1001, jsonresult = "" });
+            int result_3 = mbll.FindDtByCtype(ctype, issue);
+            if (result_3 != 1)
+                return JsonFormat(new ExtJson { success = false, msg = "生成批量用户的Execl表失败了,需要去排查日志", code = -1002, jsonresult = "" });
+            int result_4 = mbll.one_plyhfp(ctype, issue);
+            if (result_4 != 1)
+                return JsonFormat(new ExtJson { success = false, msg = "上传批量用户的EXECL并且发送短信失败了,需要去排查日志", code = -1003, jsonresult = "" });
+            return JsonFormat(new ExtJson { success = true, msg = "成功运行发送充值短信.", code = 1000, jsonresult = "" });
+        }
     }
 }
