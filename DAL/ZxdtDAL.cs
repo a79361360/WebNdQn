@@ -24,7 +24,7 @@ namespace DAL
         /// <param name="id"></param>
         /// <returns></returns>
         public DataTable GetTopicById(int id) {
-            string sql = "SELECT [id],[cooperid],[topic],[answer],[keyanswer],[addtime] FROM [T_TopicBank] WHERE id=@id";
+            string sql = "SELECT [id],[cooperid],[topic],[answer],[keyanswer],[checkbox],[addtime] FROM [T_TopicBank] WHERE id=@id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@id",SqlDbType.Int),
@@ -37,7 +37,7 @@ namespace DAL
         /// </summary>
         /// <returns></returns>
         public DataTable GetDttsTopic(int cooperid, int tmts) {
-            string sql = "SELECT TOP "+ tmts + " [id],[cooperid],[topic],[answer],[keyanswer],[addtime] FROM T_TopicBank WHERE cooperid = @cooperid ORDER BY id";
+            string sql = "SELECT TOP " + tmts + " [id],[cooperid],[topic],[answer],[keyanswer],[checkbox],[addtime] FROM T_TopicBank WHERE cooperid = @cooperid ORDER BY id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@cooperid",SqlDbType.Int),
@@ -51,9 +51,9 @@ namespace DAL
         /// <param name="dto"></param>
         /// <returns></returns>
         public int SetZxdtTopic(T_TopicBank dto) {
-            string sql = "INSERT INTO [T_TopicBank]([cooperid],[topic],[answer],[keyanswer])VALUES(@cooperid, @topic, @answer, @keyanswer)";
+            string sql = "INSERT INTO [T_TopicBank]([cooperid],[topic],[answer],[checkbox],[keyanswer])VALUES(@cooperid, @topic, @answer,@checkbox, @keyanswer)";
             if (dto.id != 0) {
-                sql = "UPDATE [T_TopicBank] SET [cooperid] = @cooperid,[topic] = @topic,[answer] = @answer,[keyanswer] = @keyanswer WHERE id=@id";
+                sql = "UPDATE [T_TopicBank] SET [cooperid] = @cooperid,[topic] = @topic,[answer] = @answer,[checkbox] = @checkbox,[keyanswer] = @keyanswer WHERE id=@id";
             }
             SqlParameter[] parameter = new[]
             {
@@ -61,13 +61,15 @@ namespace DAL
                 new SqlParameter("@cooperid",SqlDbType.Int),
                 new SqlParameter("@topic",SqlDbType.NVarChar,300),
                 new SqlParameter("@answer",SqlDbType.NVarChar,500),
-                new SqlParameter("@keyanswer",SqlDbType.Int),
+                new SqlParameter("@checkbox",SqlDbType.Int),
+                new SqlParameter("@keyanswer",SqlDbType.NVarChar,20),
             };
             parameter[0].Value = dto.id;
             parameter[1].Value = dto.cooperid;
             parameter[2].Value = dto.topic;
             parameter[3].Value = dto.answer;
-            parameter[4].Value = dto.keyanswer;
+            parameter[4].Value = dto.checkbox;
+            parameter[5].Value = dto.keyanswer;
             int result = dal.IntExtSql(sql, parameter);
             return result;
         }

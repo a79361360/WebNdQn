@@ -216,6 +216,12 @@
     <Content Include="Content\Activity\Zxdt\content\test.html" />
     <Content Include="Content\Activity\Zxdt\content\touch.js" />
     <Content Include="Content\Activity\Zxdt\content\wxshare.js" />
+    <Content Include="Content\Activity\Zxdt\Demo\css\risk_test.css" />
+    <Content Include="Content\Activity\Zxdt\Demo\images\test_card_bg.png" />
+    <Content Include="Content\Activity\Zxdt\Demo\index.html" />
+    <Content Include="Content\Activity\Zxdt\Demo\js\answer.js" />
+    <Content Include="Content\Activity\Zxdt\Demo\js\font-size.js" />
+    <Content Include="Content\Activity\Zxdt\Demo\js\jquery-1.8.3.min.js" />
     <Content Include="Content\Activity\Zxdt\images\b1g.png" />
     <Content Include="Content\Activity\Zxdt\images\bg.png" />
     <Content Include="Content\Activity\Zxdt\images\btn_1.png" />
@@ -334,6 +340,8 @@
     <Content Include="Views\Zxdt\ZxdtPortal.cshtml" />
     <Content Include="Views\Zxdt\ZxdtDrawPortal.cshtml" />
     <Content Include="Views\Cooper\MsgCodePortal.cshtml" />
+    <Content Include="Views\Nsoup\Index.cshtml" />
+    <Content Include="Views\Zxdt\Default.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

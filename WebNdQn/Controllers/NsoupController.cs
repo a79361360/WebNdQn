@@ -16,7 +16,7 @@ namespace WebNdQn.Controllers
         {
             return View();
         }
-        //发送短信
+        //发送登入短信
         public ActionResult SendLoginMsg() {
             if (Request["ctype"] == null || Request["issue"] == null)
                 return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
@@ -25,9 +25,9 @@ namespace WebNdQn.Controllers
 
             int result = nbll.SendLoginMsg(ctype, issue);
             if (result > 0) {
-                return JsonFormat(new ExtJson { success = true, msg = "短信发送成功" });
+                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "短信发送成功" });
             }
-            return JsonFormat(new ExtJson { success = false, msg = "短信发送失败" });
+            return JsonFormat(new ExtJson { success = false, code = -1000, msg = "短信发送失败" });
         }
         //获取短信
         public ActionResult TakeMobileCode()
@@ -50,6 +50,7 @@ namespace WebNdQn.Controllers
             {
                 if (type == 1)
                 {
+                    //创建登入cookie并保存到数据库
                     int result_1 = nbll.CreateLoginCookie(Convert.ToInt32(code));
                 }
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "TakeMobileCode 4 将短信内容写入数据库成功: ");
@@ -63,9 +64,9 @@ namespace WebNdQn.Controllers
         public ActionResult SignDlCookie() {
             int result = nbll.SignDlCookie();
             if (result == 1)
-                return JsonFormat(new ExtJson { success = true, msg = "登入Cookie有效" });
+                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "登入Cookie有效" });
             else
-                return JsonFormat(new ExtJson { success = false, msg = "登入Cookie无效" });
+                return JsonFormat(new ExtJson { success = false, code = -1000, msg = "登入Cookie无效" });
         }
 
 
@@ -76,19 +77,33 @@ namespace WebNdQn.Controllers
             int ctype = Convert.ToInt32(Request["ctype"].ToString());
             int issue = Convert.ToInt32(Request["issue"].ToString());
             //判断是否有待充值记录
-            int result_1 = mbll.IsExistsCzList(ctype, issue);
-            if (result_1 == 0)
+            int result_1 = nbll.IsExistsCzList(ctype, issue);
+            if (result_1 != 1)
                 return JsonFormat(new ExtJson { success = false, msg = "没有待充值的记录", code = -1000, jsonresult = "" });
-            int result_2 = mbll.KeepSessionUsered(ctype, issue, 2);
-            if (result_2 == -1)
-                return JsonFormat(new ExtJson { success = false, msg = "充值Session已经失效,需要重新获取", code = -1001, jsonresult = "" });
-            int result_3 = mbll.FindDtByCtype(ctype, issue);
+            //校验登入cookie是否有效
+            int result_2 = nbll.SignDlCookie(ctype, issue);
+            if (result_2 != 1)
+                return JsonFormat(new ExtJson { success = false, msg = "Cookie已经失效,需要重新获取", code = -1001, jsonresult = "" });
+            //将充值记录生成DT再生成Execl表文件
+            int result_3 = nbll.CreateCzExecl(ctype, issue);
             if (result_3 != 1)
-                return JsonFormat(new ExtJson { success = false, msg = "生成批量用户的Execl表失败了,需要去排查日志", code = -1002, jsonresult = "" });
-            int result_4 = mbll.one_plyhfp(ctype, issue);
+                return JsonFormat(new ExtJson { success = false, msg = "生成批量充值的Execl表失败了,需要去排查日志", code = -1002, jsonresult = "" });
+            //提交Cz的Execl表
+            int result_4 = nbll.SubmitCzExecl(ctype, issue);
             if (result_4 != 1)
                 return JsonFormat(new ExtJson { success = false, msg = "上传批量用户的EXECL并且发送短信失败了,需要去排查日志", code = -1003, jsonresult = "" });
             return JsonFormat(new ExtJson { success = true, msg = "成功运行发送充值短信.", code = 1000, jsonresult = "" });
+        }
+        /// <summary>
+        /// 取得监控列表
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult FindLogCacheList() {
+            var list = nbll.FindLogCacheList();
+            if (list.Count > 0)
+                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "查询成功", jsonresult = list });
+            else
+                return JsonFormat(new ExtJson { success = false, code = -1000, msg = "查询失败", jsonresult = "" });
         }
     }
 }

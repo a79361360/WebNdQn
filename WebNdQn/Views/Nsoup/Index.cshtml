@@ -1,0 +1,270 @@
+﻿
+@{
+    Layout = null;
+}
+@using Model.WxModel
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Session状态管理</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script src="~/Scripts/commonaction.js?v=2"></script>
+    <script type="text/javascript">
+        $(function () {
+            $("#search").click(function () {
+                var field = $("#field").attr("v_val");  //title
+                var fieldv = $("#fieldv").val();        //phone
+                var url = "/Nsoup/FindLogCacheList";
+                var data = { ctype: field, phone: fieldv };
+                searchlist(url, data);
+            })
+            $("#monit").click(function () {
+                var text = $(this).text();
+                if (text == "监控") $(this).text("监控中"); else $(this).text("监控");
+                forulist();
+            })
+            $('.dropdown-menu a').click(function () {
+                var txt = $(this).text(); var val = $(this).attr("v_val");
+                var objdrop = $(this).parent().parent().siblings("button").eq(0);
+                objdrop.text(txt); objdrop.attr("v_val", val);
+            })
+        })
+        //查询返回列晴
+        searchlist = function (url, data) {
+            $("#ulist").html(""); 
+            $.getJSON(url, data, function (ret) {
+                if (ret.code == 1000) {
+                    var caption = "<caption><div class=\"btn-toolbar\" role=\"toolbar\">";
+                    caption += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-default\" onclick=\"RemoveById()\">删除</button></div>";
+                    caption += "</div></caption>";
+
+                    var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:45px;\">Ctype</th><th style=\"width:45px;\">期号</th><th style=\"width:118px;\">客户编号</th><th style=\"width:118px;\">手机号码</th><th style=\"width:118px;\">CSRF</th><th style=\"width:118px;\">登入COOKIE</th><th style=\"width:118px;\">操作</th></tr></thead>" + caption;
+                    $.each(ret.jsonresult, function (i, o) {
+                        str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td class=\"tdcls\">" + o.ctype + "</td><td>" + o.issue + "</td><td title=\"" + o.corpid + "\">" + o.corpid + "</td><td title=\"" + o.phone + "\">" + o.phone + "</td><td title=\"" + o.csrf + "\">" + o.csrf + "</td><td title=\"" + o.dlcookie + "\">" + autoAddEllipsis(o.dlcookie, 10) + "</td><td><button class=\"btn btn-default\" onclick=\"One(" + o.ctype + "," + o.issue + ")\">手动充值</button></td></tr>";
+                    })
+                    str += "</table>";
+                    $("#ulist").html(str);
+                    $("#allqx").click(function () { togglechg(); })
+                } else
+                    tips("查询失败.", 1);
+            })
+        }
+        //删除超端记录
+        RemoveById = function () {
+            if (confirm("确定要清空数据吗?")) {
+                var list = [];      //数组对象，将
+                var data;           //元素对象
+                var tr = $("#ulist tbody tr");
+                $.each(tr, function (i, e) {
+                    var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                    if (eachobj.prop("checked")) {
+                        data = new Object();    //元素对象实例
+                        data.id = eachobj.val();
+                        list.push(data);
+                    }
+                })
+                if (list.length < 1) {
+                    tips("未选中任何行", 2); return;
+                }
+                $.post("/Mobile/RemoveLoginCache", { data: JSON.stringify(list) }, function (ret) {
+                    if (ret.success) {
+                        tips(ret.msg, 2);
+                        $("#search").click();
+                    }else
+                        tips(ret.msg, 2);
+                })
+            }
+        }
+        //点击全选
+        togglechg = function () {
+            var qx = $("#allqx");
+            var tr = $("#ulist tbody tr")
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (qx.prop("checked")) eachobj.prop("checked", true); else eachobj.prop("checked", false);
+            })
+        }
+        //截取字符串结束
+        //tips
+        tips = function (content, timeout) {
+                var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+                BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
+                var obj = $(BootDialog); obj.modal('show');
+                setTimeout(function () { obj.modal('hide'); }, timeout * 1000);
+                //setTimeout(function () { obj.remove(); }, timeout * 1000);
+            }
+        //弹出窗体
+        //弹窗ID，标题，文字内容，宽度，高度
+        qiu_confirm = function (id, title, content, width, height) {
+            var iframe = $("#" + id);
+            if (iframe.length > 0) {
+                iframe.modal('show');
+                return;
+            }
+            if (width != null) {
+                width = "style=\"width:" + width + "px\"";
+            }
+            if (height != null) {
+                height = "style=\"height:" + height + "px;overflow:auto\"";
+            }
+            var header = "<div class=\"modal-header\"><button type=\"button\" class=\"close\" data-dismiss=\"modal\" aria-hidden=\"true\">×</button><h4 class=\"modal-title\" id=\"myModalLabel\">" + title + "</h4></div>"
+            var footer = "<div class=\"modal-footer\"><button type=\"button\" class=\"btn btn-default\" data-dismiss=\"modal\">取消</button><button id=\"Tj\" type=\"button\" class=\"btn btn-primary\">确定</button></div>";
+            var BootDialog = "<div class=\"modal fade\" id=\"" + id + "\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"" + width + ">" + header + "<div class=\"modal-body\"" + height + ">" + content + "</div>" + footer + "</div></div></div>";
+            var obj = $(BootDialog); obj.modal('show');
+            obj.find("#Tj").click(function () {
+                var url = "/Mobile/UpdateDlCookie";
+                var dlcookie = $("#dltext").val();
+                if (dlcookie == "") { tips("登入的Cookie值不能为空.", 1); return; }
+                $.post(url, { ctype: id, issue: 1, dlcookie: dlcookie }, function (ret) {
+                    if (ret.code == "1000")
+                    {
+                        tips("更新成功.", 1);
+                    }
+                });
+                obj.modal('hide');
+            })
+        }
+        window.setInterval(function () { timedown() }, 1000);
+        //定义一个60秒的变量,一分钟内只能发一条充值短信
+        var tsix = 0;
+        //每秒减1
+        timedown = function () {
+            //60秒短信减少
+            if (tsix > 0) tsix--;
+        }
+        var isl = true;     //与lindex一起来判断,当前的ctype是否结束,true为可进行,false为不能进行下一个
+        var lindex = 0;     //单子td的索引值
+        var len = 0;        //共有几个单子
+        var ulist_timer;    //定时器,每隔10秒去判断当前的ctype结束没有,是否可以进行下一个
+        //另一种思路,10秒一执行,开始遍历ulist里面td
+        forulist = function () {
+            var list = $(".tdcls");
+            if (list.length == 0) { tips("没有需要监控的单子", 2); return; }   //没有列表,需要先点击查询,将列表查询出来
+            lindex = 0; len = list.length;       //初始化遍历变量
+            clearInterval(ulist_timer);
+            ulist_timer = setInterval(function () { execute_one(list) }, 10000);    //定时器初始化,每10秒去调用一次
+        }
+        //另一种思路,10秒一执行
+        execute_one = function (list) {
+            var text = $("#monit").text();      //取得监控按钮的值
+            if (text != "监控中") return;      //如果没处于监控中,后面将不执行
+            //如果索引已经超过列表最大值,就清空定时器Return
+            if (lindex > (len - 1)) {
+                console.log("execute_one > clearInterval");
+                //另一种思路,不走250秒一次的.就是遍历列表,10秒调用一次,如果遇到成功发送充值短信的我们就等60秒,否则就是10秒走一个index索引
+                lindex = 0; len = list.length;
+                return;
+            }
+            list.css("background-color", "white");          //清空所有背景色,方便看到目前在执行哪个单子
+            $(list[lindex]).css("background-color", "red"); //当前单了设置成红色
+            var ctype = $(list[lindex]).text().trim();      //取得当前ctype的值
+            var issue = 1;                                  //issue的值
+            if (ctype.trim() == "") return;                 //如果出现ctype为空的情况,就直接不做,理论上是不可能出现的
+            console.log("lindex=" + lindex + "(len - 1)=" + (len - 1) + "tsix=" + tsix);
+            if (isl && tsix == 0) {
+                isl = false;
+                One(ctype, issue);
+            };
+        }
+        //修改isl标识和lindex索引,认为当前单子结束,可执行下一个单子
+        execute_case = function () {
+            isl = true;
+            lindex++;
+        }
+        //充值
+        One = function (ctype, issue) {
+            console.log("One > ");
+            $.getJSON("/Nsoup/One", { ctype: ctype, issue: issue }, function (ret) {
+                if (ret.code == -1001) {
+                    Two(ctype, issue);  //Cookie失效,
+                } else if (ret.code == 1000) {
+                    tips(ret.msg, 2);
+                    execute_case();
+                    tsix = 60;          //只有这里的充值短信发送成功需要设置一下这个60秒的变量
+                }
+                else {
+                    tips(ret.msg, 2);
+                    execute_case();
+                }
+            })
+        }
+        //发送登入短信生成Cookie
+        Two = function (ctype, issue) {
+            console.log("Two > ");
+            $.getJSON("/Nsoup/SendLoginMsg", { ctype: ctype, issue: issue }, function (ret) {
+                if (ret.code == 1000) {
+                    Three(ctype, issue);      //短信已经发送成功了,但是需要校验一下是否Cookie已经生成到数据库
+                } else {
+                    tips(ret.msg, 2);
+                    execute_case();
+                }
+            })
+        }
+        var three_timer;    //定时器
+        var three_num = 0;  //
+        //连续5秒去判断一次Cookie是否有效
+        Three = function (ctype, issue) {
+            console.log("Three > three_num=" + three_num);
+            //开始初始化判断
+            if (parseFloat(three_num) == 0) {
+                console.log("Three > 生成Three定时器");
+                three_timer = window.setInterval(function () { Three(ctype, issue) }, 5000);
+            }
+            if (three_num > 5) { three_num = 0; clearInterval(three_timer); tips("Cookie连续验证6次依然无效,排查日志", 2); execute_case(); return; }
+            $.getJSON("/Nsoup/SignDlCookie", { ctype: ctype, issue: issue }, function (ret) {
+                if (ret.code == 1000) {
+                    three_num = 0;
+                    clearInterval(three_timer);
+                    One(ctype, issue);
+                }
+                else {
+                    console.log("Three > 记数增加" + three_num);
+                    three_num++;
+                }
+            })
+        }
+    </script>
+</head>
+<body>
+    <p id="back-to-top"><a href="#top"><span></span></a></p>
+    <div class="container" style="margin-left:0px; padding-left:0px">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <form action="" class="bs-example bs-example-form" role="form">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="input-group" style="float:left;">
+                                <div class="btn-group" style="float: left;">
+                                    <button id="field" type="button" v_val="-1" class="btn btn-default">默认</button>
+                                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" style="height: 34px;">
+                                        <span class="caret"></span>
+                                        <span class="sr-only">切换下拉菜单</span>
+                                    </button>
+                                    <ul class="dropdown-menu" role="menu">
+                                        <li><a href="#" v_val="-1">默认</a></li>
+                                        <li><a href="#" v_val="1">2</a></li>
+                                    </ul>
+                                </div>
+                                <input id="fieldv" type="text" class="form-control" style="width: 220px;margin:0 5px" />
+                            </div><!-- /input-group -->
+                            <button id="search" type="button" style="float:left; margin-left:5px;" class="btn btn-default">查询</button>
+                            <button id="monit" type="button" style="float:left; margin-left:5px;" class="btn btn-default">监控</button>
+                            @*<button id="btn_ztimes" value="1500" style="float:left; margin-left:5px;" type="button" class="btn btn-info">1500秒</button>*@
+                            <button id="btn_ctimes" value="250" style="float:left; margin-left:5px;" type="button" class="btn btn-info">250秒</button>
+                        </div><!-- /.col-lg-6 -->
+                    </div><!-- /.row -->
+                </form>
+            </div>
+            <div class="panel-body">
+                <div id="ulist"></div>
+                <div id="page" class="m-pagination"></div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

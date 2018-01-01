@@ -148,7 +148,7 @@ namespace BLL
         /// 生成登入Cookie并保存到数据库,根据短信动态码
         /// </summary>
         /// <param name="code"></param>
-        /// <returns>1成功-1异常-2校验失败-3不存在正在进行时的监控列-4登入的Cookie更新到数据库失败</returns>
+        /// <returns>1成功-1异常-2校验失败-3不存在正在进行时的监控列-4登入的Cookie更新到数据库失败-5生成充值的Execl表失败-6提交充值的Execl表失败</returns>
         public int CreateLoginCookie(int code) {
             IList<T_LogCache> list = DataTableToList.ModelConvertHelper<T_LogCache>.ConvertToModel(ndal.FindLogCacheState());
             if (list.Count > 0)
@@ -183,6 +183,26 @@ namespace BLL
                         {
                             Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie 校验登入cookie成功");
                             return 1;
+                            //生成充值的Execl
+                            //int result_3 = CreateCzExecl(dto.ctype, dto.issue);
+                            //if (result_3 == 1)
+                            //{
+                            //    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie 生成充值记录的Execl表成功");
+                            //    int result_4 = SubmitCzExecl(dto.ctype, dto.issue);
+                            //    if (result_4 == 1)
+                            //    {
+                            //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie 提交充值Execl表成功");
+                            //        return 1;
+                            //    }
+                            //    else {
+                            //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie 提交充值Execl表失败");
+                            //        return -6;
+                            //    }
+                            //}
+                            //else {
+                            //    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie 生成充值记录的Execl表失败");
+                            //    return -5;
+                            //}
                         }
                         else {
                             Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie 校验登入cookie失败");
@@ -264,6 +284,118 @@ namespace BLL
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SignDlCookie 不存在正在进行时的监控列");
                 return -3;
             }
+        }
+        /// <summary>
+        /// 校验登入的cookie是否有效
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns>1成功-1异常-2校验失败-3不存在进行时的监控项</returns>
+        public int SignDlCookie(int ctype,int issue)
+        {
+            IList<T_LogCache> list = DataTableToList.ModelConvertHelper<T_LogCache>.ConvertToModel(ndal.FindLogCacheState(ctype, issue));
+            if (list.Count > 0)
+            {
+                T_LogCache dto = list[0];
+                string url = "http://www.fj.10086.cn/power/ll800/ht/home/main.do";
+                HttpHelper helpweb = new HttpHelper();  //初始实例化HttpHelper
+                HttpResult result = new HttpResult();   //初始实例化HttpResult
+                HttpItem item = new HttpItem()
+                {
+                    URL = url,                                          //URL     必需项    
+                    Method = "GET",                                    //URL     可选项 默认为Get   
+                    ProxyIp = "ieproxy",
+                    ContentType = "application/x-www-form-urlencoded",  //ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
+                    Cookie = dto.dlcookie
+                };
+                try
+                {
+                    result = helpweb.GetHtml(item);
+                    NSoup.Nodes.Document doc = NSoup.NSoupClient.Parse(result.Html);
+                    string text = doc.Select(".current a")[0].Text();
+                    if (text == "首页" & doc.ChildNodes.Count == 2)
+                    {
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SignDlCookie(int ctype,int issue) 校验登入Cookie成功 ctype=" + dto.ctype + " issue=" + dto.issue);
+                        return 1;
+                    }
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SignDlCookie(int ctype,int issue) 校验登入Cookie失败 ctype=" + dto.ctype + " issue=" + dto.issue);
+                    return -2;
+                }
+                catch (Exception er)
+                {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SignDlCookie(int ctype,int issue) 校验登入Cookie异常 " + er.Message);
+                    return -1;
+                }
+            }
+            else
+            {
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SignDlCookie(int ctype,int issue) 不存在正在进行时的监控列");
+                return -3;
+            }
+        }
+        /// <summary>
+        /// 是否存在待充值的记录
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns>1存在充值记录-2客户不存在-3没有充值记录</returns>
+        public int IsExistsCzList(int ctype, int issue)
+        {
+            int num = ndal.IsExistsCzList(1, ctype, issue);
+            return num;
+        }
+        /// <summary>
+        /// 待充值的记录生成Execl文件
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns>1成功-1异常-2未配置用户流量和截止时间-3不存在进行时的监控项-4充值记录的表是空的</returns>
+        public int CreateCzExecl(int ctype,int issue) {
+            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(cdal.GetCooperConfig(ctype, issue));
+            if (list.Count > 0)
+            {
+                T_CooperConfig dto = list[0];
+                if (dto.eachflow == 0 || string.IsNullOrEmpty(dto.cutdate))
+                {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + "未进行每个用户流量或者截止时间没有配置.T_CooperConfig");
+                    return -2;
+                }
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + " 开始生成充值记录的Datatable表");
+                var dt = ndal.CreatCzDTToExecl(2, ctype, issue);
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + " 生成充值记录的Datatable表结束,条数为" + dt.Rows.Count);
+                if (dt.Rows.Count > 0)
+                {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + " 开始将充值记录的Datatable表生成Execl表文件");
+                    int result = Common.Helper.HmExcelAssist.DataTabletoExcel(dt, AppDomain.CurrentDomain.BaseDirectory + (@"Content\Txt\") + "flowPoolExcel.xls");
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + " 将充值记录的Datatable表生成Execl表文件的结果" + result);
+                    return result;
+                }
+                else {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + " Datatable表的条数为0");
+                    return -4;
+                }
+            }
+            else {
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + " 不存在当前监控的客户");
+                return -3;
+            }
+        }
+        /// <summary>
+        /// 提交Cz的Execl表
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int SubmitCzExecl(int ctype,int issue) {
+            return 1;
+        }
+        /// <summary>
+        /// 取得监控列表
+        /// </summary>
+        /// <returns></returns>
+        public IList<T_LogCache> FindLogCacheList() {
+            IList<T_LogCache> list = DataTableToList.ModelConvertHelper<T_LogCache>.ConvertToModel(ndal.FindLogCacheList());
+            return list;
         }
     }
     //新发送短信返回结果实体类

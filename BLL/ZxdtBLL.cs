@@ -51,7 +51,7 @@ namespace BLL
             SqlPageParam param = new SqlPageParam();
             param.TableName = "T_TopicBank";
             param.PrimaryKey = "id";
-            param.Fields = "[id],[cooperid],[topic],[answer],[keyanswer],[addtime]";
+            param.Fields = "[id],[cooperid],[topic],[answer],[checkbox],[keyanswer],[addtime]";
             param.PageSize = pageSize;
             param.PageIndex = pageIndex;
             param.Filter = filter;
@@ -69,10 +69,11 @@ namespace BLL
         /// <param name="answer"></param>
         /// <param name="keyanswer"></param>
         /// <returns></returns>
-        public int SetZxdtTopic(int id,int cooperid,string topic,string answer,int keyanswer) {
+        public int SetZxdtTopic(int id, int cooperid, int checkbox, string topic, string answer, string keyanswer)
+        {
             int result = 0;
             T_TopicBank dto = new T_TopicBank();
-            dto.id = id;dto.cooperid = cooperid;dto.topic = topic;dto.answer = answer;dto.keyanswer = keyanswer;
+            dto.id = id; dto.cooperid = cooperid; dto.checkbox = checkbox; dto.topic = topic; dto.answer = answer; dto.keyanswer = keyanswer;
             result = zdal.SetZxdtTopic(dto);
             return result;
         }

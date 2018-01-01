@@ -21,6 +21,108 @@ namespace WebNdQn.Controllers
         WeiXinBLL wxll = new WeiXinBLL();
         ZxdtBLL zbll = new ZxdtBLL();
         ActivityBLL Abll = new ActivityBLL();
+        public ActionResult Default() {
+            if (Request["ctype"] == null || Request["issue"] == null)
+                return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
+            string ctype = Request["ctype"].ToString(); string issue = Request["issue"].ToString();
+            T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));     //取得配置
+            if (dto == null)
+                return Content("配置为空");
+            if (Request["p"] == null)
+            {
+                string c = "&c=" + DEncrypt.DESEncrypt1("CGI|1|" + WebHelp.GetCurHttpHost() + "/Zxdt/Index");   //c参数进行加密
+                string param = Request.Url.Query + c;   //参数串,例如:http://wx.ndll800.com/home/default?ctype=1&issue=1 取的param为:   ?ctype=1&issue=1
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     param： " + param);
+                string state = "";                  //state的值暂时为空,如果后面有需要验签,再用起来,现在就直接用参数来做校验
+                string url = wxll.Wx_Auth_Code(dto.wx_appid, System.Web.HttpUtility.UrlEncode(WebHelp.GetCurHttpHost() + "/WeiX/Wx_Auth_Code" + param), "snsapi_userinfo", state);  //snsapi_base,snsapi_userinfo
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     URL： " + url);
+                return Redirect(url);
+            }
+            else
+            {
+                string gz = "0"; string openid = "";
+                if (Request["p"] != null)
+                {
+                    try
+                    {
+                        string p = Request["p"].ToString(); //1|subscribe|openid  微信发送|是否关注|openid
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + Request["p"].ToString());
+                        string temp = DEncrypt.DESDecrypt1(p);    //取得p参数,并且进行解密
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + temp);
+                        string[] plist = temp.Split('|');   //微信发送|是否
+                        if (plist[0] != "1") return Content("配置参数异常");
+                        gz = plist[1]; openid = plist[2];   //是否关注,微信用户id
+                    }
+                    catch
+                    {
+                        return Content("参数错误");
+                    }
+                }
+                if (string.IsNullOrEmpty(openid))
+                    return Content("授权失败");
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
+                #region 获取微信用户的openid
+                ViewBag.openid = openid;
+                //ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkL";
+                #endregion
+                //cooperid
+                ViewBag.cooperid = dto.id;
+                //取得当前用户还可摇几次，需要用到openid
+                ViewBag.lotteyn = Abll.GetOpenidCount(dto.id, 2, ViewBag.openid);
+                //手机号码
+                ViewBag.curphone = Abll.GetActivityPhone(dto.id, 2, ViewBag.openid);
+                #region 分享到朋友 基础数据
+                if (dto != null)
+                {
+                    long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
+                    string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
+                    string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
+                    ViewBag.appid = Wx_config.appid;        //分享到朋友，这里的appid用的是自己公司的，域名只能自己操作
+                    ViewBag.timestamp = timestamp;
+                    ViewBag.noncestr = noncestr;
+                    ViewBag.signatrue = signatrue;
+                    ViewBag.areatype = dto.areatype;        //1为宁德2为莆田
+                }
+                #endregion
+
+                var dto_act = zbll.GetByCooperId(dto.id, 2);                //取得在线答题配置信息
+                if (dto_act == null)
+                    return Content("在线答题配置为空");
+                string ptitle = "在线答题"; string bgurl = "/Content/Img/bg/body_bg2.png"; string explain = "暂时没有游戏说明";
+                ptitle = dto_act.title; bgurl = string.IsNullOrEmpty(dto_act.bgurl) == false ? bgurl = dto_act.bgurl : ""; explain = dto_act.explain.Replace("\n", "<br/>");
+                ViewBag.ptitle = ptitle;            //页面的标题
+                ViewBag.bgurl = bgurl;              //页面的背景
+                ViewBag.explain = explain;          //答题的说明
+                ViewBag.score = dto_act.dt_fs;      //每个题目的分数
+                ViewBag.sright = dto_act.sright;    //是否显化答案
+                ViewBag.flowamount = dto_act.flowamount;    //流量池量
+                ViewBag.curflowcount = zbll.ZxdtDrawNumber(dto_act.cooperid);   //用户流量
+                #region 分享到朋友 具体数据
+                ViewBag.title = dto_act.wx_title;              //标题
+                ViewBag.desc = dto_act.wx_descride;            //描述
+                ViewBag.imgurl = WebHelp.GetCurHttpHost() + dto_act.wx_imgurl;            //图片地址
+                ViewBag.linkurl = dto_act.wx_linkurl;          //链接地址
+                #endregion
+
+                #region 取得题目列表b
+                var list = zbll.GetDttsTopic(dto.id, dto_act.dt_tmts);
+                List<questions> qdtolist = new List<questions>();
+                questions qdto;
+                foreach (var item in list)
+                {
+                    qdto = new questions();
+                    qdto.question = item.topic;
+                    string[] sstr = item.answer.Split('|');
+                    qdto.answers = sstr;
+                    qdto.correctAnswer = item.keyanswer;
+                    qdtolist.Add(qdto);
+                }
+                string json = JsonConvert.SerializeObject(qdtolist);
+                ViewBag.json = json;
+                #endregion 取得题目列表e
+            }
+            return View();
+        }
         /// <summary>
         /// 展示给客户的页面
         /// </summary>
@@ -243,12 +345,13 @@ namespace WebNdQn.Controllers
         /// </summary>
         /// <returns></returns>
         public ActionResult SetZxdtTopic() {
-            int id = Convert.ToInt32(Request.Form["id"]);                //id,如果没有为0是新增
+            int id = Convert.ToInt32(Request.Form["id"]);                       //id,如果没有为0是新增
             int cooperid = Convert.ToInt32(Request.Form["cooperid"]);           //cooperid
             string topic = Request.Form["topic"];                               //题目
+            int checkbox = Convert.ToInt32(Request.Form["checkbox"]);           //是否为多选
             string answer = Request.Form["answer"];                             //答案列表
-            int keyanswer = Convert.ToInt32(Request.Form["keyanswer"]);         //答案值
-            int result = zbll.SetZxdtTopic(id, cooperid, topic, answer, keyanswer);
+            string keyanswer = Request.Form["keyanswer"];                       //答案值
+            int result = zbll.SetZxdtTopic(id, cooperid, checkbox, topic, answer, keyanswer);
             if (result > 0)
                 return JsonFormat(new ExtJson { success = true, code = 1000, msg = "操作成功." });
             else
@@ -347,6 +450,6 @@ namespace WebNdQn.Controllers
     public class questions {
         public string question { get; set; }
         public string[] answers { get; set; }
-        public int correctAnswer { get; set; }
+        public string correctAnswer { get; set; }
     }
 }

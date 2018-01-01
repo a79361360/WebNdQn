@@ -10,9 +10,10 @@ namespace Model.WxModel
     {
         public int id { get; set; }
         public int cooperid { get; set; }
+        public int checkbox { get; set; }
         public string topic { get; set; }
         public string answer { get; set; }
-        public int keyanswer { get; set; }
+        public string keyanswer { get; set; }
         public DateTime addtime { get; set; }
     }
 }

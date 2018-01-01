@@ -79,6 +79,22 @@ namespace DAL
             return dal.ExtSql(sql);
         }
         /// <summary>
+        /// 取得当前正在监控的项
+        /// </summary>
+        /// <returns></returns>
+        public DataTable FindLogCacheState(int ctype,int issue)
+        {
+            string sql = "SELECT ctype,issue,corpid,phone,csrf,dlyzm,czyzm,dlcookie,czcookie FROM T_LogCache WHERE ctype=@ctype AND issue=@issue";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int)
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            return dal.ExtSql(sql, parameter);
+        }
+        /// <summary>
         /// 更新登入的cookie
         /// </summary>
         /// <param name="dlcookie"></param>
@@ -91,6 +107,67 @@ namespace DAL
             };
             parameter[0].Value = dlcookie;
             return dal.IntExtSql(sql, parameter);
+        }
+        /// <summary>
+        /// 是否存在待直充的记录
+        /// </summary>
+        /// <param name="type">1判断是否存在充值记录,1存在,-2当前客户不存在-3没有充值记录</param>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int IsExistsCzList(int type, int ctype, int issue)
+        {
+            string sql = "SP_ExecuteFlowLog";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@Type",SqlDbType.Int),
+                new SqlParameter("@Ctype",SqlDbType.Int),
+                new SqlParameter("@Issue",SqlDbType.Int),
+                new SqlParameter("@ReturnValue",SqlDbType.Int)
+            };
+            parameter[0].Value = type;
+            parameter[1].Value = ctype;
+            parameter[2].Value = issue;
+            parameter[3].Direction = ParameterDirection.ReturnValue;
+            string[] str = new string[] { "@ReturnValue" };
+            Dictionary<string, object> list = new Dictionary<string, object>();
+            dal.ExtProc(sql, parameter, str, out list);
+            return Convert.ToInt32(list["@ReturnValue"]);
+        }
+        /// <summary>
+        /// 生成待充值的记录
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public DataTable CreatCzDTToExecl(int type, int ctype, int issue)
+        {
+            string sql = "SP_ExecuteFlowLog";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@Type",SqlDbType.Int),
+                new SqlParameter("@Ctype",SqlDbType.Int),
+                new SqlParameter("@Issue",SqlDbType.Int),
+                new SqlParameter("@ReturnValue",SqlDbType.Int)
+            };
+            parameter[0].Value = type;
+            parameter[1].Value = ctype;
+            parameter[2].Value = issue;
+            parameter[3].Direction = ParameterDirection.ReturnValue;
+            string[] str = new string[] { "@ReturnValue" };
+            Dictionary<string, object> list = new Dictionary<string, object>();
+            DataTable dt = new DataTable();
+            dt = dal.ExtProc(sql, parameter, str, out list);
+            return dt;
+        }
+        /// <summary>
+        /// 取得监控列表
+        /// </summary>
+        /// <returns></returns>
+        public DataTable FindLogCacheList() {
+            string sql = "SELECT ctype,issue,corpid,phone,csrf,dlyzm,czyzm,dlcookie,czcookie FROM T_LogCache";
+            return dal.ExtSql(sql);
         }
     }
 }
