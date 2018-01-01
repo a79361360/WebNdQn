@@ -106,19 +106,43 @@ namespace WebNdQn.Controllers
 
                 #region 取得题目列表b
                 var list = zbll.GetDttsTopic(dto.id, dto_act.dt_tmts);
-                List<questions> qdtolist = new List<questions>();
-                questions qdto;
+                string str = "";int index = 1; string cardstr = "";     //题目字符串，索引，card样式字符串
                 foreach (var item in list)
                 {
-                    qdto = new questions();
-                    qdto.question = item.topic;
+                    index++;
+                    if (index < 4) {
+                        cardstr = " card" + index;
+                    }
+                    str += "<div class=\"card_cont" + cardstr + "\">";
+                    str += "<div class=\"card\">";
+                    str += "<p class=\"question\"><span>Q" + index + "、</span>" + item.topic + "</p>";
+                    str += "<ul class=\"select\">";
                     string[] sstr = item.answer.Split('|');
-                    qdto.answers = sstr;
-                    qdto.correctAnswer = item.keyanswer;
-                    qdtolist.Add(qdto);
+                    int temindex = 1;string checktype = "checkbox";
+                    foreach (var tem in sstr) {
+                        temindex++;
+                        if (item.checkbox == 1) {
+                            checktype = "radio";
+                        }
+                        str += "<li><input id=\"q" + index + "_" + temindex + "\" type=\"" + checktype + "\" name=\"r - group - " + index + "\" ><label for=\"q" + index + "_" + temindex + "\">" + tem + "</label></li>";
+                    }
+                    if(index==1)
+                        str += "</ul><div class=\"card_bottom\"><a class=\"next\">下一题</a><span><b>" + index + "</b>/" + dto_act.dt_tmts + "</span></div></div></div>";
+                    if(index!= dto_act.dt_tmts)
+                        str += "</ul><div class=\"card_bottom\"><a class=\"prev\">上一题</a><a class=\"next\">下一题</a><span><b>" + index + "</b>/" + dto_act.dt_tmts + "</span></div></div></div>";
+                    if (index == dto_act.dt_tmts)
+                        str += "</ul><div class=\"card_bottom\"><a class=\"prev\">上一题</a><a class=\"ok\">完成</a><span><b>" + index + "</b>/" + dto_act.dt_tmts + "</span></div></div></div>";
+                    //List<questions> qdtolist = new List<questions>();
+                    //questions qdto;
+                    //qdto = new questions();
+                    //qdto.question = item.topic;
+                    //string[] sstr = item.answer.Split('|');
+                    //qdto.answers = sstr;
+                    //qdto.correctAnswer = item.keyanswer;
+                    //qdtolist.Add(qdto);
                 }
-                string json = JsonConvert.SerializeObject(qdtolist);
-                ViewBag.json = json;
+                //string json = JsonConvert.SerializeObject(qdtolist);
+                ViewBag.json = str;
                 #endregion 取得题目列表e
             }
             return View();

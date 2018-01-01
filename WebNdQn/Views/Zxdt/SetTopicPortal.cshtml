@@ -33,6 +33,10 @@
             var topic = $("#txt_topic").val();
             var cooperid = $("#txt_cooperid").val();
             var checkbox = $("input[name='optionsRadiosinline']:checked").val();
+            if (checkbox == 1 & checkbox.indexOf(',')) {
+                tips("单选题的答案不能有,号", -1);
+                return;
+            }
             var answer = MergeAnswer();
             var kanswer = $("#txt_keyanswer").val();
             if (answer == "-1") {
