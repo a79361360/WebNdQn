@@ -10,10 +10,8 @@
     <meta name="viewport" content="width=device-width" />
     <title>@ViewBag.ptitle</title>
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-    <link href="~/Content/Activity/Zxdt/style.css?v=4" rel="stylesheet" />
     
     <script src="~/Scripts/jquery-1.10.2.min.js"></script>
-    <script src="~/Content/Activity/Zxdt/quiz.js?v=10"></script>
     <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js" type="text/javascript"></script>
     <script src="~/Scripts/commonaction.js?v=1"></script>
     <script type="text/javascript">
@@ -24,30 +22,17 @@
         var sright = '@ViewBag.sright';                 //是否显化答案
         var flowamount = '@ViewBag.flowamount';         //流量池数量
         var curflowcount = '@ViewBag.curflowcount';     //用户占用流量池
-
-        function HTMLDecode(text) {
-            var temp = document.createElement("div");
-            temp.innerHTML = text;
-            var output = temp.innerText || temp.textContent;
-            temp = null;
-            return output;
-        }
-        @*var l = HTMLDecode('@ViewBag.json');
-        var init1 = "{\"questions\":" + l + "}";
-        var init = JSON.parse(init1);*@
         var tmfs = @ViewBag.score;  //题目分数
+
         $(function () {
-            $('#quiz-container').jquizzy({
-                questions: init.questions
-            });
-            $(".demo").hide();  //先隐藏答题部分
+            $(".wrap").hide();  //先隐藏答题部分
             $("#btn").click(function () {
                 if(parseFloat(lotteyn)<1){alert("没有可答题的次数");return;}
                 if($("#txt_curphone").val()==""){_system._guide("guide");return;}
                 if(openid==""){alert("微信授权失败,重新点击链接");return;}
                 if((parseFloat(flowamount) - parseFloat(curflowcount)) < 100){alert("活动已经结束");return;}
 
-                $(".demo").show();
+                $(".wrap").show();
                 $(".bg").hide();
                 $(".nav-start").click();
             })
@@ -121,16 +106,6 @@
         }
     </script>
     <style type="text/css">
-        .bg {
-            width: 100%;
-            background-image: url(../Content/Activity/Zxdt/images/bg.png);
-            background-repeat: no-repeat;
-            background-size: 100%;
-            height: 0;
-            padding-bottom: 177.5%;
-            text-align:center;
-        }
-
         .div_c {
             padding-top: 99%;
         }
@@ -278,7 +253,7 @@
         </div>
     </div>
 
-    <div class="bg">
+    @*<div class="bg">
         <form class="form-horizontal div_c" role="form">
             <div class="col-sm-12">
                 <span id="btn" class="btn_1"></span>
@@ -288,7 +263,21 @@
                 <span id="btn2" class="btn_3 col-sm-6" onclick="getranklist()"></span>
             </div>
         </form>
+    </div>*@
+
+
+    <div class="wrap" id="wrap">
+        <span class="start"><img src="images/btn_1.png"></span>
+        <div class="ranlist_role">
+            <span><img src="images/ranlist.png" onclick="getranklist()"></span>
+            <span><img src="images/role.png" onclick="javascript:_system._guide('dbox');"></span>
+        </div>
     </div>
+    <script type="text/javascript">
+    var maxw=640,cw=document.body.clientWidth,ch=window.innerHeight,fsize;var wrap=document.getElementsByClassName('wrap');if(cw>=maxw){fsize=100}else{fsize=100*cw/maxw}var wh=fsize*10.72;if(wh<ch){wh=ch}document.getElementById("wrap").style.height=wh-1+"px";
+    </script>
+
+
     <div class="demo">
         <div id='quiz-container'></div>
     </div>
@@ -298,7 +287,7 @@
         chg_bg = function(){
             var bgurl = '@ViewBag.bgurl';
             if(bgurl!=""){
-                $(".bg")[0].style.backgroundImage="url("+bgurl+")";
+                $(".wrap")[0].style.backgroundImage="url("+bgurl+")";
             }
         }
         chg_bg();   //初始调用，改变背景图

@@ -209,6 +209,7 @@
     <Content Include="Content\Activity\Dzp\images\turnplate-pointer.png" />
     <Content Include="Content\Activity\Zxdt\content\answer.js" />
     <Content Include="Content\Activity\Zxdt\content\base.css" />
+    <Content Include="Content\Activity\Zxdt\content\jquery.min.js" />
     <Content Include="Content\Activity\Zxdt\content\randomQ.js" />
     <Content Include="Content\Activity\Zxdt\content\reset.font.js" />
     <Content Include="Content\Activity\Zxdt\content\sha1.js" />
@@ -216,6 +217,7 @@
     <Content Include="Content\Activity\Zxdt\content\test.html" />
     <Content Include="Content\Activity\Zxdt\content\touch.js" />
     <Content Include="Content\Activity\Zxdt\content\wxshare.js" />
+    <Content Include="Content\Activity\Zxdt\css\risk_test.css" />
     <Content Include="Content\Activity\Zxdt\Demo\css\risk_test.css" />
     <Content Include="Content\Activity\Zxdt\Demo\images\test_card_bg.png" />
     <Content Include="Content\Activity\Zxdt\Demo\index.html" />
@@ -230,9 +232,13 @@
     <Content Include="Content\Activity\Zxdt\images\ranlist.png" />
     <Content Include="Content\Activity\Zxdt\images\role.png" />
     <Content Include="Content\Activity\Zxdt\images\start.gif" />
+    <Content Include="Content\Activity\Zxdt\images\test_card_bg.png" />
     <Content Include="Content\Activity\Zxdt\index.html" />
-    <Content Include="Content\Activity\Zxdt\jquery.min.js" />
+    <Content Include="Content\Activity\Zxdt\js\answer.js" />
+    <Content Include="Content\Activity\Zxdt\js\font-size.js" />
+    <Content Include="Content\Activity\Zxdt\js\jquery-1.8.3.min.js" />
     <Content Include="Content\Activity\Zxdt\quiz.js" />
+    <Content Include="Content\Activity\Zxdt\ss.html" />
     <Content Include="Content\Activity\Zxdt\style.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
