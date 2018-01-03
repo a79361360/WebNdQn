@@ -6,7 +6,10 @@ using Model.WxModel;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.IO;
 using System.Linq;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -183,26 +186,6 @@ namespace BLL
                         {
                             Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie 校验登入cookie成功");
                             return 1;
-                            //生成充值的Execl
-                            //int result_3 = CreateCzExecl(dto.ctype, dto.issue);
-                            //if (result_3 == 1)
-                            //{
-                            //    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie 生成充值记录的Execl表成功");
-                            //    int result_4 = SubmitCzExecl(dto.ctype, dto.issue);
-                            //    if (result_4 == 1)
-                            //    {
-                            //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie 提交充值Execl表成功");
-                            //        return 1;
-                            //    }
-                            //    else {
-                            //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie 提交充值Execl表失败");
-                            //        return -6;
-                            //    }
-                            //}
-                            //else {
-                            //    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie 生成充值记录的Execl表失败");
-                            //    return -5;
-                            //}
                         }
                         else {
                             Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateLoginCookie 校验登入cookie失败");
@@ -349,7 +332,7 @@ namespace BLL
         /// </summary>
         /// <param name="ctype"></param>
         /// <param name="issue"></param>
-        /// <returns>1成功-1异常-2未配置用户流量和截止时间-3不存在进行时的监控项-4充值记录的表是空的</returns>
+        /// <returns>1成功-1异常-3不存在进行时的监控项-4充值记录的表是空的</returns>
         public int CreateCzExecl(int ctype,int issue) {
             IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(cdal.GetCooperConfig(ctype, issue));
             if (list.Count > 0)
@@ -385,9 +368,187 @@ namespace BLL
         /// </summary>
         /// <param name="ctype"></param>
         /// <param name="issue"></param>
-        /// <returns></returns>
+        /// <returns>1成功-1异常-3不存在进行时的监控项-4Execl文件提交失败-5短信发送失败</returns>
         public int SubmitCzExecl(int ctype,int issue) {
-            return 1;
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 开始上传Execl并发送充值短信: " + ctype + " 期号：" + issue);
+            IList<T_LogCache> list = DataTableToList.ModelConvertHelper<T_LogCache>.ConvertToModel(ndal.FindLogCacheState(ctype, issue));
+            if (list.Count > 0)
+            {
+                T_LogCache dto = list[0];
+                string url = "http://www.fj.10086.cn/power/ll800/ht/flow/upload.do";
+                CookieContainer ttainer = ToCookieContainer(dto.dlcookie);
+                string path = AppDomain.CurrentDomain.BaseDirectory + @"Content\Txt\flowPoolExcel.xls";
+                string resposeresult = HttpPostData(url, 10000, "fileField", path, null, ttainer);
+                NSoup.Nodes.Document doc = NSoup.NSoupClient.Parse(resposeresult);
+                var tabobj = doc.Select("#table").Html();     //当前账号已经没有流量池的权限了
+                if (!string.IsNullOrEmpty(tabobj))
+                {
+                    url = "http://www.fj.10086.cn/power/ll800/ht/activity/sendMSM.do";
+                    HttpHelper helpweb = new HttpHelper();  //初始实例化HttpHelper
+                    HttpResult result = new HttpResult();   //初始实例化HttpResult
+                    HttpItem item = new HttpItem()
+                    {
+                        URL = url,//URL     必需项    
+                        Method = "GET",//URL     可选项 默认为Get   
+                        ProxyIp = "ieproxy",
+                        Cookie = dto.dlcookie,
+                        ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
+                    };
+                    try
+                    {
+                        result = helpweb.GetHtml(item);
+                        nsoupmsgdto msgdto = JsonConvert.DeserializeObject<nsoupmsgdto>(result.Html);
+                        if (result.StatusCode == HttpStatusCode.OK & msgdto.result != "false")
+                        {
+                            Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 发送短信成功类型ctype: " + ctype + "期号：" + issue);
+                            return 1;
+                        }
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 发送短信失败ctype: " + ctype + "期号：" + issue+ " result.Html: "+ result.Html);
+                        return -5;
+                    }
+                    catch (Exception er)
+                    {
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl ctype: " + ctype + "期号：" + issue + " 发送短信异常:" + er.Message);
+                        return -1;
+                    }
+                }
+                else {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl ctype: " + ctype + "期号：" + issue + " 提交充值Execl文件失败:" + doc.Html());
+                    return -4;
+                }
+            }
+            else {
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 类型ctype: " + ctype + "期号：" + issue + " 不存在当前监控的客户");
+                return -3;
+            }
+        }
+        /// <summary>
+        /// 提交充值短信
+        /// </summary>
+        /// <param name="code"></param>
+        /// <returns></returns>
+        public int SubmitCzMsg(int code) {
+            IList<T_LogCache> list = DataTableToList.ModelConvertHelper<T_LogCache>.ConvertToModel(ndal.FindLogCacheState());
+            if (list.Count > 0)
+            {
+                T_LogCache dto = list[0];
+                string url = "http://www.fj.10086.cn/power/ll800/ht/flow/toFlowPoolList.do";
+                return 1;
+            }
+            else {
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg 不存在正在进行监控的客户");
+                return -3;
+            }
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cookies"></param>
+        /// <returns></returns>
+        public CookieContainer ToCookieContainer(string cookies)
+        {
+            CookieContainer ner = new CookieContainer();
+            string[] cookiestr = cookies.Split(';');
+            for (int i = 0; i < cookiestr.Length; i++)
+            {
+                string[] v = cookiestr[i].Split('=');
+                ner.Add(new Cookie(v[0], v[1], "/", "www.fj.10086.cn"));
+            }
+            return ner;
+        }
+        /// <summary>
+        /// 提交批量待充值的手机号码execl到服务器
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="timeOut">稁秒</param>
+        /// <param name="fileKeyName">文件名称</param>
+        /// <param name="filePath">文件路径</param>
+        /// <param name="stringDict">参数放到body</param>
+        /// <param name="container">cookie</param>
+        /// <returns>返回结果</returns>
+        public string HttpPostData(string url, int timeOut, string fileKeyName, string filePath, NameValueCollection stringDict, CookieContainer container)
+        {
+            string responseContent;
+            var memStream = new MemoryStream();
+            var webRequest = (HttpWebRequest)WebRequest.Create(url);
+            // 边界符
+            var boundary = "---------------" + DateTime.Now.Ticks.ToString("x");
+            // 边界符
+            var beginBoundary = Encoding.ASCII.GetBytes("--" + boundary + "\r\n");
+            var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+            // 最后的结束符
+            var endBoundary = Encoding.ASCII.GetBytes("\r\n--" + boundary + "--\r\n");
+
+            // 设置属性
+            webRequest.Method = "POST";
+            webRequest.Timeout = timeOut;
+            webRequest.CookieContainer = container;
+            webRequest.ContentType = "multipart/form-data; boundary=" + boundary;
+            try
+            {
+                // 写入文件
+                const string filePartHeader =
+                    "Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"\r\n" +
+                     "Content-Type: application/vnd.ms-excel\r\n\r\n";
+                var header = string.Format(filePartHeader, fileKeyName, "flowPoolExcel.xls");
+                var headerbytes = Encoding.UTF8.GetBytes(header);
+
+                memStream.Write(beginBoundary, 0, beginBoundary.Length);
+                memStream.Write(headerbytes, 0, headerbytes.Length);
+
+                var buffer = new byte[1024];
+                int bytesRead; // =0
+
+                while ((bytesRead = fileStream.Read(buffer, 0, buffer.Length)) != 0)
+                {
+                    memStream.Write(buffer, 0, bytesRead);
+                }
+
+                // 写入字符串的Key
+                //var stringKeyHeader = "\r\n--" + boundary +
+                //                       "\r\nContent-Disposition: form-data; name=\"{0}\"" +
+                //                       "\r\n\r\n{1}\r\n";
+
+                //foreach (byte[] formitembytes in from string key in stringDict.Keys
+                //                                 select string.Format(stringKeyHeader, key, stringDict[key])
+                //                                     into formitem
+                //                                 select Encoding.UTF8.GetBytes(formitem))
+                //{
+                //    memStream.Write(formitembytes, 0, formitembytes.Length);
+                //}
+
+                // 写入最后的结束边界符
+                memStream.Write(endBoundary, 0, endBoundary.Length);
+
+                webRequest.ContentLength = memStream.Length;
+
+                var requestStream = webRequest.GetRequestStream();
+
+                memStream.Position = 0;
+                var tempBuffer = new byte[memStream.Length];
+                memStream.Read(tempBuffer, 0, tempBuffer.Length);
+                memStream.Close();
+
+                requestStream.Write(tempBuffer, 0, tempBuffer.Length);
+                requestStream.Close();
+
+                var httpWebResponse = (HttpWebResponse)webRequest.GetResponse();
+                using (var httpStreamReader = new StreamReader(httpWebResponse.GetResponseStream(),
+                                                                Encoding.GetEncoding("utf-8")))
+                {
+                    responseContent = httpStreamReader.ReadToEnd();
+                }
+                fileStream.Close();
+                httpWebResponse.Close();
+                webRequest.Abort();
+                return responseContent;
+            }
+            catch
+            {
+                fileStream.Close();
+                webRequest.Abort();
+                return "";
+            }
         }
         /// <summary>
         /// 取得监控列表

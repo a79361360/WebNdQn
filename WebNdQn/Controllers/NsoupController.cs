@@ -53,6 +53,11 @@ namespace WebNdQn.Controllers
                     //创建登入cookie并保存到数据库
                     int result_1 = nbll.CreateLoginCookie(Convert.ToInt32(code));
                 }
+                else if (type == 2)
+                {
+                    //接收充值短信并完成充值
+                    int result_1 = nbll.SubmitCzMsg(Convert.ToInt32(code));
+                }
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "TakeMobileCode 4 将短信内容写入数据库成功: ");
             }
             return JsonFormat(new ExtJson { success = false, msg = "保存验证码失败" + "结果：" + content });
