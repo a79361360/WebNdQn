@@ -1,0 +1,35 @@
+﻿<!doctype html>
+<html>
+<head>
+<meta charset="UTF-8" name="viewport" http-equiv="Access-Control-Allow-Origin" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+<title>无标题文档</title>
+<style>
+*{padding:0; margin:0;}
+body{font-size:100%;}
+.wrap{max-width:640px; height:10.72rem; background:url(images/b1g.png) center top no-repeat #089CDE; background-size:100%; margin:0 auto;}
+body:before,body:after,.wrap:before,.wrap:after{content:""; clear:both; height:.01rem; display:block; width:100%;}
+span{display:block;}
+span img{width:100%; max-width:100%; display:block;}
+.start{margin:6.1rem auto 0; width:2.32rem; height:.73rem;}
+.ranlist_role{height:.4rem; width:70%; margin:.5rem auto 2.98rem;}
+.ranlist_role span{width:1.4rem; height:.4em;}
+.ranlist_role span:first-child{float:left;}
+.ranlist_role span:last-child{float:right;}
+</style>
+<script type="text/javascript">
+;(function(doc,win){var max=640,docEl=doc.documentElement,resizeEvt='orientationchange'in window?'orientationchange':'resize',recalc=function(){var clientWidth=docEl.clientWidth;if(!clientWidth)return;if(clientWidth>=max){docEl.style.fontSize='100px'}else{docEl.style.fontSize=100*clientWidth/max+'px'}};if(!doc.addEventListener)return;win.addEventListener(resizeEvt,recalc,false);doc.addEventListener('DOMContentLoaded',recalc,false)})(document,window);
+</script>
+</head>
+<body>
+<div class="wrap" id="wrap">
+    <span class="start"><img src="images/btn_1.png"></span>
+    <div class="ranlist_role">
+        <span><img src="images/ranlist.png"></span>
+        <span><img src="images/role.png"></span>
+    </div>
+</div>
+<script type="text/javascript">
+var maxw=640,cw=document.body.clientWidth,ch=window.innerHeight,fsize;var wrap=document.getElementsByClassName('wrap');if(cw>=maxw){fsize=100}else{fsize=100*cw/maxw}var wh=fsize*10.72;if(wh<ch){wh=ch}document.getElementById("wrap").style.height=wh-1+"px";
+</script>
+</body>
+</html>
