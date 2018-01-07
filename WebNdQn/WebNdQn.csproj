@@ -229,6 +229,7 @@
     <Content Include="Content\Activity\Zxdt\images\btn_1.png" />
     <Content Include="Content\Activity\Zxdt\images\confirm.png" />
     <Content Include="Content\Activity\Zxdt\images\delete.png" />
+    <Content Include="Content\Activity\Zxdt\images\last.png" />
     <Content Include="Content\Activity\Zxdt\images\ranlist.png" />
     <Content Include="Content\Activity\Zxdt\images\role.png" />
     <Content Include="Content\Activity\Zxdt\images\start.gif" />
