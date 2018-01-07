@@ -21,6 +21,12 @@ namespace WebNdQn.Controllers
         WeiXinBLL wxll = new WeiXinBLL();
         ZxdtBLL zbll = new ZxdtBLL();
         ActivityBLL Abll = new ActivityBLL();
+        public ActionResult Last() {
+            return View();
+        }
+        public ActionResult QA() {
+            return View();
+        }
         public ActionResult Default() {
             if (Request["ctype"] == null || Request["issue"] == null)
                 return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });

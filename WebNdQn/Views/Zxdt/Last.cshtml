@@ -1,0 +1,33 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8" name="viewport" http-equiv="Access-Control-Allow-Origin" content="width=device-width,initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no" />
+    <title>Last</title>
+    <style>
+    <!--
+    *{padding:0; margin:0; box-sizing:border-box;}
+    body{font-size:100%;}
+    .wrap{max-width:640px; height:10.72rem; background:url(../../Content/Activity/Zxdt/images/last.png) center top no-repeat #089CDE; background-size:100% 100%; margin:0 auto;}
+    body:before,body:after,.wrap:before,.wrap:after{content:""; clear:both; height:.01rem; display:block; width:100%;}
+    span{display:block;}
+    .start{height:6.5rem; padding:1.6rem .5rem 0; font-size:.3rem;word-wrap:break-word;display:block;}
+    .fenxiang{margin:.8rem auto 0; height:.65rem; width:2.2rem; text-indent:-9999px; overflow:hidden;display:block;}
+    -->
+    </style>
+</head>
+<body>
+    <div class="wrap" id="wrap">
+        <span class="start"><span id="txt1">2131231231232314ertwertsdfg</span></span>
+        <a href="/Zxdt/Default" class="fenxiang">回到首页</a>
+    </div>
+    <script>
+;(function(doc,win){var max=640,docEl=doc.documentElement,resizeEvt='orientationchange'in window?'orientationchange':'resize',fsize;recalc=function(){var clientWidth=docEl.clientWidth;var clientHeight=docEl.clientHeight;if(!clientWidth)return;if(clientWidth>=max){fsize=100;docEl.style.fontSize='100px'}else{fsize=100*clientWidth/max;docEl.style.fontSize=100*clientWidth/max+'px'}var wrap=document.getElementsByClassName('wrap');var wh=fsize*10.72;if(wh<clientHeight){wh=clientHeight}document.getElementById("wrap").style.height=wh-1+"px"};if(!doc.addEventListener)return;win.addEventListener(resizeEvt,recalc,false);doc.addEventListener('DOMContentLoaded',recalc,false)})(document,window);
+    </script>
+</body>
+</html>

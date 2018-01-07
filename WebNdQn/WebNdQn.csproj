@@ -233,9 +233,12 @@
     <Content Include="Content\Activity\Zxdt\images\role.png" />
     <Content Include="Content\Activity\Zxdt\images\start.gif" />
     <Content Include="Content\Activity\Zxdt\images\test_card_bg.png" />
+    <Content Include="Content\Activity\Zxdt\images\test_card_bg2.png" />
+    <Content Include="Content\Activity\Zxdt\images\test_card_bg3.png" />
     <Content Include="Content\Activity\Zxdt\index.html" />
     <Content Include="Content\Activity\Zxdt\js\answer.js" />
     <Content Include="Content\Activity\Zxdt\js\font-size.js" />
+    <Content Include="Content\Activity\Zxdt\js\index.js" />
     <Content Include="Content\Activity\Zxdt\js\jquery-1.8.3.min.js" />
     <Content Include="Content\Activity\Zxdt\quiz.js" />
     <Content Include="Content\Activity\Zxdt\ss.html" />
@@ -347,7 +350,10 @@
     <Content Include="Views\Zxdt\ZxdtDrawPortal.cshtml" />
     <Content Include="Views\Cooper\MsgCodePortal.cshtml" />
     <Content Include="Views\Nsoup\Index.cshtml" />
+    <Content Include="Views\Zxdt\Default1.cshtml" />
     <Content Include="Views\Zxdt\Default.cshtml" />
+    <Content Include="Views\Zxdt\QA.cshtml" />
+    <Content Include="Views\Zxdt\Last.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

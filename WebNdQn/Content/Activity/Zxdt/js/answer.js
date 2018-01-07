@@ -1,9 +1,13 @@
-/**
- * CSS3 答题卡翻页效果 jQuery Transit 
- * @authors Candice <286556658@qq.com>
- * @date    2016-9-27 15:30:18
- * @version 1.0.8
- */
+$(document).ready(function(){ 
+	var input = $("input");
+	var label = $("label");
+	var inputArray = input.length;
+	var labelArray = label.length;
+	for (i = 0; i < inputArray; i++) {
+		input[i].value = label[i].innerText;
+	}
+}) 
+/**CSS3 答题卡翻页效果**/
 $.fn.answerSheet = function(options) {
 	var defaults = {
 		mold: 'card',
@@ -25,11 +29,10 @@ $.fn.answerSheet = function(options) {
 		$(this).show();
 		if (opts.mold == 'card') {
 			$('.card_bottom').find('.next').click(function() {
-				var b  =$(this).closest(".card").find("input:checkbox:checked").length;
+				var b  = $(this).closest(".card").find("input:checked").length;
 				if(b == 0) {
 					alert("请至少选择一个答案再进入下一题!");
-				} else {
-				    rightcheck();
+				}else{
 					var _idx = $(this).parents(_cont).index(),
 					_cards = obj,
 					_cardcont = $(this).parents(_cont);
@@ -62,11 +65,27 @@ $.fn.answerSheet = function(options) {
 				200);
 			});
 			$('.card_bottom').find('.ok').click(function() {
-				var b  =$(this).closest(".card").find("input:checkbox:checked").length;
+				var b  =$(this).closest(".card").find("input:checked").length;
 				if(b == 0) {
 					alert("请至少选择一个答案再提交!");
 				}else{
-				    alert("提交成功!");
+					var chestr = "";
+					var question = $(".question")
+					var cardArray = $(".card").length;
+					for (i = 1; i <= cardArray; i++) {
+						//chestr += $(".question").eq(i-1).text();
+						chestr += "Q" + i+ ".";
+						$("input[name='r-group-" + i + "']").each(function() {
+							if($(this).is(":checked")){
+								chestr += $(this).val()+",";
+							}
+						});/**/
+						//chestr += "<br>";
+						chestr += "...";
+					}
+					//console.log(chestr);
+					$("#txta").html(chestr)
+					document.location.href ='last.html?mydata1=' + $("#txta").html();
 				}
 			});
 		}
