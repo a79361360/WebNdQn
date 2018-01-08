@@ -21,6 +21,15 @@ namespace WebNdQn.Controllers
         WeiXinBLL wxll = new WeiXinBLL();
         ZxdtBLL zbll = new ZxdtBLL();
         ActivityBLL Abll = new ActivityBLL();
+        /// <summary>
+        /// 最新的
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult QaDefault() {
+            return View();
+        }
+
+
         public ActionResult Last() {
             return View();
         }

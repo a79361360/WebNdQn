@@ -24,10 +24,12 @@
 <body>
     <div class="wrap" id="wrap">
         <span class="start"><span id="txt1">2131231231232314ertwertsdfg</span></span>
-        <a href="/Zxdt/Default" class="fenxiang">回到首页</a>
+        <a href="/Zxdt/Default?ctype=1&issue=1&p=1" class="fenxiang">回到首页</a>
     </div>
     <script>
-;(function(doc,win){var max=640,docEl=doc.documentElement,resizeEvt='orientationchange'in window?'orientationchange':'resize',fsize;recalc=function(){var clientWidth=docEl.clientWidth;var clientHeight=docEl.clientHeight;if(!clientWidth)return;if(clientWidth>=max){fsize=100;docEl.style.fontSize='100px'}else{fsize=100*clientWidth/max;docEl.style.fontSize=100*clientWidth/max+'px'}var wrap=document.getElementsByClassName('wrap');var wh=fsize*10.72;if(wh<clientHeight){wh=clientHeight}document.getElementById("wrap").style.height=wh-1+"px"};if(!doc.addEventListener)return;win.addEventListener(resizeEvt,recalc,false);doc.addEventListener('DOMContentLoaded',recalc,false)})(document,window);
+    var txt1 = document.getElementById("txt1");
+    txt1.innerText = location.search.match(new RegExp("[\?\&]mydata1=([^\&]+)", "i"))[1];
+    ;(function(doc,win){var max=640,docEl=doc.documentElement,resizeEvt='orientationchange'in window?'orientationchange':'resize',fsize;recalc=function(){var clientWidth=docEl.clientWidth;var clientHeight=docEl.clientHeight;if(!clientWidth)return;if(clientWidth>=max){fsize=100;docEl.style.fontSize='100px'}else{fsize=100*clientWidth/max;docEl.style.fontSize=100*clientWidth/max+'px'}var wrap=document.getElementsByClassName('wrap');var wh=fsize*10.72;if(wh<clientHeight){wh=clientHeight}document.getElementById("wrap").style.height=wh-1+"px"};if(!doc.addEventListener)return;win.addEventListener(resizeEvt,recalc,false);doc.addEventListener('DOMContentLoaded',recalc,false)})(document,window);
     </script>
 </body>
 </html>

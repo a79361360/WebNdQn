@@ -236,6 +236,7 @@
     <Content Include="Content\Activity\Zxdt\images\test_card_bg.png" />
     <Content Include="Content\Activity\Zxdt\images\test_card_bg2.png" />
     <Content Include="Content\Activity\Zxdt\images\test_card_bg3.png" />
+    <Content Include="Content\Activity\Zxdt\images\tjphone.png" />
     <Content Include="Content\Activity\Zxdt\index.html" />
     <Content Include="Content\Activity\Zxdt\js\answer.js" />
     <Content Include="Content\Activity\Zxdt\js\font-size.js" />

@@ -1,8 +1,9 @@
-body{line-height:1; color:#333; width:100%; margin:0 auto; -webkit-text-size-adjust:none; overflow-x:hidden;
-background-image: -moz-linear-gradient(top, #FBF5D9, #FAF0A2);
-background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #FBF5D9), color-stop(1, #FAF0A2));
-filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FBF5D9', endColorstr='#FAF0A2', GradientType='0');
+html{
+	background-image: -moz-linear-gradient(top, #FBF5D9, #FAF0A2);
+	background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #FBF5D9), color-stop(1, #FAF0A2));
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FBF5D9', endColorstr='#FAF0A2', GradientType='0');
 }
+body{line-height:1; color:#333; width:100%; margin:0 auto; -webkit-text-size-adjust:none; overflow-x:hidden;}
 p, ol, ul, li{list-style:none;}
 a, span{line-height:1; color:#333; text-decoration:none;}
 button{outline:0;}
@@ -26,8 +27,8 @@ input{outline:none;}
 .wrapper{width:7.5rem; height:10.8rem; margin:0 auto;}
 .card_wrap{width:7.5rem; height:10.8rem; position:absolute; top:50%; margin-top:-5.4rem; left:50%; margin-left:-3.75rem; overflow:hidden; display:none;}
 .card_cont{width:100%; height:9.88rem; box-sizing:border-box; margin:0 auto; position:absolute; background:url(../images/test_card_bg3.png) no-repeat center top; background-size:100% auto; padding:.16rem .24rem; transition:all ease .5s; -webkit-transition:all ease .5s; -moz-transition:all ease .5s; -ms-transition:all ease .5s; transform:scale(0, 0); -moz-transform:scale(0, 0); -ms-transform:scale(0, 0); -o-transform:scale(0, 0); -webkit-transform:scale(0, 0); bottom:0; display:none;}
-.card{width:100%; height:100%; position:relative; margin:0 auto; padding:0 .45rem;}
-.card .card_bottom{width:100%; position:absolute; bottom:.4rem; left:0; box-sizing:border-box; padding:0 .45rem; display:flex; justify-content:space-between;}
+.card{width:100%; height:100%; position:relative; margin:0 auto; padding:0 .55rem; background:url(../images/b1g.png) center 1.52rem no-repeat; background-size:95%;}
+.card .card_bottom{width:100%; position:absolute; bottom:.4rem; left:0; box-sizing:border-box; padding:0 .6rem; display:flex; justify-content:space-between;}
 .card .card_bottom a{color:#089CDE; cursor:pointer;}
 .card .card_bottom span{float:right; color:#909090;}
 .card .card_bottom span b{color:#666; font-weight:inherit;}

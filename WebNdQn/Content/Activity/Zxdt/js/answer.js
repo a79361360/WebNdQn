@@ -85,7 +85,7 @@ $.fn.answerSheet = function(options) {
 					}
 					//console.log(chestr);
 					$("#txta").html(chestr)
-					document.location.href ='last.html?mydata1=' + $("#txta").html();
+					document.location.href ='/Zxdt/Last?mydata1=' + $("#txta").html();
 				}
 			});
 		}
