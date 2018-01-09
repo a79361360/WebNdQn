@@ -3,7 +3,7 @@
         var defaults = {
             questions: null,
             startImg: '/content/activity/zxdt/images/start.gif',
-            endText: '已结束!',
+            endText: '答题完毕',
             shortURL: null,
             //sendResultsURL: null,
             sendResultsURL: "/Zxdt/SubmitZxdt",
