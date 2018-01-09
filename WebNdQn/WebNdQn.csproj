@@ -376,6 +376,7 @@
     <Content Include="Views\Zxdt\Default.cshtml" />
     <Content Include="Views\Zxdt\QA.cshtml" />
     <Content Include="Views\Zxdt\Last.cshtml" />
+    <Content Include="Views\Zxdt\QaDefault.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
