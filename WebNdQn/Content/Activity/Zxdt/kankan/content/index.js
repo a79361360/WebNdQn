@@ -32,7 +32,7 @@ $(document).ready(function(){
 	}
 });
 
-function checkMobile(){
+function checkMobile() {
 	var activityUnStart=$("#activityUnStart").val();
 	var activityUnStartHint=$("#activityUnStartHint").val();
 	var activityEnd=$("#activityEnd").val();
