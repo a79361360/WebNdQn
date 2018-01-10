@@ -84,7 +84,7 @@ namespace BLL
                                 }
                                 catch (Exception er)
                                 {
-                                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SendLoginMsg 短信发送异常:" + er.Message);
+                                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SendLoginMsg 短信发送异常:" + er.Message);
                                     return -1;
                                 }
                             }
@@ -130,6 +130,7 @@ namespace BLL
                 return "1|" + yzm;
             }
             else if (content.IndexOf("本次动态码为：") != -1) {
+                pstr = "本次动态码为：";
                 string yzm = content.Substring(content.LastIndexOf(pstr) + 7, 6);
                 return "2|" + yzm;
             }
@@ -400,20 +401,20 @@ namespace BLL
                         nsoupmsgdto msgdto = JsonConvert.DeserializeObject<nsoupmsgdto>(result.Html);
                         if (result.StatusCode == HttpStatusCode.OK & msgdto.result != "false")
                         {
-                            Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 发送短信成功类型ctype: " + ctype + "期号：" + issue);
+                            Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 发送短信成功类型ctype: " + ctype + "期号：" + issue);
                             return 1;
                         }
-                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 发送短信失败ctype: " + ctype + "期号：" + issue+ " result.Html: "+ result.Html);
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 发送短信失败ctype: " + ctype + "期号：" + issue+ " result.Html: "+ result.Html);
                         return -5;
                     }
                     catch (Exception er)
                     {
-                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl ctype: " + ctype + "期号：" + issue + " 发送短信异常:" + er.Message);
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl ctype: " + ctype + "期号：" + issue + " 发送短信异常:" + er.Message);
                         return -1;
                     }
                 }
                 else {
-                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/MobileBll_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl ctype: " + ctype + "期号：" + issue + " 提交充值Execl文件失败:" + doc.Html());
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl ctype: " + ctype + "期号：" + issue + " 提交充值Execl文件失败:" + doc.Html());
                     return -4;
                 }
             }
@@ -433,7 +434,35 @@ namespace BLL
             {
                 T_LogCache dto = list[0];
                 string url = "http://www.fj.10086.cn/power/ll800/ht/flow/toFlowPoolList.do";
-                return 1;
+                string data = "vcode=" + code;
+                HttpHelper helpweb = new HttpHelper();  //初始实例化HttpHelper
+                HttpResult result = new HttpResult();   //初始实例化HttpResult
+                HttpItem item = new HttpItem()
+                {
+                    URL = url,//URL     必需项    
+                    Method = "POST",//URL     可选项 默认为Get   
+                    ProxyIp = "ieproxy",
+                    Cookie = dto.dlcookie,
+                    ContentType = "application/x-www-form-urlencoded",//ContentType = "application/x-www-form-urlencoded",//返回类型    可选项有默认值   
+                    Postdata = data,
+                };
+                try
+                {
+                    result = helpweb.GetHtml(item);
+                    czdto czdto = JsonConvert.DeserializeObject<czdto>(result.Html);
+                    if (result.StatusCode == HttpStatusCode.OK & czdto.Code == "100")
+                    {
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg 发送短信成功类型ctype: " + dto.ctype + "期号：" + dto.issue + " result.Html: " + result.Html);
+                        return 1;
+                    }
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg 发送短信失败ctype: " + dto.ctype + "期号：" + dto.issue + " result.Html: " + result.Html);
+                    return -5;
+                }
+                catch (Exception er)
+                {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg ctype: " + dto.ctype + "期号：" + dto.issue + " 发送短信异常:" + er.Message);
+                    return -1;
+                }
             }
             else {
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg 不存在正在进行监控的客户");
@@ -567,5 +596,21 @@ namespace BLL
     //短信登入返回结果实体类
     public class logindto {
         public bool flag { get; set; }
+    }
+    //确认提交充值短信
+    public class czdto {
+        public string AllocateAmount { get; set; }
+        public string BeginDate { get; set; }
+        public string Code { get; set; }
+        public string ECCode { get; set; }
+        public string ECOrderID { get; set; }
+        public string EndDate { get; set; }
+        public string Mode { get; set; }
+        public string Msg { get; set; }
+        public string PackageAmount { get; set; }
+        public string Parammsidn { get; set; }
+        public string Piid { get; set; }
+        public string Type { get; set; }
+        public string mobielnum { get; set; }
     }
 }
