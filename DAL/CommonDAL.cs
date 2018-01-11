@@ -252,6 +252,24 @@ namespace DAL
             parameter[0].Value = id;
             return dal.IntExtSql(sql, parameter);
         }
+        /// <summary>
+        /// 更新Flow的状态
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public int UpdateFlowState(int id,int state)
+        {
+            string sql = "UPDATE T_TakeFlowLog SET state=@state WHERE id=@id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@id",SqlDbType.Int),
+                new SqlParameter("@state",SqlDbType.Int),
+            };
+            parameter[0].Value = id;
+            parameter[1].Value = state;
+            return dal.IntExtSql(sql, parameter);
+        }
         public DataTable FindFlowLogByCtype(int ctype, int issue)
         {
             string sql = "SELECT [ctype],[issue],[phone],[state],[addtime] FROM [T_TakeFlowLog] Where ctype=@ctype and issue=@issue and state=0";

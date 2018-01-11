@@ -365,6 +365,43 @@ namespace BLL
             }
         }
         /// <summary>
+        /// 生成execl文件，当自动充值出问题的时候，人工导出Execl
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <param name="filename"></param>
+        /// <returns></returns>
+        public int CreateCzExecl(int ctype, int issue,string filename) {
+            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(cdal.GetCooperConfig(ctype, issue));
+            if (list.Count > 0)
+            {
+                T_CooperConfig dto = list[0];
+                if (dto.eachflow == 0 || string.IsNullOrEmpty(dto.cutdate))
+                {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + "未进行每个用户流量或者截止时间没有配置.T_CooperConfig");
+                    return -2;
+                }
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + " 开始生成充值记录的Datatable表");
+                var dt = ndal.CreatCzDTToExecl(2, ctype, issue);
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + " 生成充值记录的Datatable表结束,条数为" + dt.Rows.Count);
+                if (dt.Rows.Count > 0)
+                {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + " 开始将充值记录的Datatable表生成Execl表文件");
+                    int result = Common.Helper.HmExcelAssist.DataTabletoExcel(dt, AppDomain.CurrentDomain.BaseDirectory + (@"Content\Txt\") + filename);
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + " 将充值记录的Datatable表生成Execl表文件的结果" + result);
+                    return result;
+                }
+                else {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + " Datatable表的条数为0");
+                    return -4;
+                }
+            }
+            else {
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "CreateCzExecl 类型ctype: " + ctype + "期号：" + issue + " 不存在当前监控的客户");
+                return -3;
+            }
+        }
+        /// <summary>
         /// 提交Cz的Execl表
         /// </summary>
         /// <param name="ctype"></param>

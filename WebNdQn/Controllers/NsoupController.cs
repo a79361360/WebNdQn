@@ -59,6 +59,7 @@ namespace WebNdQn.Controllers
                     int result_1 = nbll.SubmitCzMsg(Convert.ToInt32(code));
                 }
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "TakeMobileCode 4 将短信内容写入数据库成功: ");
+                return JsonFormat(new ExtJson { success = true, msg = "执行成功" + "结果：" + content });
             }
             return JsonFormat(new ExtJson { success = false, msg = "保存验证码失败" + "结果：" + content });
         }

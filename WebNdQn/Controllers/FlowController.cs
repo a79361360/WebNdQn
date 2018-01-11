@@ -15,6 +15,7 @@ namespace WebNdQn.Controllers
     {
         CommonBLL bll = new CommonBLL();
         AdminBLL abll = new AdminBLL();
+        NsoupBLL nbll = new NsoupBLL();
         // GET: Flow
         public ActionResult Index()
         {
@@ -56,6 +57,36 @@ namespace WebNdQn.Controllers
                 return JsonFormat(new ExtJson { success = true, msg = "删除成功！共删除" + result });
             else
                 return JsonFormat(new ExtJson { success = false, msg = "删除失败！共" + list.Count + " 成功" + result });
+        }
+
+
+
+        /// <summary>
+        /// 手动生成充值的Execl，以便手动提交
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult CreateExecl() {
+            string ctype = Request["ctype"].ToString();         //公司类型
+            string issue = Request["issue"].ToString();         //活动期号
+            //将充值记录生成DT再生成Execl表文件flowPoolExcel.xls
+            int result_3 = nbll.CreateCzExecl(Convert.ToInt32(ctype), Convert.ToInt32(issue), "ProPool.xls");
+            if (result_3 != 1)
+                return JsonFormat(new ExtJson { success = false, msg = "生成批量充值的Execl表失败了,需要去排查日志", code = -1002, jsonresult = "" });
+            return JsonFormat(new ExtJson { success = true, msg = "生成成功!" });
+        }
+        /// <summary>
+        /// 更新直充记录的状态
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UpdateFlowState() {
+            string data = Request.Form["data"];  //用户的IDS数组
+            string state = Request.Form["state"];  //需要修改的状态
+            IList<IdListDto> list = SerializeJson<IdListDto>.JSONStringToList(data);
+            int result = bll.UpdateFlowState(list,Convert.ToInt32(state));
+            if (result == list.Count)
+                return JsonFormat(new ExtJson { success = true, msg = "更新成功！共更新" + result });
+            else
+                return JsonFormat(new ExtJson { success = false, msg = "更新失败！共" + list.Count + " 成功" + result });
         }
     }
 }

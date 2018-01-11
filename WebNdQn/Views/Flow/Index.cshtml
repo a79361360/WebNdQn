@@ -115,38 +115,6 @@
             else if (v == 2) return "充值中";
             else return "充值失败";
         }
-        //试玩名称
-        function ReUname(utype) {
-            if (utype == "1") return "PC蛋蛋";
-            if (utype == "2") return "聚享游";
-            if (utype == "3") return "易瑞特";
-            if (utype == "4") return "蹦蹦网";
-            if (utype == "5") return "快乐赚";
-            if (utype == "9") return "趣吧24";
-            if (utype == "60") return "天天钻";
-            if (utype == "145") return "稻米网";
-            if (utype == "146") return "集趣";
-            if (utype == "147") return "聚聚玩";
-            if (utype == "148") return "乐豆玩";
-            if (utype == "149") return "七Ux";
-            return "闽乐游";
-        }
-        //仅取消自动投注
-        CloseAutoTz = function (userid, e) {
-            $.ajax({
-                type: 'post',
-                url: 'UserList.aspx',
-                dataType: 'json',
-                data: { action: "stopautotz", userid: userid, gameid: 1 },
-                success: function (ret) {
-                    if (ret.code == 1000) {
-                        tips(ret.tips, 2);
-                    } else {
-                        tips(ret.tips, 2);
-                    }
-                }
-            })
-        }
         //随机字符串
         function randomString(len) {
             len = len || 32;
@@ -177,34 +145,41 @@
             BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"" + width + ">" + header + "<div class=\"modal-body\"" + height + ">" + content + "</div>" + footer + "</div></div></div>";
             var obj = $(BootDialog); obj.modal('show');
             obj.find("#Tj").click(function () {
-                var url = "/Flow/AddFlow";
-                var phone = $("#txt_phone").val();
-                var ctype = $("#field").attr("v_val");  //类型
-                var issue = 1;
-                var openid = randomString(10);      //取得一个字符串当做openid
-                if (phone == "") {
-                    alert("手机号码不能为空"); return;
+                if (id == "q_addflow") {
+                    AddFlow(obj);
+                } else if (id == "q_updateflowstate") {
+                    UpdateFlowState(obj);
                 }
-                var data = {
-                    phone: phone,
-                    ctype: ctype,
-                    issue: issue,
-                    openid: openid
-                }
-                $.post(url, data, function (ret) {
-                    if (ret.success) {
-                        tips("添加成功.", 1);
-                    } else {
-                        tips("添加失败.", 1);
-                    }
-                });
-                obj.modal('hide');
             })
+        }
+        //新增手机号码方法
+        AddFlow = function (obj) {
+            var url = "/Flow/AddFlow";
+            var phone = $("#txt_phone").val();
+            var ctype = $("#field").attr("v_val");  //类型
+            var issue = 1;
+            var openid = randomString(10);      //取得一个字符串当做openid
+            if (phone == "") {
+                alert("手机号码不能为空"); return;
+            }
+            var data = {
+                phone: phone,
+                ctype: ctype,
+                issue: issue,
+                openid: openid
+            }
+            $.post(url, data, function (ret) {
+                if (ret.success) {
+                    tips("添加成功.", 1);
+                } else {
+                    tips("添加失败.", 1);
+                }
+            });
+            obj.modal('hide');
         }
         //新增
         NewFlow = function () {
             var ctype = $("#field").attr("v_val");  //类型
-            console.log(ctype)
             if (parseInt(ctype) < 1) {
                 alert("请先选择一个单子类型."); return;
             }
@@ -223,21 +198,21 @@
         }
         //删除充值记录
         RemoveById = function () {
-            if (confirm("确定要清空数据吗?")) {
-                var list = [];      //数组对象，将
-                var data;           //元素对象
-                var tr = $("#ulist tbody tr");
-                $.each(tr, function (i, e) {
-                    var eachobj = $(e).children("td").eq(0).find(":checkbox");
-                    if (eachobj.prop("checked")) {
-                        data = new Object();    //元素对象实例
-                        data.id = eachobj.val();
-                        list.push(data);
-                    }
-                })
-                if (list.length < 1) {
-                    tips("未选中任何行", 2); return;
+            var list = [];      //数组对象，将
+            var data;           //元素对象
+            var tr = $("#ulist tbody tr");
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (eachobj.prop("checked")) {
+                    data = new Object();    //元素对象实例
+                    data.id = eachobj.val();
+                    list.push(data);
                 }
+            })
+            if (list.length < 1) {
+                tips("未选中任何行", 2); return;
+            }
+            if (confirm("确定要清空数据吗?")) {
                 $.post("/Flow/RemoveFlow", { data: JSON.stringify(list) }, function (ret) {
                     if (ret.success) {
                         tips(ret.msg, 2);
@@ -246,6 +221,83 @@
                         tips(ret.msg, 2);
                 })
             }
+        }
+        //生成充值的Execl
+        CreateExecl = function () {
+            var ctype = $("#field").attr("v_val");  //类型
+            var issue = 1;
+            tips("已经开始生成", 2);
+            $.post("/Flow/CreateExecl", { ctype: ctype, issue: issue }, function (ret) {
+                if (ret.success) {
+                    tips(ret.msg, 2);
+                }
+                else
+                    tips("生成失败", 2);
+            })
+        }
+        //弹出状态选择框
+        ShowFlowState = function () {
+            var list = [];      //数组对象，将
+            var data;           //元素对象
+            var tr = $("#ulist tbody tr");
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (eachobj.prop("checked")) {
+                    data = new Object();    //元素对象实例
+                    data.id = eachobj.val();
+                    list.push(data);
+                }
+            })
+            if (list.length < 1) {
+                tips("未选中任何行", 2); return;
+            }
+
+            var str = "";
+            str += "<div class=\"btn-group\">";
+            str += "<button id=\"field1\" type=\"button\" v_val=\"-1\" class=\"btn btn-default\">默认</button>";
+            str += "<button type=\"button\" class=\"btn btn-default dropdown-toggle\" data-toggle=\"dropdown\" style=\"height: 34px;\">";
+            str += "<span class=\"caret\"></span><span class=\"sr-only\">切换下拉菜单</span></button>";
+            str += "<ul class=\"dropdown-menu\" role=\"menu\">"
+            str += "<li><a href=\"#\" v_val=\"0\">待充值</a></li><li><a href=\"#\" v_val=\"2\">充值中</a></li><li><a href=\"#\" v_val=\"1\">充值完成</a></li></ul></div>";
+
+            qiu_confirm("q_updateflowstate", "更新充值记录状态", str, 200, 200);
+            setTimeout(function () { lll() }, 2000);
+        }
+        //过2秒再执行
+        lll = function () {
+            $('.dropdown-menu a').click(function () {
+                var txt = $(this).text(); var val = $(this).attr("v_val");
+                var objdrop = $(this).parent().parent().siblings("button").eq(0);
+                objdrop.text(txt); objdrop.attr("v_val", val);
+            })
+        }
+        //提交修改状态和记录ids
+        UpdateFlowState = function (obj) {
+            var state = $("#field1").attr("v_val");
+            var list = [];      //数组对象，将
+            var data;           //元素对象
+            var tr = $("#ulist tbody tr");
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (eachobj.prop("checked")) {
+                    data = new Object();    //元素对象实例
+                    data.id = eachobj.val();
+                    list.push(data);
+                }
+            })
+            if (list.length < 1) {
+                tips("未选中任何行", 2); return;
+            }
+            if (confirm("确定要修改状态吗?")) {
+                $.post("/Flow/UpdateFlowState", { data: JSON.stringify(list), state: state }, function (ret) {
+                    if (ret.success) {
+                        tips(ret.msg, 2);
+                        $("#search").click();
+                    } else
+                        tips(ret.msg, 2);
+                })
+            }
+            obj.modal('hide');
         }
     </script>
     <style type="text/css">
@@ -320,7 +372,10 @@
             <div class="panel-body">
                 <div class="btn-toolbar" role="toolbar">
                     <div class="btn-group"><button type="button" class="btn btn-default" onclick="NewFlow()">新增</button></div>
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="ShowFlowState()">状态</button></div>
                     <div class="btn-group"><button type="button" class="btn btn-default" onclick="RemoveById()">删除</button></div>
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="CreateExecl()">生成Execl</button></div>
+                    <div class="btn-group"><button type="button" class="btn btn-default"><a href="/Content/Txt/ProPool.xls">下载Execl</a></button></div>
                 </div>
                 <div id="ulist"></div>
                 <div id="page" class="m-pagination"></div>
