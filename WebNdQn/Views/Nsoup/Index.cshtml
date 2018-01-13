@@ -42,9 +42,9 @@
                     caption += "<div class=\"btn-group\"><button type=\"button\" class=\"btn btn-default\" onclick=\"RemoveById()\">删除</button></div>";
                     caption += "</div></caption>";
 
-                    var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:45px;\">Ctype</th><th style=\"width:45px;\">期号</th><th style=\"width:118px;\">客户编号</th><th style=\"width:118px;\">手机号码</th><th style=\"width:118px;\">CSRF</th><th style=\"width:118px;\">登入COOKIE</th><th style=\"width:118px;\">操作</th></tr></thead>" + caption;
+                    var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:45px;\">Ctype</th><th style=\"width:45px;\">期号</th><th style=\"width:118px;\">客户编号</th><th style=\"width:118px;\">手机号码</th><th style=\"width:118px;\">CSRF</th><th style=\"width:118px;\">登入COOKIE</th></tr></thead>" + caption;
                     $.each(ret.jsonresult, function (i, o) {
-                        str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td class=\"tdcls\">" + o.ctype + "</td><td>" + o.issue + "</td><td title=\"" + o.corpid + "\">" + o.corpid + "</td><td title=\"" + o.phone + "\">" + o.phone + "</td><td title=\"" + o.csrf + "\">" + o.csrf + "</td><td title=\"" + o.dlcookie + "\">" + autoAddEllipsis(o.dlcookie, 10) + "</td><td><button class=\"btn btn-default\" onclick=\"One(" + o.ctype + "," + o.issue + ")\">手动充值</button></td></tr>";
+                        str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td class=\"tdcls\">" + o.ctype + "</td><td>" + o.issue + "</td><td title=\"" + o.corpid + "\">" + o.corpid + "</td><td title=\"" + o.phone + "\">" + o.phone + "</td><td title=\"" + o.csrf + "\">" + o.csrf + "</td><td title=\"" + o.dlcookie + "\">" + autoAddEllipsis(o.dlcookie, 10) + "</td></tr>";
                     })
                     str += "</table>";
                     $("#ulist").html(str);
@@ -70,7 +70,7 @@
                 if (list.length < 1) {
                     tips("未选中任何行", 2); return;
                 }
-                $.post("/Mobile/RemoveLoginCache", { data: JSON.stringify(list) }, function (ret) {
+                $.post("/Nsoup/RemoveLoginCache", { data: JSON.stringify(list) }, function (ret) {
                     if (ret.success) {
                         tips(ret.msg, 2);
                         $("#search").click();
@@ -254,8 +254,6 @@
                             </div><!-- /input-group -->
                             <button id="search" type="button" style="float:left; margin-left:5px;" class="btn btn-default">查询</button>
                             <button id="monit" type="button" style="float:left; margin-left:5px;" class="btn btn-default">监控</button>
-                            @*<button id="btn_ztimes" value="1500" style="float:left; margin-left:5px;" type="button" class="btn btn-info">1500秒</button>*@
-                            <button id="btn_ctimes" value="250" style="float:left; margin-left:5px;" type="button" class="btn btn-info">250秒</button>
                         </div><!-- /.col-lg-6 -->
                     </div><!-- /.row -->
                 </form>

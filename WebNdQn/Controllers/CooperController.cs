@@ -36,6 +36,10 @@ namespace WebNdQn.Controllers
         }
         public ActionResult SetCooperPortal() {
             T_CooperConfig dto = new T_CooperConfig();
+            dto.corpid = "5913497406";                          //默认值
+            dto.signphone = "15159370686";                      //默认值
+            dto.wx_appid = "wx0d8924c9bc2c6e11";                //默认值
+            dto.wx_secret = "9c0125be80b710c17e09124f13c82b24"; //默认值
             if (Request["cooperid"] != null) {
                 int id = Convert.ToInt32(Request["cooperid"]);
                 dto = cbll.GetCooperConfigById(id);

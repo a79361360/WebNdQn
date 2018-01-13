@@ -2,6 +2,7 @@
 using CsharpHttpHelper;
 using DAL;
 using FJSZ.OA.Common.Web;
+using Model.ViewModel;
 using Model.WxModel;
 using Newtonsoft.Json;
 using System;
@@ -439,7 +440,17 @@ namespace BLL
                         if (result.StatusCode == HttpStatusCode.OK & msgdto.result != "false")
                         {
                             Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 发送短信成功类型ctype: " + ctype + "期号：" + issue);
-                            return 1;
+                            //更新监控列表状态,为后面的
+                            int result_1 = ndal.UpdateLogCacheState(dto.ctype, dto.issue);
+                            if (result_1 == 1)
+                            {
+                                Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 更新监控列表的状态成功ctype: " + ctype + "期号：" + issue);
+                                return 1;
+                            }
+                            else {
+                                Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 更新监控列表的状态成功ctype: " + ctype + "期号：" + issue);
+                                return -6;
+                            }
                         }
                         Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 发送短信失败ctype: " + ctype + "期号：" + issue+ " result.Html: "+ result.Html);
                         return -5;
@@ -486,18 +497,20 @@ namespace BLL
                 try
                 {
                     result = helpweb.GetHtml(item);
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg 提交充值短信类型ctype: " + dto.ctype + "期号：" + dto.issue + " result.Html: " + result.Html);
                     czdto czdto = JsonConvert.DeserializeObject<czdto>(result.Html);
                     if (result.StatusCode == HttpStatusCode.OK & czdto.Code == "100")
                     {
-                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg 发送短信成功类型ctype: " + dto.ctype + "期号：" + dto.issue + " result.Html: " + result.Html);
-                        return 1;
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg 提交充值短信成功类型ctype: " + dto.ctype + "期号：" + dto.issue + " result.Html: " + result.Html);
+                        int result_1 = UpdateFlowLogState(dto.ctype, dto.issue);
+                        if (result_1 == 1) return 1; else return -4;
                     }
-                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg 发送短信失败ctype: " + dto.ctype + "期号：" + dto.issue + " result.Html: " + result.Html);
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg 提交充值短信失败ctype: " + dto.ctype + "期号：" + dto.issue + " result.Html: " + result.Html);
                     return -5;
                 }
                 catch (Exception er)
                 {
-                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg ctype: " + dto.ctype + "期号：" + dto.issue + " 发送短信异常:" + er.Message);
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg 提交充值短信异常ctype: " + dto.ctype + "期号：" + dto.issue + " 异常:" + er.Message);
                     return -1;
                 }
             }
@@ -505,6 +518,18 @@ namespace BLL
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzMsg 不存在正在进行监控的客户");
                 return -3;
             }
+        }
+        /// <summary>
+        /// 充值成功完成调用这个方法完成充值订单的状态
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int UpdateFlowLogState(int ctype, int issue)
+        {
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "UpdateFlowLogState 更新充值记录状态类型ctype: " + ctype + "期号：" + issue);
+            int result = ndal.UpdateFlowState(3, ctype, issue);
+            return result;
         }
         /// <summary>
         /// 
@@ -623,6 +648,54 @@ namespace BLL
         public IList<T_LogCache> FindLogCacheList() {
             IList<T_LogCache> list = DataTableToList.ModelConvertHelper<T_LogCache>.ConvertToModel(ndal.FindLogCacheList());
             return list;
+        }
+        /// <summary>
+        /// 添加超端记录,返回-1000表示已经存在超端记录
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int InsertLoginCache(int ctype, int issue)
+        {
+            int result = ndal.IsExitsLogCache(ctype, issue);
+            if (result > 0) return -1000;
+            IList<T_CooperConfig> list = DataTableToList.ModelConvertHelper<T_CooperConfig>.ConvertToModel(cdal.GetCooperConfig(ctype, issue));
+            if (list.Count > 0) {
+                T_CooperConfig dto = list[0];
+                T_LogCache dto1 = new T_LogCache();
+                dto1.ctype = ctype; dto1.issue = issue; dto1.corpid = dto.corpid; dto1.phone = dto.signphone;
+                result = ndal.InsertT_LogCache(dto1);
+                return result;
+            }
+            return -1;
+        }
+        /// <summary>
+        /// 移除超端记录,返回成功数量
+        /// </summary>
+        /// <param name="ids"></param>
+        /// <returns></returns>
+        public int RemoveLoginCache(IList<IdListDto> ids)
+        {
+            int sresult = 0;    //成功的数量
+            if (ids.Count == 0)
+                throw new ArgumentNullException();
+            else
+            {
+                try
+                {
+                    foreach (var item in ids)
+                    {
+                        int gid = item.id;        //ID
+                        int result = ndal.RemoveLoginCache(gid);
+                        sresult = sresult + result;
+                    }
+                }
+                catch
+                {
+                    return -1000;
+                }
+            }
+            return sresult;
         }
     }
     //新发送短信返回结果实体类

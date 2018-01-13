@@ -1,4 +1,5 @@
 ﻿using Common;
+using Model.WxModel;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -71,6 +72,25 @@ namespace DAL
             return dal.IntExtSql(sql, parameter);
         }
         /// <summary>
+        /// 仅更新当前监控的状态
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int UpdateLogCacheState(int ctype, int issue)
+        {
+            InitT_LogCacheState(); //先进行state初始化，设置为0
+            string sql = "UPDATE [T_LogCache] SET [state] = 1 WHERE [ctype] = @ctype and [issue] = @issue";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int),
+            };
+            parameter[0].Value = ctype;
+            parameter[1].Value = issue;
+            return dal.IntExtSql(sql, parameter);
+        }
+        /// <summary>
         /// 取得当前正在监控的项
         /// </summary>
         /// <returns></returns>
@@ -135,6 +155,27 @@ namespace DAL
             return Convert.ToInt32(list["@ReturnValue"]);
         }
         /// <summary>
+        /// 刚充值完成的单子修改他的状态为已完成
+        /// </summary>
+        /// <param name="type">3</param>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int UpdateFlowState(int type,int ctype,int issue) {
+            string sql = "SP_ExecuteFlowLog";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@Type",SqlDbType.Int),
+                new SqlParameter("@Ctype",SqlDbType.Int),
+                new SqlParameter("@Issue",SqlDbType.Int)
+            };
+            parameter[0].Value = type;
+            parameter[1].Value = ctype;
+            parameter[2].Value = issue;
+            dal.ExtProc(sql, parameter);
+            return 1;
+        }
+        /// <summary>
         /// 生成待充值的记录
         /// </summary>
         /// <param name="type"></param>
@@ -166,8 +207,43 @@ namespace DAL
         /// </summary>
         /// <returns></returns>
         public DataTable FindLogCacheList() {
-            string sql = "SELECT ctype,issue,corpid,phone,csrf,dlyzm,czyzm,dlcookie,czcookie FROM T_LogCache";
+            string sql = "SELECT id,ctype,issue,corpid,phone,csrf,dlyzm,czyzm,dlcookie,czcookie FROM T_LogCache";
             return dal.ExtSql(sql);
+        }
+        /// <summary>
+        /// 移除超端记录
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int RemoveLoginCache(int id)
+        {
+            string sql = "DELETE FROM [T_LogCache] WHERE id=@id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@id",SqlDbType.Int)
+            };
+            parameter[0].Value = id;
+            return dal.IntExtSql(sql, parameter);
+        }
+        /// <summary>
+        /// 添加到超端
+        /// </summary>
+        /// <param name="dto"></param>
+        /// <returns></returns>
+        public int InsertT_LogCache(T_LogCache dto) {
+            string sql = "INSERT INTO [T_LogCache]([ctype],[issue],[corpid],[phone])VALUES(@ctype,@issue,@corpid,@phone)";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@ctype",SqlDbType.Int),
+                new SqlParameter("@issue",SqlDbType.Int),
+                new SqlParameter("@corpid",SqlDbType.NVarChar,20),
+                new SqlParameter("@phone",SqlDbType.NVarChar,50),
+            };
+            parameter[0].Value = dto.ctype;
+            parameter[1].Value = dto.issue;
+            parameter[2].Value = dto.corpid;
+            parameter[3].Value = dto.phone;
+            return dal.IntExtSql(sql, parameter);
         }
     }
 }

@@ -159,7 +159,7 @@
                 tips("只能选择一行", 2);
                 return;
             }
-            $.post("/Mobile/AddLoginCache", { ctype: ctype, issue: 1 }, function (ret) {
+            $.post("/Nsoup/AddLoginCache", { ctype: ctype, issue: 1 }, function (ret) {
                 tips(ret.msg, 1);
             })
         }
