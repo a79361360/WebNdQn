@@ -26,6 +26,21 @@ namespace WebNdQn.Controllers
         /// </summary>
         /// <returns></returns>
         public ActionResult QaDefault() {
+            if (Request["ctype"] == null || Request["issue"] == null)
+                return Content("参数为空");
+            string ctype = Request["ctype"].ToString();
+            string issue = Request["issue"].ToString();
+            T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
+            if (dto != null)
+            {
+                ViewBag.Appid = dto.wx_appid;
+                var dto_act = zbll.GetByCooperId(dto.id, 2);                //取得在线答题配置信息
+                if (dto_act == null)
+                    return Content("在线答题配置为空");
+                //答题的分享部分
+                ViewBag.WxTitle = dto_act.wx_title;
+
+            }
             return View();
         }
 
