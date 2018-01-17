@@ -236,6 +236,8 @@ namespace WebNdQn.Controllers
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/HomeController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
                 if (dto != null)
                 {
+                    ViewBag.cooperid = dto.id;  //
+                    int lognum = bll.GetLogNum(dto.id); //第几位
                     V_IndexDto rdto = new V_IndexDto();
                     
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/HomeController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     gzstate：" + gz);
@@ -245,6 +247,7 @@ namespace WebNdQn.Controllers
                         rdto.bgurl = dto.bgurl;             //背景图
                         rdto.btnurl = dto.btnurl;           //背景按钮图
                     }
+                    
                     rdto.genner = dto.gener;                //推广类型 分享推广|关注推广
                     rdto.areatype = dto.areatype;           //1宁德地区2莆田地区       
                     //关注公众号部分
@@ -258,7 +261,8 @@ namespace WebNdQn.Controllers
                     string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
                     string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
                     rdto.timestamp = timestamp; rdto.noncestr = noncestr; rdto.signatrue = signatrue;         //上面三个附值
-                    rdto.fx_title = dto.title; rdto.fx_descride = dto.descride; rdto.fx_imgurl = WebHelp.GetCurHttpHost() + dto.imgurl; rdto.fx_linkurl = dto.linkurl;    //分享的标题,描述,小图标,链接
+                    string logstr = ""; if (!string.IsNullOrEmpty(dto.username)) { logstr = dto.username + lognum + "位"; }
+                    rdto.fx_title = logstr + dto.title; rdto.fx_descride = dto.descride; rdto.fx_imgurl = WebHelp.GetCurHttpHost() + dto.imgurl; rdto.fx_linkurl = dto.linkurl;    //分享的标题,描述,小图标,链接
                     return View(rdto);
                 }
                 else
@@ -303,6 +307,18 @@ namespace WebNdQn.Controllers
         }
         public ActionResult CooperIndex() {
             return View();
+        }
+        /// <summary>
+        /// 记录登入的用户数
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult LogNum() {
+            string cooperid = Request["cooperid"];
+            int result = bll.LogNum(Convert.ToInt32(cooperid));
+            if (result > 0)
+                return JsonFormat(new ExtJson { success = true, msg = "succeed" });
+            else
+                return JsonFormat(new ExtJson { success = false, msg = "faile" });
         }
     }
 }

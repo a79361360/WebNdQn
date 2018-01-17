@@ -276,6 +276,23 @@ namespace BLL
             if (area == "3") txtpath = "/Content/Txt/fujianconfig.txt";
             return txtpath;
         }
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <returns></returns>
+        public int LogNum(int cooperid) {
+            int result = dal.LogNum(cooperid);
+            return result;
+        }
+        /// <summary>
+        /// 取得当前位数
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <returns></returns>
+        public int GetLogNum(int cooperid) {
+            int result = dal.GetLogNum(cooperid);
+            return result;
+        }
     }
 }
