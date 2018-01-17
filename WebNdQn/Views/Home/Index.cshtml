@@ -6,23 +6,30 @@
 <title>流量800支撑平台</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=0">
 <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
-<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script src="~/Scripts/jquery18.js"></script>
 <script src="http://res.wx.qq.com/open/js/jweixin-1.0.0.js" type="text/javascript"></script>
 <script type="text/javascript">
     var gener = '@Model.genner';    //推广类型 分享推广|关注推广
     var sharenum = 0;               //分享次数
-    var gz = @Model.gz;             //用来表示是否关注公众号
-    var area = @Model.areatype;     //地区1宁德2莆田
+    var gz = '@Model.gz';             //用来表示是否关注公众号
+    var area = '@Model.areatype';     //地区1宁德2莆田
+    //取参数方法
+    function GetQueryString(name)
+    {
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return null;
+    }
     $(function () {
         $("#btn").bind("click", function () {
             var phone = $("#phone").val();   //手机号码
             var g = gener.split("|");
+            var ctype = GetQueryString("ctype");
+            var issue = GetQueryString("issue");
+            var openid = $("#hid_openid").val();
             if (!telRuleCheck2(phone)) { alert("请输入正确的手机号码"); return }
             if (parseInt(sharenum)<1&&g[0]=="1") { alert("请进行分享后再进行兑换");_system._guide('div_fx',true); return }
             if (parseInt(gz)<1&&g[1]=="1") { alert("您需要先关注一下我们的微信众公号");_system._guide('div_gz',true); return }
-            var ctype = $(this).getUrlParam("ctype");
-            var issue = $(this).getUrlParam("issue");
-            var openid = $("#hid_openid").val();
             $.getJSON("/Home/SignPhoneFilter_gz", { phone: phone,ctype:ctype,issue:issue,openid:openid,area:area }, function (ret) {
                 alert(ret.msg);
             })
@@ -70,6 +77,7 @@
         height: 35px;
         width: 85px;
         display:inline-block;
+        cursor:pointer;
     }
 </style>
 <style type="text/css">
