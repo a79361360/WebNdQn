@@ -1,5 +1,7 @@
 ﻿using BLL;
 using FrameWork;
+using FrameWork.Common;
+using Model.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -110,6 +112,40 @@ namespace WebNdQn.Controllers
                 return JsonFormat(new ExtJson { success = true, code = 1000, msg = "查询成功", jsonresult = list });
             else
                 return JsonFormat(new ExtJson { success = false, code = -1000, msg = "查询失败", jsonresult = "" });
+        }
+        /// <summary>
+        /// 删除超端记录
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult RemoveLoginCache()
+        {
+            string data = Request.Form["data"];  //用户的IDS数组
+            IList<IdListDto> list = SerializeJson<IdListDto>.JSONStringToList(data);
+            int result = nbll.RemoveLoginCache(list);
+            if (result == list.Count)
+                return JsonFormat(new ExtJson { success = true, msg = "删除成功！共删除" + result });
+            else
+                return JsonFormat(new ExtJson { success = false, msg = "删除失败！共" + list.Count + " 成功" + result });
+        }
+        /// <summary>
+        /// 添加超端记录
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult AddLoginCache()
+        {
+            if (Request.Form["ctype"] == null || Request.Form["issue"] == null)
+            {
+                return JsonFormat(new ExtJson { success = false, code = -1000, msg = "参数不能为空" });
+            }
+            int ctype = Convert.ToInt32(Request.Form["ctype"]);
+            int issue = Convert.ToInt32(Request.Form["issue"]);
+            int result = nbll.InsertLoginCache(ctype, issue);
+            if (result > 0)
+                return JsonFormat(new ExtJson { success = true, code = 1000, msg = "添加超端记录成功" });
+            else if (result == -1000)
+                return JsonFormat(new ExtJson { success = false, code = -1000, msg = "已经存在此超端记录" });
+            else
+                return JsonFormat(new ExtJson { success = false, code = -1000, msg = "添加超端记录失败" });
         }
     }
 }
