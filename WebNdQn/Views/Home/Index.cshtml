@@ -21,12 +21,12 @@
     var gz = '@Model.gz';             //用来表示是否关注公众号
     var area = '@Model.areatype';     //地区1宁德2莆田
 
-function GetQueryString(name)
-{
-     var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
-     var r = window.location.search.substr(1).match(reg);
-     if(r!=null)return  unescape(r[2]); return null;
-}
+    function GetQueryString(name)
+    {
+         var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+         var r = window.location.search.substr(1).match(reg);
+         if(r!=null)return  unescape(r[2]); return null;
+    }
     $(function () {
         var ctype = GetQueryString("ctype");
         var issue = GetQueryString("issue");
