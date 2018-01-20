@@ -25,6 +25,7 @@ namespace Model.WxModel
         public string username { get; set; }
         public string userpwd { get; set; }
         public string signphone { get; set; }
+        public string logstr { get; set; }
         public string wx_appid { get; set; }
         public string wx_secret { get; set; }
         public string qrcode_url { get; set; }

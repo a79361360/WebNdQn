@@ -21,7 +21,7 @@ namespace DAL
         /// <returns></returns>
         public DataTable GetCooperConfig(int ctype,int issue)
         {
-            string sql = "SELECT [id],[ctype],[issue],[areatype],areatypen='',[gener],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state in(1,2)";
+            string sql = "SELECT [id],[ctype],[issue],[areatype],areatypen='',[gener],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[logstr],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state in(1,2)";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
@@ -71,7 +71,7 @@ namespace DAL
         /// <param name="id"></param>
         /// <returns></returns>
         public DataTable GetCooperConfigById(int id) {
-            string sql = "SELECT [id],[ctype],[issue],[title],[areatype],areatypen='',[gener],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE id=@id";
+            string sql = "SELECT [id],[ctype],[issue],[title],[areatype],areatypen='',[gener],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[logstr],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE id=@id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@id",SqlDbType.Int)
@@ -305,6 +305,45 @@ namespace DAL
             parameter[3].Value = code;
             parameter[4].Value = content;
             return dal.IntExtSql(sql, parameter);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <returns></returns>
+        public int LogNum(int cooperid) {
+            string sql = "SP_LogNumer";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@Type",SqlDbType.Int),
+                new SqlParameter("@Cooperid",SqlDbType.Int),
+            };
+            parameter[0].Value = 1;
+            parameter[1].Value = cooperid;
+            int result = dal.NoExtProc(sql, parameter);
+            return result;
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="cooperid"></param>
+        /// <returns></returns>
+        public int GetLogNum(int cooperid)
+        {
+            string sql = "SP_LogNumer";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@Type",SqlDbType.Int),
+                new SqlParameter("@Cooperid",SqlDbType.Int),
+            };
+            parameter[0].Value = 2;
+            parameter[1].Value = cooperid;
+            DataTable dt = dal.ExtProc(sql, parameter);
+            if (dt.Rows.Count > 0) {
+                int result = Convert.ToInt32(dt.Rows[0]["num"]);
+                return result;
+            }
+            return 1;
         }
     }
 }

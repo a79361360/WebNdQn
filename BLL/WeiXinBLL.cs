@@ -70,14 +70,15 @@ namespace BLL
         /// <param name="secret"></param>
         /// <returns></returns>
         public string Get_Cgi_Taoke(string appid, string secret) {
-            var t = FJSZ.OA.Common.CacheAccess.GetFromCache("cgi_token");
+            var t = FJSZ.OA.Common.CacheAccess.GetFromCache(appid + "cgi_token");
             if (t == null)
             {
                 string url = "https://api.weixin.qq.com/cgi-bin/token?grant_type=client_credential&appid=" + appid + "&secret=" + secret;
                 string result = web.Get(url);
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Get_Cgi_Taoke：" + result);
                 WxJsApi_token dto = JsonConvert.DeserializeObject<WxJsApi_token>(result);
                 t = dto.access_token;
-                FJSZ.OA.Common.CacheAccess.InsertToCacheByTime("cgi_token", dto.access_token, 7200);
+                FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(appid + "cgi_token", dto.access_token, 7200);
             }
             return t.ToString();
         }
