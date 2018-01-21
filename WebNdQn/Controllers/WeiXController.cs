@@ -53,13 +53,15 @@ namespace WebNdQn.Controllers
                 }
                 if (clist[0].ToUpper() == "CGI")
                 {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WeiXController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Wx_Auth_Code CGI进入开始：");
                     //取得CGI的token值,这是一个全局的token
-                    object obj_cgi_token = FJSZ.OA.Common.CacheAccess.GetFromCache("cgi_token");
+                    object obj_cgi_token = FJSZ.OA.Common.CacheAccess.GetFromCache(dto.wx_appid + "cgi_token");
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WeiXController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Wx_Auth_Code 取得cgi_token值：" + obj_cgi_token);
                     string cgi_token = "";
                     if (obj_cgi_token == null)
                     {
                         cgi_token = wxbll.Get_Cgi_Taoke(dto.wx_appid, dto.wx_secret);
-                        FJSZ.OA.Common.CacheAccess.InsertToCacheByTime("cgi_token", cgi_token, 7000);
+                        FJSZ.OA.Common.CacheAccess.InsertToCacheByTime(dto.wx_appid + "cgi_token", cgi_token, 7000);
                     }
                     else cgi_token = obj_cgi_token.ToString();
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/WeiXController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Wx_Auth_Code 取得cgi_token值：" + cgi_token);

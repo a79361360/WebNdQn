@@ -20,12 +20,12 @@
     var sharenum = 0;               //分享次数
     var gz = '@Model.gz';             //用来表示是否关注公众号
     var area = '@Model.areatype';     //地区1宁德2莆田
-
+    //取参数方法
     function GetQueryString(name)
     {
-         var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
-         var r = window.location.search.substr(1).match(reg);
-         if(r!=null)return  unescape(r[2]); return null;
+        var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");
+        var r = window.location.search.substr(1).match(reg);
+        if(r!=null)return  unescape(r[2]); return null;
     }
     $(function () {
         var ctype = GetQueryString("ctype");
@@ -34,13 +34,17 @@
 
             var phone = $("#phone").val();   //手机号码
             var g = gener.split("|");
+            var ctype = GetQueryString("ctype");
+            var issue = GetQueryString("issue");
             var openid = $("#hid_openid").val();
-
             if (!telRuleCheck2(phone)) { alert("请输入正确的手机号码"); return }
             if (parseInt(sharenum)<1&&g[0]=="1") { alert("请进行分享后再进行兑换");_system._guide('div_fx',true); return }
             if (parseInt(gz)<1&&g[1]=="1") { alert("您需要先关注一下我们的微信众公号");_system._guide('div_gz',true); return }
             $.getJSON("/Home/SignPhoneFilter_gz", { phone: phone,ctype:ctype,issue:issue,openid:openid,area:area }, function (ret) {
-                alert(ret.msg);
+                if(ret.success)
+                    alert("领取成功,记得分享给更多朋友领取流量!");
+                else
+                    alert(ret.msg);
             })
         })
         //手机号码格式验证
@@ -93,7 +97,8 @@
         background-size: cover;
         height: 35px;
         width: 85px;
-        display: inline-block;
+        display:inline-block;
+        cursor:pointer;
     }
 </style>
 <style type="text/css">
