@@ -31,16 +31,61 @@ namespace WebNdQn.Controllers
             string ctype = Request["ctype"].ToString();
             string issue = Request["issue"].ToString();
             T_CooperConfig dto = wxll.Get_CooperConfig(Convert.ToInt32(ctype), Convert.ToInt32(issue));                              //取得配置
-            if (dto != null)
+            if (dto == null)
+                return Content("配置为空");
+            if (Request["p"] == null)
             {
-                ViewBag.Appid = dto.wx_appid;
-                var dto_act = zbll.GetByCooperId(dto.id, 2);                //取得在线答题配置信息
-                if (dto_act == null)
-                    return Content("在线答题配置为空");
-                //答题的分享部分
-                ViewBag.WxTitle = dto_act.wx_title;
-
+                string c = "&c=" + DEncrypt.DESEncrypt1("CGI|1|" + WebHelp.GetCurHttpHost() + "/Zxdt/QaDefault");   //c参数进行加密
+                string param = Request.Url.Query + c;   //参数串,例如:http://wx.ndll800.com/home/default?ctype=1&issue=1 取的param为:   ?ctype=1&issue=1
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "QaDefault     param： " + param);
+                string state = "";                  //state的值暂时为空,如果后面有需要验签,再用起来,现在就直接用参数来做校验
+                string url = wxll.Wx_Auth_Code(dto.wx_appid, System.Web.HttpUtility.UrlEncode(WebHelp.GetCurHttpHost() + "/WeiX/Wx_Auth_Code" + param), "snsapi_userinfo", state);  //snsapi_base,snsapi_userinfo
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "QaDefault     URL： " + url);
+                return Redirect(url);
             }
+            else {
+                string gz = "0"; string openid = "";
+                if (Request["p"] != null)
+                {
+                    try
+                    {
+                        string p = Request["p"].ToString(); //1|subscribe|openid  微信发送|是否关注|openid
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + Request["p"].ToString());
+                        string temp = DEncrypt.DESDecrypt1(p);    //取得p参数,并且进行解密
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + temp);
+                        string[] plist = temp.Split('|');   //微信发送|是否
+                        if (plist[0] != "1") return Content("配置参数异常");
+                        gz = plist[1]; openid = plist[2];   //是否关注,微信用户id
+                    }
+                    catch
+                    {
+                        return Content("参数错误");
+                    }
+                }
+                if (string.IsNullOrEmpty(openid))
+                    return Content("授权失败");
+                #region 获取微信用户的openid
+                ViewBag.openid = openid;
+                //ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkL";
+                #endregion
+                ViewBag.RemoteIP = WebHelp.GetIp();     //用户IP
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
+                if (dto != null)
+                {
+                    ViewBag.Appid = dto.wx_appid;
+                    var dto_act = zbll.GetByCooperId(dto.id, 2);                //取得在线答题配置信息
+                    if (dto_act == null)
+                        return Content("在线答题配置为空");
+                    //答题的分享部分
+                    ViewBag.WxTitle = dto_act.wx_title;
+                    ViewBag.ShareImgPath = dto_act.wx_imgurl;
+                    ViewBag.ShareContent = dto_act.wx_descride;
+                    ViewBag.ShareUrl = dto_act.wx_linkurl;
+
+                }
+            }
+
+
             return View();
         }
 
