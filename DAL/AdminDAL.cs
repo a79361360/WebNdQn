@@ -26,7 +26,7 @@ namespace DAL
         /// <returns></returns>
         public DataTable FlowList(string filter, int ctype, int issue, string phone)
         {
-            string sql = "SELECT [id],[ctype],[issue],[phone],[state],Convert(nvarchar(19),addtime,120) addtime FROM [dbo].[T_TakeFlowLog] " + filter;
+            string sql = "SELECT [id],[ctype],[issue],[phone],[limitflow],[state],Convert(nvarchar(19),addtime,120) addtime FROM [dbo].[T_TakeFlowLog] " + filter;
             SqlParameter[] parameter = new[]
                         {
                 new SqlParameter("@ctype",SqlDbType.Int),

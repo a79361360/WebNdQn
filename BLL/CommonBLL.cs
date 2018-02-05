@@ -71,10 +71,6 @@ namespace BLL
         public int CtypeCount(int ctype,int issue) {
             return dal.CtypeInt(ctype, issue);
         }
-        public int TakeFlowLog(int ctype, int issue, string phone)
-        {
-            return dal.TakeFlowLog(ctype, issue, phone, "");
-        }
         /// <summary>
         /// 添加领取流量的记录
         /// </summary>
@@ -82,7 +78,18 @@ namespace BLL
         /// <param name="phone">手机号码</param>
         /// <returns>返回影响行数</returns>
         public int TakeFlowLog(int ctype, int issue, string phone,string openid) {
-            return dal.TakeFlowLog(ctype, issue, phone, openid);
+            int result = LimitFlow(ctype, issue);
+            return dal.TakeFlowLog(ctype, issue, phone, openid, result);
+        }
+        /// <summary>
+        /// 取得用户充值流量的数量
+        /// </summary>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int LimitFlow(int ctype, int issue) {
+            int result = dal.GetLimitFlow(4, ctype, issue);
+            return result;
         }
         /// <summary>
         /// 删除flow记录

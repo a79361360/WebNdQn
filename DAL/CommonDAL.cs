@@ -223,19 +223,21 @@ namespace DAL
         /// <param name="ctype">公司类型</param>
         /// <param name="phone">手机号码</param>
         /// <returns>返回影响行数</returns>
-        public int TakeFlowLog(int ctype, int issue, string phone,string openid) {
-            string sql = "INSERT INTO [T_TakeFlowLog]([ctype],[issue],[phone],[openid])VALUES(@ctype,@issue,@phone,@openid)";
+        public int TakeFlowLog(int ctype, int issue, string phone,string openid,int flow) {
+            string sql = "INSERT INTO [T_TakeFlowLog]([ctype],[issue],[phone],[openid],[limitflow])VALUES(@ctype,@issue,@phone,@openid,@flow)";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
                 new SqlParameter("@issue",SqlDbType.Int),
                 new SqlParameter("@phone", SqlDbType.NVarChar, 20),
-                new SqlParameter("@openid", SqlDbType.NVarChar, 50)
+                new SqlParameter("@openid", SqlDbType.NVarChar, 50),
+                new SqlParameter("@flow", SqlDbType.Int),
             };
             parameter[0].Value = ctype;
             parameter[1].Value = issue;
             parameter[2].Value = phone;
             parameter[3].Value = openid;
+            parameter[4].Value = flow;
             return dal.IntExtSql(sql, parameter);
         }
         /// <summary>
@@ -272,7 +274,7 @@ namespace DAL
         }
         public DataTable FindFlowLogByCtype(int ctype, int issue)
         {
-            string sql = "SELECT [ctype],[issue],[phone],[state],[addtime] FROM [T_TakeFlowLog] Where ctype=@ctype and issue=@issue and state=0";
+            string sql = "SELECT [ctype],[issue],[phone],[limitflow],[state],[addtime] FROM [T_TakeFlowLog] Where ctype=@ctype and issue=@issue and state=0";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
@@ -344,6 +346,32 @@ namespace DAL
                 return result;
             }
             return 1;
+        }
+        /// <summary>
+        /// 取得用户充值流量的数值
+        /// </summary>
+        /// <param name="type"></param>
+        /// <param name="ctype"></param>
+        /// <param name="issue"></param>
+        /// <returns></returns>
+        public int GetLimitFlow(int type, int ctype, int issue)
+        {
+            string sql = "SP_ExecuteFlowLog";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@Type",SqlDbType.Int),
+                new SqlParameter("@Ctype",SqlDbType.Int),
+                new SqlParameter("@Issue",SqlDbType.Int),
+                new SqlParameter("@ReturnValue",SqlDbType.Int)
+            };
+            parameter[0].Value = type;
+            parameter[1].Value = ctype;
+            parameter[2].Value = issue;
+            parameter[3].Direction = ParameterDirection.ReturnValue;
+            string[] str = new string[] { "@ReturnValue" };
+            Dictionary<string, object> list = new Dictionary<string, object>();
+            dal.ExtProc(sql, parameter, str, out list);
+            return Convert.ToInt32(list["@ReturnValue"]);
         }
     }
 }
