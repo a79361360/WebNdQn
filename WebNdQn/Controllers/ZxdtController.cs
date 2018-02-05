@@ -68,7 +68,12 @@ namespace WebNdQn.Controllers
                 ViewBag.openid = openid;
                 //ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkL";
                 #endregion
-                ViewBag.RemoteIP = WebHelp.GetIp();     //用户IP
+                //cooperid
+                ViewBag.cooperid = dto.id;
+                //取得当前用户还可摇几次，需要用到openid
+                ViewBag.lotteyn = Abll.GetOpenidCount(dto.id, 2, ViewBag.openid);
+                //手机号码
+                ViewBag.curphone = Abll.GetActivityPhone(dto.id, 2, ViewBag.openid);
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
                 if (dto != null)
                 {
@@ -81,7 +86,8 @@ namespace WebNdQn.Controllers
                     ViewBag.ShareImgPath = dto_act.wx_imgurl;
                     ViewBag.ShareContent = dto_act.wx_descride;
                     ViewBag.ShareUrl = dto_act.wx_linkurl;
-
+                    ViewBag.RemoteIP = WebHelp.GetIp();     //用户IP
+                    ViewBag.Tmts = dto_act.dt_tmts;         //题目条数
                 }
             }
 

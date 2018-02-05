@@ -268,7 +268,7 @@
             </ul>
         </div>
         <!--问题条数-->
-        <input type="hidden" id="questionListSize" value="10">
+        <input type="hidden" id="questionListSize" value="@ViewBag.Tmts">
     </div>
     <!--全部答对弹出窗s-->
     <div id="qbdd-dialog" class="dialog dialog-none">
@@ -387,10 +387,13 @@
     <input name="" type="hidden" id="wrongNum" value="0">
     <!--当前答题明细-->
     <input name="" type="hidden" id="detailContent" value="1、世界卫生组织（WHO）和联合国儿童基金会（UNICEF）联合倡议：在添加辅食的基础上，坚持哺乳（   ）个月。C24个月2、街道社区卫生服务中心为怀孕的妇女提供的孕期保健包括（）D以上都是">
-    <input type="hidden" id="appId" name="appId" value="wx4626023aba65d69d">
-    <input type="hidden" id="remoteIp" name="remoteIp" value="220.160.57.59">
-    <input type="hidden" id="openId" name="openId" value="o25kcw9lWmnTklXXL2rP-xveMj9M">
-    <input type="hidden" id="phone" name="phone" value="13906995798">
+    <input type="hidden" id="appId" name="appId" value="@ViewBag.appid">
+    <input type="hidden" id="timestamp" name="timestamp" value="@ViewBag.timestamp">
+    <input type="hidden" id="noncestr" name="noncestr" value="@ViewBag.noncestr">
+    <input type="hidden" id="signatrue" name="signatrue" value="@ViewBag.signatrue">
+    <input type="hidden" id="remoteIp" name="remoteIp" value="@ViewBag.RemoteIP">
+    <input type="hidden" id="openId" name="openId" value="@ViewBag.openid">
+    <input type="hidden" id="phone" name="phone" value="@ViewBag.curphone">
     <input type="hidden" id="id" name="id" value="629">
     <!--0为不能开始-->
     <input type="hidden" id="activityUnStart" name="activityUnStart" value="">
@@ -409,15 +412,15 @@
     <!--提交按钮-->
     <input type="hidden" id="picture3" name="picture3" value="~/Content/Activity/Zxdt/kankan/content/20171102102933.png">
     <!--分享的标题-->
-    <input type="hidden" id="shareTitl" name="shareTitl" value="丰泽区“预防出生缺陷”惠民政策 妇幼保健知识有奖问答">
+    <input type="hidden" id="shareTitl" name="shareTitl" value="@ViewBag.WxTitle">
     <!--分享的描述-->
-    <input type="hidden" id="shareContent" name="shareContent" value="丰泽区“预防出生缺陷”惠民政策 妇幼保健知识有奖问答">
+    <input type="hidden" id="shareContent" name="shareContent" value="@ViewBag.ShareContent">
     <!--分享链接的地址-->
-    <input type="hidden" id="shareUrl" name="shareUrl" value="http://ex.liuliangjimu.com?s=/v/U812F4P7AS">
+    <input type="hidden" id="shareUrl" name="shareUrl" value="@ViewBag.ShareUrl">
     <!--分享链接上的小图标-->
-    <input type="hidden" id="shareImgPath" name="shareImgPath" value="~/Content/Activity/Zxdt/kankan/content/20171220172222.jpg">
+    <input type="hidden" id="shareImgPath" name="shareImgPath" value="@ViewBag.ShareImgPath">
     <!--展示条数,如果与questionListSize不一致,使用questionListSize修改showQestionNum-->
-    <input type="hidden" id="showQestionNum" name="showQestionNum" value="10">
+    <input type="hidden" id="showQestionNum" name="showQestionNum" value="@ViewBag.Tmts">
     <!--是否显示正确的tip-->
     <input type="hidden" id="isShowRightTip" name="isShowRightTip" value="0">
     <!--为0时展示当前题目-->

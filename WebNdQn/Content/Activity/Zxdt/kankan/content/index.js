@@ -10,20 +10,20 @@ function closepop(id,id_bg) {
 
 $(document).ready(function(){
 	//引入分享
-	var appId = $("#appId").val();
-	var shareTitl = $("#shareTitl").val();
-	var shareImgPath = $("#shareImgPath").val();
-	var shareContent = $("#shareContent").val();
-	var shareUrl = $("#shareUrl").val();
-	var openId = $("#openId").val();
-	var remoteIp = $("#remoteIp").val();
-	var appId = appId;
-	var fx_title = shareTitl;
-	var fx_desc = shareContent;
-	var fx_link = shareUrl;
-	var fx_imgUrl = shareImgPath;
-	getSdk(appId,fx_title,fx_desc,fx_link,fx_imgUrl,"0","",openId,remoteIp);
-	var openId = $("#openId").val();
+	//var appId = $("#appId").val();
+	//var shareTitl = $("#shareTitl").val();
+	//var shareImgPath = $("#shareImgPath").val();
+	//var shareContent = $("#shareContent").val();
+	//var shareUrl = $("#shareUrl").val();
+	//var openId = $("#openId").val();
+	//var remoteIp = $("#remoteIp").val();
+	//var appId = appId;
+	//var fx_title = shareTitl;
+	//var fx_desc = shareContent;
+	//var fx_link = shareUrl;
+	//var fx_imgUrl = shareImgPath;
+    //getSdk(appId,fx_title,fx_desc,fx_link,fx_imgUrl,"0","",openId,remoteIp);
+	GetWxSdk();
 	if(openId == null || openId == "" || openId == "undefined" ){
 		$("#message").text("不要刷新,请重新授权后进入");
 		showpop('common-dialog','dialog-bg');
