@@ -158,8 +158,10 @@ namespace WebNdQn.Controllers
             if (result)
             {
                 int de_Openid = bll.DecideOpenid(openid, Convert.ToInt32(ctype), Convert.ToInt32(issue));   //Openid是否已经参加过活动,当前微信已经添加过活动!
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/SignPhoneFilter_gz_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "ctype:"+ ctype + "de_Openid: " + de_Openid+ "openid: "+ openid);
                 if (de_Openid > 0) return JsonFormat(new ExtJson { success = false, msg = "您已参与，不可重复提交！" });
                 int de_reslut = bll.DecidePhone(phone, Convert.ToInt32(ctype), Convert.ToInt32(issue));   //手机号码是否已经参加过活动
+                Common.Expend.LogTxtExpend.WriteLogs("/Logs/SignPhoneFilter_gz_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "ctype:" + ctype + "de_reslut: " + de_reslut);
                 if (de_reslut > 0)
                 {
                     return JsonFormat(new ExtJson { success = false, msg = "您已参与，不可重复提交！" });//当前手机号已经添加过活动

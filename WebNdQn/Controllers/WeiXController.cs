@@ -67,7 +67,7 @@ namespace WebNdQn.Controllers
                     Common.Expend.LogTxtExpend.WriteLogs("/Logs/WeiXController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Wx_Auth_Code 取得cgi_token值：" + cgi_token);
                     //和通过授权code取得的openid值一起,取到用户的详细信息
                     Wx_UserInfo dto2 = wxbll.Get_Cgi_UserInfo(dto1.openid, cgi_token);
-                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WxDefault_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "subscribe：" + dto2.subscribe + "openid: " + dto2.openid + "nickname:" + dto2.nickname + "headurl:" + dto2.headimgurl);
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/WeiXController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "subscribe：" + dto2.subscribe + "openid: " + dto2.openid + "nickname:" + dto2.nickname + "headurl:" + dto2.headimgurl);
                     if (clist[1] == "1")
                     {
                         //当用户已经关注了公众号就能取到详细信息,直接写入
@@ -120,7 +120,7 @@ namespace WebNdQn.Controllers
                     nickname = dto2.nickname;
                     str = "|" + dto2.headimgurl;
                 }
-                param = "?p=" + DEncrypt.DESEncrypt1("1|" + dto1.openid + str) + "&n=" + nickname;   //1|openid|nickname|headurl  1微信发送过来的|openid微信用户id|头像URL
+                param = "?p=" + DEncrypt.DESEncrypt1("1|" + dto1.openid + str) + "&n=" + nickname+"&state="+ state;   //1|openid|headurl  1|openid微信用户id|头像URL
                 backurl = clist[2] + param;
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/ComExpendController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Wx_Auth_Code 取得backurl值：" + backurl + " 取得param值: " + param);
                 return Redirect(backurl);
