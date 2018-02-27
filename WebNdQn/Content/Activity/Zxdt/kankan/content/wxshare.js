@@ -34,9 +34,70 @@ function setVisi(activityId,openId,remoteIp){
 	getVisit(activityId,types,resource,rss,openId,remoteIp);
 }
 	    
+function GetWxSdk() {
+    var appid = $("#appId").val();                  //appid
+    var timestamp = $("#timestamp").val();          //时间戳
+    var noncestr = $("#noncestr").val();            //串
+    var signatrue = $("#signatrue").val();          //
+    var wx_title = $("#shareTitl").val();           //标题
+    var wx_desc = $("#shareContent").val();         //描述
+    var wx_shareUrl = $("#shareUrl").val();         //分享LINK
+    var shareImgPath = $("#shareImgPath").val();    //小图标地址
+    wx.config({
+        debug: false,
+        appId: appid,
+        timestamp: timestamp,
+        nonceStr: noncestr,
+        signature: signatrue,
+        jsApiList: ['onMenuShareAppMessage','onMenuShareTimeline']
+    });
+    wx.ready(function () {
+        // 2. 分享接口
+        // 2.1 监听“分享给朋友”，按钮点击、自定义分享内容及分享结果接口
+        wx.onMenuShareAppMessage({
+            title: wx_title,
+            desc: wx_desc,
+            link: wx_shareUrl,
+            imgUrl: shareImgPath,
+            trigger: function (res) {
+                // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+                //alert('用户点击发送给朋友');
+            },
+            success: function (res) {
+                activityshare(1);   //调用分享后添加摇奖次数的方法
+                //alert('已分享');
+            },
+            cancel: function (res) {
+                //alert('已取消');
+            },
+            fail: function (res) {
+                alert(JSON.stringify(res));
+            }
+        });
+        // 2.2 监听“分享到朋友圈”按钮点击、自定义分享内容及分享结果接口
+        wx.onMenuShareTimeline({
+            title: wx_title,
+            link: wx_shareUrl,
+            imgUrl: shareImgPath,
+            trigger: function (res) {
+                // 不要尝试在trigger中使用ajax异步请求修改本次分享的内容，因为客户端分享操作是一个同步操作，这时候使用ajax的回包会还没有返回
+                //alert('用户点击分享到朋友圈');
+            },
+            success: function (res) {
+                activityshare(2);   //调用分享后添加摇奖次数的方法
+                //alert('已分享');
+            },
+            cancel: function (res) {
+                //alert('已取消');
+            },
+            fail: function (res) {
+                alert(JSON.stringify(res));
+            }
+        });
+    });
+}
 
-
-function getSdk(appId,fx_title,fx_desc,fx_link,fx_imgUrl,isNextPage,isNextPageUrl,activityId,openId,remoteIp){
+function getSdk1(appId,fx_title,fx_desc,fx_link,fx_imgUrl,isNextPage,isNextPageUrl,activityId,openId,remoteIp){
 			if(fx_link == null || fx_link == undefined || fx_link == '' || fx_link.lengh <=0){
 				
 				fx_link = location.href

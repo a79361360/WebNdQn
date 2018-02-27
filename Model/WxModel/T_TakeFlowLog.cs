@@ -13,6 +13,7 @@ namespace Model.WxModel
         public int issue { get; set; }
         public string openid { get; set; }
         public string phone { get; set; }
+        public int limitflow { get; set; }
         public int state { get; set; }
         public string addtime { get; set; }
     }
