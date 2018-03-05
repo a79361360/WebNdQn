@@ -286,6 +286,7 @@ namespace WebNdQn.Controllers
                 return JsonFormat(new ExtJson { success = false, code = -1000, msg = "失败." });
         }
         public ActionResult DzpPortal() {
+            if (!bll.VerSession()) Response.Redirect("/Login/index");
             return View();
         }
         public ActionResult ActicityListSearch()

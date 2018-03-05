@@ -56,7 +56,7 @@ namespace FJSZ.OA.Common.Web
             v.CreateImageOnPage(code, HttpContext.Current);        // 输出图片
             //Response.Cookies.Add(new HttpCookie("CheckCode", code.ToUpper()));// 使用Cookies取验证码的值
 
-            HttpCookie cookie = new HttpCookie("VerifyCode");
+            HttpCookie cookie = new HttpCookie("VerifyCode_" + type.ToString());
             //cookie.Domain = "91236.com";
             cookie.Expires = DateTime.Now.AddMinutes(30);
             cookie.Value = TxtHelp.MD5(code.ToUpper().ToString() + "4a64cd60aa6666f29a1dce503226eaa1");

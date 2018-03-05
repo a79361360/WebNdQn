@@ -19,6 +19,7 @@ namespace WebNdQn.Controllers
         // GET: Flow
         public ActionResult Index()
         {
+            if (!bll.VerSession()) Response.Redirect("/Login/index");
             ViewBag.CooperDrop = bll.GetCooperConfigDrop(1);    //取得配置信息列表
             return View();
         }

@@ -55,7 +55,7 @@ namespace BLL
             SqlPageParam param = new SqlPageParam();
             param.TableName = "T_CooperConfig";
             param.PrimaryKey = "id";
-            param.Fields = "id,ctype,issue,title,eachflow,uplimit,state";
+            param.Fields = "id,ctype,issue,title,eachflow,uplimit,state,(SELECT COUNT(*) FROM T_TakeFlowLog WHERE ctype=T_CooperConfig.ctype AND issue=T_CooperConfig.issue) curuplimit";
             param.PageSize = pageSize;
             param.PageIndex = pageIndex;
             param.Filter = filter;
@@ -84,7 +84,7 @@ namespace BLL
                     filter += " state=@state";
             }
             if (!string.IsNullOrEmpty(filter))
-                filter = "where" + filter;
+                filter = "where" + filter+ " order by addtime";
             IList<T_ActivityDrawLog> list = DataTableToList.ModelConvertHelper<T_ActivityDrawLog>.ConvertToModel(dal.ActivityDrawList(filter, cooperid, phone, state));
             return list;
         }
@@ -128,5 +128,27 @@ namespace BLL
             IList<T_MsgCode> list = DataTableToList.ModelConvertHelper<T_MsgCode>.ConvertToModel(dal.MsgCodeList(filter, type, phone));
             return list;
         }
+        public IList<T_AdminManager> FindAdminList(string username, int pageSize, int pageIndex, ref int Total) {
+            string filter = "";
+            if (!string.IsNullOrEmpty(username))
+            {
+                if (!string.IsNullOrEmpty(filter))
+                    filter += " and username=" + username;
+                else
+                    filter += " username=" + username;
+            }
+            SqlPageParam param = new SqlPageParam();
+            param.TableName = "T_AdminManager";
+            param.PrimaryKey = "id";
+            param.Fields = "id,username,userpwd,system,Convert(varchar(19),addtime,120) addtime";
+            param.PageSize = pageSize;
+            param.PageIndex = pageIndex;
+            param.Filter = filter;
+            param.Group = "";
+            param.Order = "id";
+            IList<T_AdminManager> list = DataTableToList.ModelConvertHelper<T_AdminManager>.ConvertToModel(dal.PageResult(ref Total, param));
+            return list;
+        }
+
     }
 }

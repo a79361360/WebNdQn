@@ -22,6 +22,7 @@ namespace BLL
     public class CommonBLL
     {
         CommonDAL dal = new CommonDAL();
+        public static string key = "4a64cd60aa6666f29a1dce503226eaa1";
         public bool ReadPhoneFliter(string phone, string path) {
             phone = phone.Substring(0, 7);
             List<string> list = (List<string>)FJSZ.OA.Common.CacheAccess.GetFromCache("MoneyList");
@@ -300,6 +301,33 @@ namespace BLL
         public int GetLogNum(int cooperid) {
             int result = dal.GetLogNum(cooperid);
             return result;
+        }
+        /// <summary>
+        /// 图形验证码校验
+        /// </summary>
+        /// <param name="yzm"></param>
+        /// <param name="yzmcode"></param>
+        /// <returns></returns>
+        public bool VerCode(string yzm, string yzmcode)
+        {
+            if (TxtHelp.MD5(yzm + key) == yzmcode)
+            {
+                return true;
+            }
+            return false;
+        }
+        /// <summary>
+        /// 取得后台管理员账号的ID
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="userpwd"></param>
+        /// <returns></returns>
+        public int GetAdminId(string username,string userpwd) {
+            var result = dal.GetAdminId(username, userpwd);
+            return result;
+        }
+        public bool VerSession() {
+            if (System.Web.HttpContext.Current.Session["AdminID"] == null) return false; else return true;
         }
     }
 }

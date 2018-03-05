@@ -207,7 +207,7 @@ namespace DAL
         /// </summary>
         /// <returns></returns>
         public DataTable FindLogCacheList() {
-            string sql = "SELECT id,ctype,issue,corpid,phone,csrf,dlyzm,czyzm,dlcookie,czcookie FROM T_LogCache";
+            string sql = "SELECT id,ctype,issue,corpid,phone,csrf,dlyzm,czyzm,dlcookie,czcookie FROM T_LogCache ORDER BY id DESC";
             return dal.ExtSql(sql);
         }
         /// <summary>

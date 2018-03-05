@@ -89,14 +89,16 @@
             })
         }
         //截取字符串结束
-        //tips
+        //弹于信息tips
         tips = function (content, timeout) {
-                var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
-                BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
-                var obj = $(BootDialog); obj.modal('show');
-                setTimeout(function () { obj.modal('hide'); }, timeout * 1000);
-                //setTimeout(function () { obj.remove(); }, timeout * 1000);
-            }
+            var tipsobj = $("#myModal");
+            if (tipsobj.length > 0)
+                tipsobj.remove();
+            var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
+            tipsobj = $(BootDialog); tipsobj.modal('show');
+            if (timeout > 0) { setTimeout(function () { tipsobj.modal('hide') }, timeout * 1000); }
+        }
         //弹出窗体
         //弹窗ID，标题，文字内容，宽度，高度
         qiu_confirm = function (id, title, content, width, height) {

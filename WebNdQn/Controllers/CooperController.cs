@@ -118,6 +118,7 @@ namespace WebNdQn.Controllers
         }
         //查询短信页面
         public ActionResult MsgCodePortal() {
+            if (!cbll.VerSession()) Response.Redirect("/Login/index");
             return View();
         }
         public ActionResult MsgCodeAction() {
