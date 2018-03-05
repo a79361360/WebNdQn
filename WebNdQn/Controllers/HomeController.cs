@@ -308,6 +308,7 @@ namespace WebNdQn.Controllers
             return View();
         }
         public ActionResult CooperIndex() {
+            if (!bll.VerSession()) Response.Redirect("/Login/index");
             return View();
         }
         /// <summary>

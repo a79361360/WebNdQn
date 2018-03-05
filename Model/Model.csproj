@@ -48,6 +48,7 @@
     <Compile Include="WxModel\T_ActivityConfig.cs" />
     <Compile Include="WxModel\T_ActivityConfigList.cs" />
     <Compile Include="WxModel\T_ActivityDrawLog.cs" />
+    <Compile Include="WxModel\T_AdminManager.cs" />
     <Compile Include="WxModel\T_CooperConfig.cs" />
     <Compile Include="WxModel\T_LogCache.cs" />
     <Compile Include="WxModel\T_LoginLogCache.cs" />

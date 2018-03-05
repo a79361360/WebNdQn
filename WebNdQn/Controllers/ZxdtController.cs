@@ -493,6 +493,7 @@ namespace WebNdQn.Controllers
         }
         //后台查询在线答题页面
         public ActionResult ZxdtPortal() {
+            if (!bll.VerSession()) Response.Redirect("/Login/index");
             return View();
         }
         //后台提交设置在线答题方法

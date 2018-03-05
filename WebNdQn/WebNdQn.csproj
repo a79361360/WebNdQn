@@ -166,6 +166,7 @@
     <Compile Include="Controllers\CooperController.cs" />
     <Compile Include="Controllers\FlowController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\LoginController.cs" />
     <Compile Include="Controllers\MobileController.cs" />
     <Compile Include="Controllers\NsoupController.cs" />
     <Compile Include="Controllers\WeiXController.cs" />
@@ -306,6 +307,20 @@
     <Content Include="Content\My97DatePicker\开发包\skin\whyGreen\img.gif" />
     <Content Include="Content\Txt\putianconfig.txt" />
     <Content Include="Content\Txt\pwebconfig.txt" />
+    <Content Include="Content\whcss\bootstrap-datetimepicker.min.css" />
+    <Content Include="Content\whcss\bootstrap.css" />
+    <Content Include="Content\whcss\default.jpg" />
+    <Content Include="Content\whcss\font-awesome.css" />
+    <Content Include="Content\whcss\frame_v4.css" />
+    <Content Include="Content\whcss\left_ico.png" />
+    <Content Include="Content\whcss\left_select_ico.png" />
+    <Content Include="Content\whcss\login.css" />
+    <Content Include="Content\whcss\login_bg.png" />
+    <Content Include="Content\whcss\logo.png" />
+    <Content Include="Content\whcss\logo1.png" />
+    <Content Include="Content\whcss\logo_02.png" />
+    <Content Include="Content\whcss\public.css" />
+    <Content Include="Content\whcss\register_bg.png" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
@@ -325,6 +340,7 @@
     <Content Include="Scripts\modernizr-2.6.2.js" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.min.js" />
+    <Content Include="Scripts\whjs\common.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Web.config" />
     <Content Include="Web.Debug.config">
@@ -377,6 +393,8 @@
     <Content Include="Views\Zxdt\QA.cshtml" />
     <Content Include="Views\Zxdt\Last.cshtml" />
     <Content Include="Views\Zxdt\QaDefault.cshtml" />
+    <Content Include="Views\Login\Index.cshtml" />
+    <Content Include="Views\Login\LoginVerifyCode.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

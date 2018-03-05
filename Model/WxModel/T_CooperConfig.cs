@@ -30,6 +30,7 @@ namespace Model.WxModel
         public string qrcode_url { get; set; }
         public int eachflow { get; set; }
         public int uplimit { get; set; }
+        public int curuplimit { get; set; }
         public string cutdate { get; set; }
         public int state { get; set; }
         public DateTime addtime {get;set;}

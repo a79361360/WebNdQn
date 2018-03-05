@@ -1,0 +1,147 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width;text/html; charset=UTF-8" http-equiv="Content-Type" />
+    <title>AdminLogin</title>
+    <link type="text/css" rel="stylesheet" href="~/Content/bootstrap.min.css" />
+    <link type="text/css" rel="stylesheet" href="~/Content/whcss/font-awesome.css">
+    <link type="text/css" rel="stylesheet" href="~/Content/whcss/frame_v4.css">
+    <link type="text/css" rel="stylesheet" href="~/Content/whcss/login.css">
+    <link type="text/css" rel="stylesheet" href="~/Content/whcss/public.css">
+    <link type="text/css" rel="stylesheet" href="~/Content/whcss/bootstrap-datetimepicker.min.css">
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/whjs/common.js"></script>
+</head>
+<body>
+    <div class="login_c clearfix">
+
+        <div class="login_main">
+            <div class="register_bg">
+                <form id="login_form" action="/Login/Login" method="post" target="_top">
+                    <table class="c_table">
+                        <tbody>
+                            <tr>
+                                <td></td>
+                                <td class="center">
+                                    <img class="c_logo" src="~/Content/whcss/logo_02.png">
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="c_label">账号</td>
+                                <td><input type="text" class="c_text" data-validate="require" data-label="账号" placeholder="请输入注册时填写的账号或手机号" name="username" id="username" autocomplete="off"></td>
+                            </tr>
+                            <tr>
+                                <td class="c_label">密码</td>
+                                <td><input type="password" class="c_text" data-validate="require" data-label="密码" placeholder="请输入登录密码" name="password" value="qingqiu321" autocomplete="off" id="password"></td>
+                            </tr>
+                            <tr>
+                                <td class="c_label">验证码</td>
+                                <td>
+                                    @*<input type="text" class="c_text code " autocomplete="off" name="code" id="code">*@
+                                    <input type="tel" class="c_text code" id="yzm" name="yzm" maxlength="4" onkeyup="this.value=this.value.replace(/\D/g,'')" onafterpaste="this.value=this.value.replace(/\D/g,'')" placeholder="点击获取验证码" style="width: 40%; float: left;margin-right:10px" />
+                                    <a style="cursor: pointer; color: #000;display: block;margin-top: 10px;" onclick="CreateYzm()"><img id="yzmimg" /></a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <div class="c_checkbox">
+                                        <input type="checkbox" class="pass-checkbox-input" value="1" id="remember" style="border:none;"> 记住用户名
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td></td>
+                                <td>
+                                    <input type="hidden" name="token" value="c0dd1128">
+                                    <a href="javascript:void(0)" class="c_submit">登录</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        //创建验证码
+        CreateYzm = function () {
+            $("#yzm").val("");
+            changeImg("yzmimg", "/Login/LoginVerifyCode", "login");
+        }
+        //验证码img
+        function changeImg(id, url, type) {
+            var imgSrc = $("#" + id);
+            var src = url + "?type=" + type;
+            imgSrc.attr("src", chgUrl(src));
+        }
+        //生成验证码生成URL
+        function chgUrl(url) {
+            var timestamp = (new Date()).valueOf();
+            if ((url.indexOf("?") >= 0)) {
+                url = url + "&tamp=" + timestamp;
+            } else {
+                url = url + "?timestamp=" + timestamp;
+            }
+            return url;
+        }
+        //是否记录密码
+        function formcheck() {
+            if ($('#remember:checked').length == 1) {
+                cookie.set('remember-username', $(':text[name="username"]').val());
+            } else {
+                cookie.del('remember-username');
+            }
+            return true;
+        }
+        //取得username付值
+        function setcheck() {
+            var username = cookie.get('remember-username');
+            if (username != null) {
+                $(':text[name="username"]').val(username);
+                $("#remember").attr("checked", true);
+            }
+        }
+        function func() {
+            if ($('#username').val() == '') {
+                $('#username').attr('placeholder', '账号不能为空').addClass('c_text_login');
+                $('#username').focus();
+                return;
+            } else if ($('#password').val() == '') {
+                $('#password').attr('placeholder', '密码不能为空').addClass('c_text_login');
+                $('#password').focus();
+                return;
+            }
+            formcheck();
+            $('#login_form').submit();
+        }
+        $(function () {
+            //点击获取验证码
+            $("#yzm").focus(function () {
+                CreateYzm();
+            });
+            //回车
+            document.onkeydown = function (evt) {
+                var evt = window.event ? window.event : evt;
+                if (evt.keyCode == 13) {
+                    func();
+                }
+            }
+            //点击登入
+            $(".c_submit").bind("click", function () {
+                func();
+            });
+            //读取记录用户名
+            setcheck();
+        })
+    </script>
+</body>
+</html>

@@ -373,5 +373,25 @@ namespace DAL
             dal.ExtProc(sql, parameter, str, out list);
             return Convert.ToInt32(list["@ReturnValue"]);
         }
+        /// <summary>
+        /// 取得后台管理员
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="userpwd"></param>
+        /// <returns></returns>
+        public int GetAdminId(string username,string userpwd) {
+            string sql = "SELECT id FROM T_AdminManager WHERE username=@username AND userpwd=@userpwd";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@username",SqlDbType.NVarChar,50),
+                new SqlParameter("@userpwd",SqlDbType.NVarChar,50),
+            };
+            parameter[0].Value = username;
+            parameter[1].Value = userpwd;
+            var result = dal.ExtScalarSql(sql, parameter);
+                if (result == null) return -1;
+            else
+                return Convert.ToInt32(result);
+        }
     }
 }
