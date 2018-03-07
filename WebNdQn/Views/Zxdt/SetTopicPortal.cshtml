@@ -33,16 +33,17 @@
             var topic = $("#txt_topic").val();
             var cooperid = $("#txt_cooperid").val();
             var checkbox = $("input[name='optionsRadiosinline']:checked").val();
-            if (checkbox == 1 & checkbox.indexOf(',')) {
-                tips("单选题的答案不能有,号", -1);
-                return;
-            }
             var answer = MergeAnswer();
             var kanswer = $("#txt_keyanswer").val();
             if (answer == "-1") {
                 tips("选项里面不能出现\" | \"符号", -1);
                 return;
             }
+            if (checkbox == 1 & kanswer.indexOf(',') > 0) {
+                tips("单选题的正确选项不能有,号", -1);
+                return;
+            }
+
             var data = {
                 id:id,
                 topic: topic,

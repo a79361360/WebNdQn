@@ -246,8 +246,8 @@ namespace BLL
             return "";
         }
         public int SetCooper(T_CooperConfig dto) {
-            int result = dal.SetCooper(dto.id, dto.ctype, dto.issue,dto.areatype,dto.gener, dto.title, dto.descride, dto.imgurl, dto.btnurl, dto.bgurl, dto.linkurl,dto.redirecturi,
-               dto.corpid, dto.username, dto.userpwd, dto.signphone, dto.wx_appid, dto.wx_secret, dto.qrcode_url, dto.eachflow, dto.uplimit, dto.cutdate, dto.state);
+            int result = dal.SetCooper(dto.id, dto.ctype, dto.issue, dto.areatype, dto.gener, dto.title, dto.descride, dto.imgurl, dto.btnurl, dto.bgurl, dto.linkurl, dto.redirecturi,
+               dto.corpid, dto.username, dto.userpwd, dto.signphone, dto.wx_appid, dto.wx_secret, dto.qrcode_url, dto.eachflow, dto.uplimit, dto.basecutdate, dto.cutdate, dto.maxcutdate, dto.state);
             return result;
         }
         public int RemoveCoopers(IList<IdListDto> ids)

@@ -21,7 +21,7 @@ namespace DAL
         /// <returns></returns>
         public DataTable GetCooperConfig(int ctype,int issue)
         {
-            string sql = "SELECT [id],[ctype],[issue],[areatype],areatypen='',[gener],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state in(1,2)";
+            string sql = "SELECT [id],[ctype],[issue],[areatype],areatypen='',[gener],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[basecutdate],[cutdate],[maxcutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE ctype=@ctype and state in(1,2)";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@ctype",SqlDbType.Int),
@@ -71,7 +71,7 @@ namespace DAL
         /// <param name="id"></param>
         /// <returns></returns>
         public DataTable GetCooperConfigById(int id) {
-            string sql = "SELECT [id],[ctype],[issue],[title],[areatype],areatypen='',[gener],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE id=@id";
+            string sql = "SELECT [id],[ctype],[issue],[title],[areatype],areatypen='',[gener],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[basecutdate],[cutdate],[maxcutdate],[state],[addtime] FROM [dbo].[T_CooperConfig] WHERE id=@id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@id",SqlDbType.Int)
@@ -84,14 +84,14 @@ namespace DAL
         }
         public int SetCooper(int id,int ctype,int issue, int areatype, string gener, string title,string descride,string imgurl,string btnurl,string bgurl,string linkurl,string redirecturi,
             string corpid,string username,string userpwd,string signphone,string wx_appid,string wx_secret,string qrcode_url,
-            int eachflow,int uplimit,string cutdate,int state) {
+            int eachflow,int uplimit,string basecutdate, string cutdate, string maxcutdate, int state) {
 
-            string sql = "INSERT INTO [T_CooperConfig]([ctype],[issue],[areatype],[gener],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[cutdate],[state])";
-            sql += "VALUES(@ctype,@issue,@areatype,@gener,@title,@descride,@imgurl,@btnurl,@bgurl,@linkurl,@redirecturi,@corpid,@username,@userpwd,@signphone,@wx_appid,@wx_secret,@qrcode_url,@eachflow,@uplimit,@cutdate,@state)";
+            string sql = "INSERT INTO [T_CooperConfig]([ctype],[issue],[areatype],[gener],[title],[descride],[imgurl],[btnurl],[bgurl],[linkurl],[redirecturi],[corpid],[username],[userpwd],[signphone],[wx_appid],[wx_secret],[qrcode_url],[eachflow],[uplimit],[basecutdate],[cutdate],[maxcutdate],[state])";
+            sql += "VALUES(@ctype,@issue,@areatype,@gener,@title,@descride,@imgurl,@btnurl,@bgurl,@linkurl,@redirecturi,@corpid,@username,@userpwd,@signphone,@wx_appid,@wx_secret,@qrcode_url,@eachflow,@uplimit,@basecutdate,@cutdate,@maxcutdate,@state)";
             if (id != 0)
             {
                 sql = "UPDATE [T_CooperConfig] SET [ctype] = @ctype,[title] = @title,[areatype] = @areatype,[gener] = @gener,[descride] = @descride,[imgurl] = @imgurl,[btnurl] = @btnurl,[bgurl] = @bgurl,[linkurl] = @linkurl,[redirecturi] = @redirecturi,[corpid] = @corpid,[username] = @username,[userpwd] = @userpwd";
-                sql += ",[signphone] = @signphone,[wx_appid] = @wx_appid,[wx_secret] = @wx_secret,[qrcode_url] = @qrcode_url,[eachflow] = @eachflow,[uplimit] = @uplimit,[cutdate] = @cutdate,[state] = @state";
+                sql += ",[signphone] = @signphone,[wx_appid] = @wx_appid,[wx_secret] = @wx_secret,[qrcode_url] = @qrcode_url,[eachflow] = @eachflow,[uplimit] = @uplimit,[basecutdate] = @basecutdate,[cutdate] = @cutdate,[maxcutdate] = @maxcutdate,[state] = @state";
                 sql += " where id=@id";
             }
             SqlParameter[] parameter = new[]
@@ -116,7 +116,9 @@ namespace DAL
                 new SqlParameter("@qrcode_url",SqlDbType.NVarChar,150),
                 new SqlParameter("@eachflow",SqlDbType.Int),
                 new SqlParameter("@uplimit",SqlDbType.Int),
+                new SqlParameter("@basecutdate",SqlDbType.NVarChar,10),
                 new SqlParameter("@cutdate",SqlDbType.NVarChar,10),
+                new SqlParameter("@maxcutdate",SqlDbType.NVarChar,10),
                 new SqlParameter("@state",SqlDbType.Int),
                 new SqlParameter("@redirecturi",SqlDbType.NVarChar,250),
             };
@@ -140,9 +142,11 @@ namespace DAL
             parameter[17].Value = qrcode_url;
             parameter[18].Value = eachflow;
             parameter[19].Value = uplimit;
-            parameter[20].Value = cutdate;
-            parameter[21].Value = state;
-            parameter[22].Value = redirecturi;
+            parameter[20].Value = basecutdate;
+            parameter[21].Value = cutdate;
+            parameter[22].Value = maxcutdate;
+            parameter[23].Value = state;
+            parameter[24].Value = redirecturi;
             int result = Convert.ToInt32(dal.IntExtSql(sql, parameter));
             return result;
 

@@ -12,6 +12,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace BLL
@@ -437,6 +438,7 @@ namespace BLL
                     {
                         result = helpweb.GetHtml(item);
                         nsoupmsgdto msgdto = JsonConvert.DeserializeObject<nsoupmsgdto>(result.Html);
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 发送短信返回的HTML ctype: " + ctype + "期号：" + issue + " result.Html: " + result.Html);
                         if (result.StatusCode == HttpStatusCode.OK & msgdto.result != "false")
                         {
                             Common.Expend.LogTxtExpend.WriteLogs("/Logs/NsoupBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "SubmitCzExecl 发送短信成功类型ctype: " + ctype + "期号：" + issue);

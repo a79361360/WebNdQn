@@ -45,29 +45,29 @@ namespace WebNdQn.Controllers
             }
             else {
                 string gz = "0"; string openid = "";
-                if (Request["p"] != null)
-                {
-                    try
-                    {
-                        string p = Request["p"].ToString(); //1|subscribe|openid  微信发送|是否关注|openid
-                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + Request["p"].ToString());
-                        string temp = DEncrypt.DESDecrypt1(p);    //取得p参数,并且进行解密
-                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + temp);
-                        string[] plist = temp.Split('|');   //微信发送|是否
-                        if (plist[0] != "1") return Content("配置参数异常");
-                        gz = plist[1]; openid = plist[2];   //是否关注,微信用户id
-                    }
-                    catch
-                    {
-                        return Content("参数错误");
-                    }
-                }
-                if (string.IsNullOrEmpty(openid))
-                    return Content("授权失败");
-                #region 获取微信用户的openid
-                ViewBag.openid = openid;
-                //ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkL";
-                #endregion
+                //if (Request["p"] != null)
+                //{
+                //    try
+                //    {
+                //        string p = Request["p"].ToString(); //1|subscribe|openid  微信发送|是否关注|openid
+                //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + Request["p"].ToString());
+                //        string temp = DEncrypt.DESDecrypt1(p);    //取得p参数,并且进行解密
+                //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + temp);
+                //        string[] plist = temp.Split('|');   //微信发送|是否
+                //        if (plist[0] != "1") return Content("配置参数异常");
+                //        gz = plist[1]; openid = plist[2];   //是否关注,微信用户id
+                //    }
+                //    catch
+                //    {
+                //        return Content("参数错误");
+                //    }
+                //}
+                //if (string.IsNullOrEmpty(openid))
+                //    return Content("授权失败");
+                //#region 获取微信用户的openid
+                //ViewBag.openid = openid;
+                ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkL";
+                //#endregion
                 //cooperid
                 ViewBag.cooperid = dto.id;
                 //取得当前用户还可摇几次，需要用到openid
@@ -88,13 +88,65 @@ namespace WebNdQn.Controllers
                     ViewBag.ShareUrl = dto_act.wx_linkurl;
                     ViewBag.RemoteIP = WebHelp.GetIp();     //用户IP
                     ViewBag.Tmts = dto_act.dt_tmts;         //题目条数
+
+
+                    #region 取得题目列表b
+                    var list = zbll.GetDttsTopic(dto.id, dto_act.dt_tmts);
+
+                    string str = ""; int index = 0;     //题目字符串，索引
+                    foreach (var item in list)
+                    {
+                        str += "<div class=\"page page_" + index + "\">";
+                        str += "<div class=\"title\"><em>" + index + "</em>、" + item.topic + "</div><ul>";
+                        string[] sstr = item.answer.Split('|'); int temindex = 1;
+                        foreach (var tem in sstr)
+                        {
+                            str += "<li class=\"" + Rzm1(temindex) + " \" data-value=\"" + Rzm(temindex) + "\"><em>" + Rzm(temindex) + "</em>" + tem + "</li>";
+                            temindex++;
+                        }
+                        str += "<div class=\"zqda\"><p>正确答案：<em>" + Rzm2(item.keyanswer) + "</em>我的答案：<i></i></p></div>";
+                        str += "<a href=\"javascript:void(0)\" class=\"btn-00 btn-xyt\" style=\"background:url(../Content/Activity/Zxdt/kankan/content/20171102102845.png) no-repeat 0 0; background-size:100% 100%; \">下一题</a>";
+                        str += "<div class=\"pic-01\"></div>";
+                        str += "<span class=\"icon-right none\">对</span>";
+                        str += "<span class=\"icon-wrong none\">错</span>";
+                        str += "</ul></div>";
+                        index++;
+                    }
+                    ViewBag.list = str;
+                    #endregion 取得题目列表e
+
                 }
             }
 
 
             return View();
         }
-
+        private string Rzm(int num) {
+            if (num == 1) return "A";
+            else if (num == 2) return "B";
+            else if (num == 3) return "C";
+            else if (num == 4) return "D";
+            else if (num == 5) return "E";
+            else if (num == 6) return "F";
+            else return "";
+        }
+        private string Rzm1(int num)
+        {
+            if (num == 1) return "a";
+            else if (num == 2) return "b";
+            else if (num == 3) return "c";
+            else if (num == 4) return "d";
+            else if (num == 5) return "e";
+            else if (num == 6) return "f";
+            else return "";
+        }
+        private string Rzm2(string keystr) {
+            string result = "";
+            string[] intstr = keystr.Split(',');
+            string zm = Rzm(Convert.ToInt32(intstr[0]));
+            result += zm;
+            return result;
+        }
 
         public ActionResult Last() {
             return View();
@@ -287,14 +339,14 @@ namespace WebNdQn.Controllers
                 #region 分享到朋友 基础数据
                 if (dto != null)
                 {
-                    long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
-                    string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
-                    string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
-                    ViewBag.appid = Wx_config.appid;        //分享到朋友，这里的appid用的是自己公司的，域名只能自己操作
-                    ViewBag.timestamp = timestamp;
-                    ViewBag.noncestr = noncestr;
-                    ViewBag.signatrue = signatrue;
-                    ViewBag.areatype = dto.areatype;        //1为宁德2为莆田
+                    //long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
+                    //string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
+                    //string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
+                    //ViewBag.appid = Wx_config.appid;        //分享到朋友，这里的appid用的是自己公司的，域名只能自己操作
+                    //ViewBag.timestamp = timestamp;
+                    //ViewBag.noncestr = noncestr;
+                    //ViewBag.signatrue = signatrue;
+                    //ViewBag.areatype = dto.areatype;        //1为宁德2为莆田
                 }
                 #endregion
 

@@ -1,0 +1,87 @@
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>SetTadminPortal</title>
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <script src="~/Scripts/jquery-1.10.2.min.js"></script>
+    <script src="~/Scripts/bootstrap.min.js"></script>
+    <script type="text/javascript">
+        $(function () {
+            var id = '@Model.id'; //如果这个为0就为新增
+            if (id != '0') $("#txt_username").attr("disabled", true);
+        })
+        //弹于信息tips
+        tips = function (content, timeout) {
+            var tipsobj = $("#myModal");
+            if (tipsobj.length > 0)
+                tipsobj.remove();
+            var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
+            tipsobj = $(BootDialog); tipsobj.modal('show');
+            if (timeout > 0) { setTimeout(function () { tipsobj.modal('hide') }, timeout * 1000); }
+        }
+        tj = function () {
+            var id = '@Model.id'; //如果这个为0就为新增
+            var username = $("#txt_username").val();
+            var userpwd = $("#txt_pwd").val();
+            var userpwd1 = $("#txt_pwd1").val();
+            if (userpwd != userpwd1) {
+                alert("两个密码不一致!"); return;
+            }
+            alert(id);
+            var data = {
+                id: id,
+                username: username,
+                userpwd: userpwd1
+            }
+            $.ajax({
+                type: "post",
+                url: "/Login/SetTadmin",
+                data: data,
+                success: function (ret) {
+                    if (ret.success)
+                        tips("提交成功", 1);
+                    else
+                        tips("提交失败", 1);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <form class="form-horizontal" role="form" action="/TUser/EditTUser" method="post">
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">管理员账号</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_username" name="txt_username" value="@Model.username" placeholder="请输入管理员账号,最多20个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">管理员密码</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" id="txt_pwd" name="txt_pwd" placeholder="请输入管理员密码,最多20个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="lastname" class="col-sm-2 control-label">确认密码</label>
+                <div class="col-sm-10">
+                    <input type="password" class="form-control" id="txt_pwd1" name="txt_pwd1" placeholder="确认管理员密码,最多20个汉字">
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-offset-2 col-sm-10">
+                    <input type="button" onclick="tj()" class="btn btn-default" value="确认提交">
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>

@@ -25,5 +25,9 @@ namespace Model.EnumModel
             莆田地区 = 2,
             福建地区 = 3
         }
+        public enum TadminType {
+            系统管理员 = 1,
+            管理员 = 2
+        }
     }
 }

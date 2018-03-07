@@ -33,16 +33,16 @@ $(document).ready(function(){
 });
 
 function checkMobile() {
-	var activityUnStart=$("#activityUnStart").val();
-	var activityUnStartHint=$("#activityUnStartHint").val();
-	var activityEnd=$("#activityEnd").val();
-	var activityEndHint=$("#activityEndHint").val();
-	var toDayIsUnStart=$("#toDayIsUnStart").val();
-	var todayUnStartHint=$("#todayUnStartHint").val();
-	var toDayIsEnd=$("#toDayIsEnd").val();
-	var personEnd=$("#personEnd").val();
-	var personNoChance=$("#personNoChance").val();
-	var personDayEnd=$("#personDayEnd").val();
+	var activityUnStart=$("#activityUnStart").val();            //0不能开始
+	var activityUnStartHint=$("#activityUnStartHint").val();    //不能开始的提示
+	var activityEnd=$("#activityEnd").val();                    //0活动结束
+	var activityEndHint=$("#activityEndHint").val();            //结束的提示
+	var toDayIsUnStart=$("#toDayIsUnStart").val();              //0今天活动不能开始
+	var todayUnStartHint=$("#todayUnStartHint").val();          //不能开始的原因
+	var toDayIsEnd=$("#toDayIsEnd").val();                      //0今天活动已经结束
+	var personEnd=$("#personEnd").val();                        //0参与次数不够
+	var personNoChance=$("#personNoChance").val();              //提示内容
+	var personDayEnd=$("#personDayEnd").val();                  //0今天的参与次数不够
 	if(activityUnStart=="0"){
 		$("#message").text(activityUnStartHint);
 		showpop('common-dialog','dialog-bg');
