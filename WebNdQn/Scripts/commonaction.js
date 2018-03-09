@@ -203,5 +203,6 @@ function cutString(pStr, pLen) {
 areaname = function (v) {
     if (v == "1") return "宁德";
     else if (v == "2") return "莆田";
+    else if (v == "3") return "福建";
     else return "宁德";
 }

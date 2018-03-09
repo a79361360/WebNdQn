@@ -26,7 +26,7 @@
 		}
 		//
 		b.find("li").click(function(){
-		if("1"==isRightGo){
+		if("2"==isRightGo){
 		if(num == 0){	
 			var a=$(this),c=a.parent().find(".icon-right"),b=a.parent().find(".icon-wrong"),f=a.parent().find(".zqda"),e=a.parent().find(".zqda i");
 			var rightNum=0;
@@ -201,7 +201,7 @@
 	
 				}else{
 					//如果开启直接进入下一题（无论对错）
-					if("1"==isRightGo){
+					if("2"==isRightGo){
 							if(e==a.length-1){
 								//最后一题
 								$("#wrongNum").val(1+Number($("#wrongNum").val()));

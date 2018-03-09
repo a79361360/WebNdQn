@@ -77,18 +77,31 @@ namespace WebNdQn.Controllers
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
                 if (dto != null)
                 {
-                    ViewBag.Appid = dto.wx_appid;
+                    ViewBag.appid = dto.wx_appid;
+                    long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
+                    string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
+                    //string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
+                    string signatrue = "1111";                             //signatrue
+                    ViewBag.timestamp = timestamp;
+                    ViewBag.noncestr = noncestr;
+                    ViewBag.signatrue = signatrue;
+                    ViewBag.RemoteIP = WebHelp.GetIp();     //用户IP
+                    ViewBag.areatype = dto.areatype;        //1为宁德2为莆田
+
                     var dto_act = zbll.GetByCooperId(dto.id, 2);                //取得在线答题配置信息
                     if (dto_act == null)
                         return Content("在线答题配置为空");
                     //答题的分享部分
+                    ViewBag.tmfs = dto_act.dt_fs;       //题目分数
+                    ViewBag.sright = dto_act.sright;    //1显化答案(答对才继续)2不显化答案(答对错,都只能下一题)
                     ViewBag.WxTitle = dto_act.wx_title;
                     ViewBag.ShareImgPath = dto_act.wx_imgurl;
                     ViewBag.ShareContent = dto_act.wx_descride;
                     ViewBag.ShareUrl = dto_act.wx_linkurl;
-                    ViewBag.RemoteIP = WebHelp.GetIp();     //用户IP
                     ViewBag.Tmts = dto_act.dt_tmts;         //题目条数
-
+                    string explain = "暂时没有游戏说明";
+                    explain = dto_act.explain.Replace("\n", "<br/>");
+                    ViewBag.explain = explain;          //答题的说明
 
                     #region 取得题目列表b
                     var list = zbll.GetDttsTopic(dto.id, dto_act.dt_tmts);
@@ -101,7 +114,7 @@ namespace WebNdQn.Controllers
                         string[] sstr = item.answer.Split('|'); int temindex = 1;
                         foreach (var tem in sstr)
                         {
-                            str += "<li class=\"" + Rzm1(temindex) + " \" data-value=\"" + Rzm(temindex) + "\"><em>" + Rzm(temindex) + "</em>" + tem + "</li>";
+                            str += "<li class=\"" + Rzm1(temindex) + " " + Rzm3(item.keyanswer, temindex.ToString()) + "\" data-value=\"" + Rzm(temindex) + "\"><em>" + Rzm(temindex) + "</em>" + tem + "</li>";
                             temindex++;
                         }
                         str += "<div class=\"zqda\"><p>正确答案：<em>" + Rzm2(item.keyanswer) + "</em>我的答案：<i></i></p></div>";
@@ -146,6 +159,12 @@ namespace WebNdQn.Controllers
             string zm = Rzm(Convert.ToInt32(intstr[0]));
             result += zm;
             return result;
+        }
+        private string Rzm3(string keystr, string index)
+        {
+            string[] intstr = keystr.Split(',');
+            if (intstr.Contains(index)) return "right";
+            return "";
         }
 
         public ActionResult Last() {
