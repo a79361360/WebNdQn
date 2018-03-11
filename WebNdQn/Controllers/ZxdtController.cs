@@ -64,10 +64,10 @@ namespace WebNdQn.Controllers
                 //}
                 //if (string.IsNullOrEmpty(openid))
                 //    return Content("授权失败");
-                //#region 获取微信用户的openid
+                #region 获取微信用户的openid
                 //ViewBag.openid = openid;
                 ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkL";
-                //#endregion
+                #endregion
                 //cooperid
                 ViewBag.cooperid = dto.id;
                 //取得当前用户还可摇几次，需要用到openid
@@ -88,6 +88,7 @@ namespace WebNdQn.Controllers
                     ViewBag.RemoteIP = WebHelp.GetIp();     //用户IP
                     ViewBag.areatype = dto.areatype;        //1为宁德2为莆田
 
+
                     var dto_act = zbll.GetByCooperId(dto.id, 2);                //取得在线答题配置信息
                     if (dto_act == null)
                         return Content("在线答题配置为空");
@@ -95,13 +96,25 @@ namespace WebNdQn.Controllers
                     ViewBag.tmfs = dto_act.dt_fs;       //题目分数
                     ViewBag.sright = dto_act.sright;    //1显化答案(答对才继续)2不显化答案(答对错,都只能下一题)
                     ViewBag.WxTitle = dto_act.wx_title;
-                    ViewBag.ShareImgPath = dto_act.wx_imgurl;
+                    ViewBag.ShareImgPath = WebHelp.GetCurHttpHost() + dto_act.wx_imgurl;
                     ViewBag.ShareContent = dto_act.wx_descride;
                     ViewBag.ShareUrl = dto_act.wx_linkurl;
                     ViewBag.Tmts = dto_act.dt_tmts;         //题目条数
-                    string explain = "暂时没有游戏说明";
+
+                    int userdcount = zbll.ZxdtDrawNumber(dto_act.cooperid);     //已经用掉的流量
+                    if (dto_act.flowamount - userdcount < 100) {
+                        ViewBag.activityEnd = "0";  //0活动结束
+                        ViewBag.activityEndTips = "流量赠送完毕，活动结束，请下次再来参与！";  //活动结束提示语
+                    }
+                    ViewBag.flowamount = dto_act.flowamount;                    //流量池量
+                    ViewBag.curflowcount = zbll.ZxdtDrawNumber(dto_act.cooperid);   //用户流量
+                    
+                    string explain = "暂时没有游戏说明"; string bgurl = "/Content/Img/bg/body_bg2.png";
+                    bgurl = string.IsNullOrEmpty(dto_act.bgurl) == false ? bgurl = dto_act.bgurl : "";
                     explain = dto_act.explain.Replace("\n", "<br/>");
-                    ViewBag.explain = explain;          //答题的说明
+                    ViewBag.explain = explain;                  //答题的说明
+                    ViewBag.ptitle = dto_act.title;             //页面的标题
+                    ViewBag.bgurl = bgurl;                      //页面的背景
 
                     #region 取得题目列表b
                     var list = zbll.GetDttsTopic(dto.id, dto_act.dt_tmts);
@@ -324,29 +337,29 @@ namespace WebNdQn.Controllers
             else
             {
                 string gz = "0"; string openid = "";
-                //if (Request["p"] != null)
-                //{
-                //    try
-                //    {
-                //        string p = Request["p"].ToString(); //1|subscribe|openid  微信发送|是否关注|openid
-                //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + Request["p"].ToString());
-                //        string temp = DEncrypt.DESDecrypt1(p);    //取得p参数,并且进行解密
-                //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + temp);
-                //        string[] plist = temp.Split('|');   //微信发送|是否
-                //        if (plist[0] != "1") return Content("配置参数异常");
-                //        gz = plist[1]; openid = plist[2];   //是否关注,微信用户id
-                //    }
-                //    catch
-                //    {
-                //        return Content("参数错误");
-                //    }
-                //}
-                //if (string.IsNullOrEmpty(openid))
-                //    return Content("授权失败");
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
+                if (Request["p"] != null)
+                {
+                    try
+                    {
+                        string p = Request["p"].ToString(); //1|subscribe|openid  微信发送|是否关注|openid
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + Request["p"].ToString());
+                        string temp = DEncrypt.DESDecrypt1(p);    //取得p参数,并且进行解密
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + temp);
+                        string[] plist = temp.Split('|');   //微信发送|是否
+                        if (plist[0] != "1") return Content("配置参数异常");
+                        gz = plist[1]; openid = plist[2];   //是否关注,微信用户id
+                    }
+                    catch
+                    {
+                        return Content("参数错误");
+                    }
+                }
+                if (string.IsNullOrEmpty(openid))
+                    //    return Content("授权失败");
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
                 #region 获取微信用户的openid
-                //ViewBag.openid = openid;
-                ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkL";
+                ViewBag.openid = openid;
+                //ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkL";
                 #endregion
                 //cooperid
                 ViewBag.cooperid = dto.id;
@@ -358,14 +371,14 @@ namespace WebNdQn.Controllers
                 #region 分享到朋友 基础数据
                 if (dto != null)
                 {
-                    //long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
-                    //string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
-                    //string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
-                    //ViewBag.appid = Wx_config.appid;        //分享到朋友，这里的appid用的是自己公司的，域名只能自己操作
-                    //ViewBag.timestamp = timestamp;
-                    //ViewBag.noncestr = noncestr;
-                    //ViewBag.signatrue = signatrue;
-                    //ViewBag.areatype = dto.areatype;        //1为宁德2为莆田
+                    long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
+                    string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
+                    string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
+                    ViewBag.appid = Wx_config.appid;        //分享到朋友，这里的appid用的是自己公司的，域名只能自己操作
+                    ViewBag.timestamp = timestamp;
+                    ViewBag.noncestr = noncestr;
+                    ViewBag.signatrue = signatrue;
+                    ViewBag.areatype = dto.areatype;        //1为宁德2为莆田
                 }
                 #endregion
 

@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
     <meta name="format-detection" content="telephone=no">
-    <title>QaDefault</title>
+    <title>@ViewBag.ptitle</title>
     <link href="~/Content/Activity/Zxdt/kankan/content/base.css" rel="stylesheet" />
     <link href="~/Content/Activity/Zxdt/kankan/content/style.css" rel="stylesheet" />
     <script src="~/Content/Activity/Zxdt/kankan/content/jquery.min.js"></script>
@@ -33,17 +33,29 @@
 		
 		.main{ position:relative;width:100%;}
 		.main:before,.main:after{content:""; display:block; height:1px; width:100%;}
-		.page{margin:60% .3rem 0; border-radius:.2rem; padding:.5rem 0; background:rgba(255,255,255,.8); -webkit-box-shadow:0 0 .25rem rgba(0, 0, 0, .3); -moz-box-shadow:0 0 .25rem rgba(0, 0, 0, .3); box-shadow:0 0 .25rem rgba(0, 0, 0, .3);}
+		.page{margin:20% .3rem 0; border-radius:.2rem; padding:.5rem 0; background:rgba(255,255,255,.8); -webkit-box-shadow:0 0 .25rem rgba(0, 0, 0, .3); -moz-box-shadow:0 0 .25rem rgba(0, 0, 0, .3); box-shadow:0 0 .25rem rgba(0, 0, 0, .3);}
 		.page .title{padding:0 .4rem;}
     </style>
     <script type="text/javascript">
         $(function () {
             //开始答题
             $(".start").click(function () {
-                checkMobile();
-				$(".one").css("display","none");
-				$(".main").css("display","block");
-			});
+                if (checkMobile()) {
+                    $(".one").css("display", "none");
+                    $(".main").css("display", "block");
+                    $(".start").unbind("click");
+                }
+            });
+            //改变背景
+            chg_bg = function () {
+                var bgurl = '@ViewBag.bgurl';
+                if (bgurl != "") {
+                    console.log($(".one.main"))
+                    $(".one")[0].style.backgroundImage = "url(" + bgurl + ")";
+                    $(".main")[0].style.backgroundImage = "url(" + bgurl + ")";
+                }
+            }
+            chg_bg();   //初始调用，改变背景图
 			var wh = $(window).height();
 			var mh = $(".main").height();
 			mainheight(wh, mh);
@@ -155,7 +167,7 @@
                 <br>
                 <strong style="color:#ff0000">
                     感谢您的积极参与，请点击右上角转发朋友圈
-                    您的100M流量正在来的路上
+                    您的流量正在来的路上
                 </strong>
             </ul>
             <!-- <div class="btn-orange" ><a href="javascript:void(0)" onClick="myrefresh();">确定</a></div> -->
@@ -249,8 +261,6 @@
                             <th>正确答案</th>
                             <th>我的答案</th>
                         </tr>
-                        <tr><td>第1题</td><td>C </td><td>C </td></tr>
-                        <tr><td>第2题</td><td>D </td><td>D </td></tr>
                     </tbody>
                 </table>
             </ul>
@@ -283,9 +293,9 @@
     <!--不能开始的提示-->
     <input type="hidden" id="activityUnStartHint" name="activityUnStartHint" value="">
     <!--0为活动结束-->
-    <input type="hidden" id="activityEnd" name="activityEnd" value="">
+    <input type="hidden" id="activityEnd" name="activityEnd" value="@ViewBag.activityEnd">
     <!--活动结束的提示-->
-    <input type="hidden" id="activityEndHint" name="activityEndHint" value="">
+    <input type="hidden" id="activityEndHint" name="activityEndHint" value="@ViewBag.activityEndTips">
     <input type="hidden" id="toDayIsUnStart" name="toDayIsUnStart" value="">
     <input type="hidden" id="todayUnStartHint" name="todayUnStartHint" value="">
     <input type="hidden" id="toDayIsEnd" name="toDayIsEnd" value="">
@@ -318,7 +328,7 @@
     <script src="~/Content/Activity/Zxdt/kankan/content/index.js"></script>
     <script src="~/Content/Activity/Zxdt/kankan/content/touch.js"></script>
     <script src="~/Content/Activity/Zxdt/kankan/content/sha1.js"></script>
-    <script src="~/Content/Activity/Zxdt/kankan/content/wxshare.js"></script>
+    <script src="~/Content/Activity/Zxdt/kankan/content/wxshare.js?v=4"></script>
     <script src="~/Content/Activity/Zxdt/kankan/content/jweixin-1.0.0.js"></script>
     <script>
 

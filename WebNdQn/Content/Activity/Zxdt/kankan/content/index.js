@@ -48,41 +48,43 @@ function checkMobile() {
 	if (openId == null || openId == "" || openId == "undefined") {
 	    $("#message").text("微信授权失败,请重新点击链接授权后进入");
 	    showpop('common-dialog', 'dialog-bg');
+	    return false;
 	}
 	if(activityUnStart=="0"){
 		$("#message").text(activityUnStartHint);
 		showpop('common-dialog','dialog-bg');
-		return ;
+		return false;
 	}
 	if(activityEnd=="0"){
 		$("#message").text(activityEndHint);
 		showpop('common-dialog','dialog-bg');
-		return ;
+		return false;
 	}
 	if(toDayIsUnStart=="0"){
 		$("#message").text(todayUnStartHint);
 		showpop('common-dialog','dialog-bg');
-		return ;
+		return false;
 	}
 	if(toDayIsEnd=="0"){
 		$("#message").text("今天活动已经结束了!请明天再来!");
 		showpop('common-dialog','dialog-bg');
-		return ;
+		return false;
 	}
 	if (personEnd == "0") {
 	    $("#message").text(personNoChance);
 	    showpop('common-dialog', 'dialog-bg');
-	    return;
+	    return false;
+	}
+	if (personDayEnd == "0") {
+	    $("#message").text("您今天的参与次数已经用完了!感谢您的参与!");
+	    showpop('common-dialog', 'dialog-bg');
+	    return false;
 	}
 	if($("#phone").val()==""){
-		showpop('tel-dialog','dialog-bg');
-	}else{
-		if(personDayEnd=="0"){
-			$("#message").text("您今天的参与次数已经用完了!感谢您的参与!");
-			showpop('common-dialog','dialog-bg');
-			return ;
-		}
+	    showpop('tel-dialog', 'dialog-bg');
+	    return false;
 	}
+	return true;
 }
 //区域验证
 areaphone = function (phone,area) {
@@ -158,6 +160,7 @@ function receive(){
 	var phone=$("#phone").val();
 	var score = $("#score").val();
 	var tmfs = $("#tmfs").val();
+	var area = $("#area").val();
     console.log(tmfs)
 	var isRecordResult=$("#isRecordResult").val();
 	var detailContent="";
@@ -175,14 +178,17 @@ function receive(){
 	    score: Number(score) * tmfs
 	}
 	console.log(data);
-	//$.ajax({
-	//    type: 'POST',
-	//    url: '/Zxdt/SubmitZxdt',
-	//    data: data,
-	//    complete: function (ret) {
-	//        console.log(ret)
-	//    }
-	//});
+    //15859326943
+	$.ajax({
+	    type: 'POST',
+	    url: '/Zxdt/SubmitZxdt',
+	    data: data,
+	    complete: function (ret) {
+	        $("#qbdd-dialog").attr("onclick", "closepop('qbdd-dialog','dialog-bg');");
+	        $(".one").css("display", "block"); $(".main").css("display", "none");
+	        showpop('jzjl-dialog', 'dialog-bg');
+	    }
+	});
  	//$.ajax({
 	//	url:"receive.jhtml",
 	//	scriptCharset: 'utf-8',
