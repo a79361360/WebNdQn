@@ -34,23 +34,38 @@
 		.main{ position:relative;width:100%;}
 		.main:before,.main:after{content:""; display:block; height:1px; width:100%;}
 		.page{margin:20% .3rem 0; border-radius:.2rem; padding:.5rem 0; background:rgba(255,255,255,.8); -webkit-box-shadow:0 0 .25rem rgba(0, 0, 0, .3); -moz-box-shadow:0 0 .25rem rgba(0, 0, 0, .3); box-shadow:0 0 .25rem rgba(0, 0, 0, .3);}
-		.page .title{padding:0 .4rem;}
+
+        .page .title{padding:0 .4rem; position:relative;}
+		.page .title *{box-sizing:border-box;}
+		.page .title i{position:absolute; left:.2rem; right:.2rem; top:-.3rem; height:.3rem; display:block; background:url(../../Content/Activity/Zxdt/kankan/content/tip1.png) right top no-repeat; background-size:auto 100%;}
+		.page .title i span{display:none; background:#FFEEBC; position:absolute; left:0; right:1rem; top:-.2rem; width:auto; padding:.2rem; font-size:.3rem; line-height:160%; word-wrap:break-word; word-break:normal; -webkit-box-shadow:0 0 .25rem rgba(0, 0, 0, .3); -moz-box-shadow:0 0 .25rem rgba(0, 0, 0, .3); box-shadow:0 0 .25rem rgba(0, 0, 0, .3); border-radius:.2rem; z-index:222;}
+		.page .title i span:before{content:""; position:absolute; right:-.25rem; top:.2rem; width:.5rem; height:.5rem; display:block; width:0; height:0; border-top:.25rem solid transparent; border-left:.25rem solid #FFEEBC; border-bottom:.25rem solid transparent;}
     </style>
     <script type="text/javascript">
         $(function () {
             //开始答题
             $(".start").click(function () {
                 if (checkMobile()) {
-                    $(".one").css("display", "none");
-                    $(".main").css("display", "block");
-                    $(".start").unbind("click");
+                    //$(".one").css("display", "none");
+                    //$(".main").css("display", "block");
+                    //$(".start").unbind("click");
+                }
+                $(".one").css("display", "none");
+                $(".main").css("display", "block");
+                $(".start").unbind("click");
+            });
+            $(".page .title i").click(function () {
+                var span = $(this).children("span")
+                if (span.css("display") == "none") {
+                    span.css("display", "block")
+                } else {
+                    span.css("display", "none")
                 }
             });
             //改变背景
             chg_bg = function () {
                 var bgurl = '@ViewBag.bgurl';
                 if (bgurl != "") {
-                    console.log($(".one.main"))
                     $(".one")[0].style.backgroundImage = "url(" + bgurl + ")";
                     $(".main")[0].style.backgroundImage = "url(" + bgurl + ")";
                 }
@@ -316,16 +331,16 @@
     <input type="hidden" id="showQestionNum" name="showQestionNum" value="@ViewBag.Tmts">
     <!--是否显示正确的tip-->
     <input type="hidden" id="isShowRightTip" name="isShowRightTip" value="0">
-    <!--为0时展示当前题目-->
-    <input type="hidden" id="isRandom" name="isRandom" value="0">
-    <input type="hidden" id="isRecordResult" name="isRecordResult" value="1">
+    <!--0为随机,空为不随机-->
+    <input type="hidden" id="isRandom" name="isRandom" value="">
+    <input type="hidden" id="isRecordResult" name="isRecordResult" value="0">
     <!--2答错也继续,1只有答对才继续 -->
     <input type="hidden" id="isRightGo" name="isRightGo" value="@ViewBag.sright">
     <!--背景音乐s-->
     <script type="text/javascript" src="~/Content/Activity/Zxdt/kankan/content/music.js"></script>
     <!--背景音乐e-->
     <script src="~/Content/Activity/Zxdt/kankan/content/randomQ.js?s=20171115"></script>
-    <script src="~/Content/Activity/Zxdt/kankan/content/index.js"></script>
+    <script src="~/Content/Activity/Zxdt/kankan/content/index.js?v=1"></script>
     <script src="~/Content/Activity/Zxdt/kankan/content/touch.js"></script>
     <script src="~/Content/Activity/Zxdt/kankan/content/sha1.js"></script>
     <script src="~/Content/Activity/Zxdt/kankan/content/wxshare.js?v=4"></script>

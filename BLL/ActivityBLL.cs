@@ -324,6 +324,29 @@ namespace BLL
             }
             return sresult;
         }
+        public int RemoveActivityFlowLog(IList<IdListDto> ids) {
+            int sresult = 0;    //成功的数量
+            if (ids.Count == 0)
+                throw new ArgumentNullException();
+            else
+            {
+                try
+                {
+                    foreach (var item in ids)
+                    {
+                        int gid = item.id;        //ID
+                        int result = adal.ActivityFlowRemoveById(gid);
+                        sresult = sresult + result;
+                    }
+                }
+                catch
+                {
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityBLL_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "方法 ActivityFlowRemoveById 异常：" + " 成功执行=" + sresult);
+                    return -1000;
+                }
+            }
+            return sresult;
+        }
         /// <summary>
         /// 取得大转盘机率合值
         /// </summary>

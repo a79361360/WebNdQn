@@ -122,8 +122,12 @@ namespace WebNdQn.Controllers
                     string str = ""; int index = 0;     //题目字符串，索引
                     foreach (var item in list)
                     {
+                        string tipstr = "";
+                        if (!string.IsNullOrEmpty(item.tips)) {
+                            tipstr = "<i><span>" + item.tips + "</span></i>";
+                        }
                         str += "<div class=\"page page_" + index + "\">";
-                        str += "<div class=\"title\"><em>" + index + "</em>、" + item.topic + "</div><ul>";
+                        str += "<div class=\"title\">"+ tipstr + "<em>" + index + "</em>、" + item.topic + "</div><ul>";
                         string[] sstr = item.answer.Split('|'); int temindex = 1;
                         foreach (var tem in sstr)
                         {
@@ -169,8 +173,11 @@ namespace WebNdQn.Controllers
         private string Rzm2(string keystr) {
             string result = "";
             string[] intstr = keystr.Split(',');
-            string zm = Rzm(Convert.ToInt32(intstr[0]));
-            result += zm;
+            foreach (var item in intstr)
+            {
+                string zm = Rzm(Convert.ToInt32(item));
+                result += zm;
+            }
             return result;
         }
         private string Rzm3(string keystr, string index)
@@ -541,7 +548,8 @@ namespace WebNdQn.Controllers
             int checkbox = Convert.ToInt32(Request.Form["checkbox"]);           //是否为多选
             string answer = Request.Form["answer"];                             //答案列表
             string keyanswer = Request.Form["keyanswer"];                       //答案值
-            int result = zbll.SetZxdtTopic(id, cooperid, checkbox, topic, answer, keyanswer);
+            string tips = Request.Form["tips"];                                 //提示语
+            int result = zbll.SetZxdtTopic(id, cooperid, checkbox, topic, answer, keyanswer, tips);
             if (result > 0)
                 return JsonFormat(new ExtJson { success = true, code = 1000, msg = "操作成功." });
             else

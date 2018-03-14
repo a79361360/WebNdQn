@@ -155,7 +155,7 @@
             if (text != "监控中") return;      //如果没处于监控中,后面将不执行
             //如果索引已经超过列表最大值,就清空定时器Return
             if (lindex > (len - 1)) {
-                console.log("execute_one > clearInterval");
+                //console.log("execute_one > clearInterval");
                 //另一种思路,不走250秒一次的.就是遍历列表,10秒调用一次,如果遇到成功发送充值短信的我们就等60秒,否则就是10秒走一个index索引
                 lindex = 0; len = list.length;
                 return;
@@ -165,7 +165,7 @@
             var ctype = $(list[lindex]).text().trim();      //取得当前ctype的值
             var issue = 1;                                  //issue的值
             if (ctype.trim() == "") return;                 //如果出现ctype为空的情况,就直接不做,理论上是不可能出现的
-            console.log("lindex=" + lindex + "(len - 1)=" + (len - 1) + "tsix=" + tsix);
+            //console.log("lindex=" + lindex + "(len - 1)=" + (len - 1) + "tsix=" + tsix);
             if (isl && tsix == 0) {
                 isl = false;
                 One(ctype, issue);
@@ -178,7 +178,7 @@
         }
         //充值
         One = function (ctype, issue) {
-            console.log("One > ");
+            //console.log("One > ");
             $.getJSON("/Nsoup/One", { ctype: ctype, issue: issue }, function (ret) {
                 if (ret.code == -1001) {
                     Two(ctype, issue);  //Cookie失效,
@@ -195,7 +195,7 @@
         }
         //发送登入短信生成Cookie
         Two = function (ctype, issue) {
-            console.log("Two > ");
+            //console.log("Two > ");
             $.getJSON("/Nsoup/SendLoginMsg", { ctype: ctype, issue: issue }, function (ret) {
                 if (ret.code == 1000) {
                     Three(ctype, issue);      //短信已经发送成功了,但是需要校验一下是否Cookie已经生成到数据库
@@ -209,10 +209,10 @@
         var three_num = 0;  //
         //连续5秒去判断一次Cookie是否有效
         Three = function (ctype, issue) {
-            console.log("Three > three_num=" + three_num);
+            //console.log("Three > three_num=" + three_num);
             //开始初始化判断
             if (parseFloat(three_num) == 0) {
-                console.log("Three > 生成Three定时器");
+                //console.log("Three > 生成Three定时器");
                 three_timer = window.setInterval(function () { Three(ctype, issue) }, 5000);
             }
             if (three_num > 5) { three_num = 0; clearInterval(three_timer); tips("Cookie连续验证6次依然无效,排查日志", 2); execute_case(); return; }
@@ -223,7 +223,7 @@
                     One(ctype, issue);
                 }
                 else {
-                    console.log("Three > 记数增加" + three_num);
+                    //console.log("Three > 记数增加" + three_num);
                     three_num++;
                 }
             })

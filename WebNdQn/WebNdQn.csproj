@@ -259,6 +259,8 @@
     <Content Include="Content\Activity\Zxdt\kankan\content\reset.font.js" />
     <Content Include="Content\Activity\Zxdt\kankan\content\sha1.js" />
     <Content Include="Content\Activity\Zxdt\kankan\content\style.css" />
+    <Content Include="Content\Activity\Zxdt\kankan\content\tip.png" />
+    <Content Include="Content\Activity\Zxdt\kankan\content\tip1.png" />
     <Content Include="Content\Activity\Zxdt\kankan\content\touch.js" />
     <Content Include="Content\Activity\Zxdt\kankan\content\visit.js" />
     <Content Include="Content\Activity\Zxdt\kankan\content\wxshare.js" />

@@ -125,10 +125,10 @@ namespace BLL
         /// <returns></returns>
         public string FilterContentTC(string mobile, string content)
         {
-            string pstr = "本次登录流量800平台的动态码为：";
+            string pstr = "本次登录的动态码为：";
             if (content.IndexOf(pstr) != -1)
             {
-                string yzm = content.Substring(content.LastIndexOf(pstr) + 17, 6);
+                string yzm = content.Substring(content.LastIndexOf(pstr) + 10, 6);
                 return "1|" + yzm;
             }
             else if (content.IndexOf("本次动态码为：") != -1) {

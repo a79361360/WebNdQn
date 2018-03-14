@@ -48,9 +48,9 @@
         searchlist = function (url, data) {
             $.getJSON(url, data, function (ret) {
                 if (ret.code == 1000) {
-                    var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:45px;\">序号</th><th style=\"width:65px;\">活动类型</th><th style=\"width:119px;\">OpenID</th><th style=\"width:118px;\">手机号码</th><th style=\"width:65px;\">答题分数</th><th style=\"width:65px;\">对应流量</th><th style=\"width:65px;\">充值状态</th><th style=\"width:118px;\">添加时间</th></tr></thead>";
+                    var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:65px;\">活动类型</th><th style=\"width:119px;\">OpenID</th><th style=\"width:118px;\">手机号码</th><th style=\"width:65px;\">答题分数</th><th style=\"width:65px;\">对应流量</th><th style=\"width:65px;\">充值状态</th><th style=\"width:118px;\">添加时间</th></tr></thead>";
                     $.each(ret.jsonresult, function (i, o) {
-                        str += "<tr><td>" + (parseInt(i) + 1) + "</td><td>" + TypeText(o.type) + "</td><td>" + o.openid + "</td><td>" + o.phone + "</td><td>" + o.score + "</td><td>" + o.number + "</td><td>" + StateText(o.state) + "</td><td>" + o.addtime + "</td></tr>";
+                        str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td>" + TypeText(o.type) + "</td><td>" + o.openid + "</td><td>" + o.phone + "</td><td>" + o.score + "</td><td>" + o.number + "</td><td>" + StateText(o.state) + "</td><td>" + o.addtime + "</td></tr>";
                     })
                     str += "</table>";
                     $("#ulist").html(str);
@@ -68,6 +68,40 @@
             if (v == 1) return "大转盘";
             else if (v == 2) return "在线答题";
             else return "其他";
+        }
+        //删除充值记录
+        RemoveById = function () {
+            var list = [];      //数组对象，将
+            var data;           //元素对象
+            var tr = $("#ulist tbody tr");
+            $.each(tr, function (i, e) {
+                var eachobj = $(e).children("td").eq(0).find(":checkbox");
+                if (eachobj.prop("checked")) {
+                    data = new Object();    //元素对象实例
+                    data.id = eachobj.val();
+                    list.push(data);
+                }
+            })
+            if (list.length < 1) {
+                tips("未选中任何行", 2); return;
+            }
+            if (confirm("确定要清空数据吗?")) {
+                $.post("/Activity/RemoveActivityFlow", { data: JSON.stringify(list) }, function (ret) {
+                    if (ret.success) {
+                        tips(ret.msg, 2);
+                        $("#search").click();
+                    } else
+                        tips(ret.msg, 2);
+                })
+            }
+        }
+        //tips
+        tips = function (content, timeout) {
+            var BootDialog = "<div class=\"modal fade\" id=\"myModal\" tabindex=\"-1\" role=\"dialog\" aria-labelledby=\"myModalLabel\" aria-hidden=\"true\">";
+            BootDialog += " <div class=\"modal-dialog\"><div class=\"modal-content\"><div class=\"modal-body\">" + content + "</div></div></div></div>";
+            var obj = $(BootDialog); obj.modal('show');
+            setTimeout(function () { obj.modal('hide'); }, timeout * 1000);
+            //setTimeout(function () { obj.remove(); }, timeout * 1000);
         }
     </script>
 </head>
@@ -114,6 +148,9 @@
                 </form>
             </div>
             <div class="panel-body">
+                <div class="btn-toolbar" role="toolbar">
+                    <div class="btn-group"><button type="button" class="btn btn-default" onclick="RemoveById()">删除</button></div>
+                </div>
                 <div id="ulist"></div>
                 <div id="page" class="m-pagination"></div>
             </div>

@@ -69,11 +69,11 @@ namespace BLL
         /// <param name="answer"></param>
         /// <param name="keyanswer"></param>
         /// <returns></returns>
-        public int SetZxdtTopic(int id, int cooperid, int checkbox, string topic, string answer, string keyanswer)
+        public int SetZxdtTopic(int id, int cooperid, int checkbox, string topic, string answer, string keyanswer,string tips)
         {
             int result = 0;
             T_TopicBank dto = new T_TopicBank();
-            dto.id = id; dto.cooperid = cooperid; dto.checkbox = checkbox; dto.topic = topic; dto.answer = answer; dto.keyanswer = keyanswer;
+            dto.id = id; dto.cooperid = cooperid; dto.checkbox = checkbox; dto.topic = topic; dto.answer = answer; dto.keyanswer = keyanswer;dto.tips = tips;
             result = zdal.SetZxdtTopic(dto);
             return result;
         }

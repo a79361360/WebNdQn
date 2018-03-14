@@ -341,5 +341,16 @@ namespace WebNdQn.Controllers
             var list = adbll.GetActivityShareList_Search(Convert.ToInt32(cooperid), Convert.ToInt32(atype), Convert.ToInt32(sharetype));
             return JsonFormat(new ExtJson { success = true, code = 1000, msg = "查询成功", jsonresult = list });
         }
+        //删除充值记录
+        public ActionResult RemoveActivityFlow()
+        {
+            string data = Request.Form["data"];  //用户的IDS数组
+            IList<IdListDto> list = SerializeJson<IdListDto>.JSONStringToList(data);
+            int result = Abll.RemoveActivityFlowLog(list);
+            if (result == list.Count)
+                return JsonFormat(new ExtJson { success = true, msg = "删除成功！共删除" + result });
+            else
+                return JsonFormat(new ExtJson { success = false, msg = "删除失败！共" + list.Count + " 成功" + result });
+        }
     }
 }

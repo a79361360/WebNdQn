@@ -23,7 +23,7 @@ $(document).ready(function(){
 	//var fx_link = shareUrl;
 	//var fx_imgUrl = shareImgPath;
     //getSdk(appId,fx_title,fx_desc,fx_link,fx_imgUrl,"0","",openId,remoteIp);
-	GetWxSdk();
+    GetWxSdk();
 	//if(openId == null || openId == "" || openId == "undefined" ){
 	//	$("#message").text("不要刷新,请重新授权后进入");
 	//	showpop('common-dialog','dialog-bg');

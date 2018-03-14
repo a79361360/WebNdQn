@@ -1,7 +1,7 @@
 (function(){
 	$(".title em").html("1");
 	var num = 0;
-	var random=$("#isRandom").val();
+	var random = $("#isRandom").val();
 	function h(){
 		for(var g=parseInt(Math.random()*f),c=0;c<a.length;c++)
 			if(a[c]==g)
@@ -20,11 +20,8 @@
 	var b=$(".page");$(".dialog");
 	var f=b.length,a=[],d=void 0,e=0;
 	for(a.push(parseInt(Math.random()*f));showQestionNum>a.length;)
-		h();
-		if(random=="0"){
-			b.addClass("none").eq(a[0]).removeClass("none");
-		}
-		//
+	    h();
+	if (random == "0") { b.addClass("none").eq(a[0]).removeClass("none"); } else { b.addClass("none").eq(0).removeClass("none"); }
 		b.find("li").click(function(){
 		if("2"==isRightGo){
 		if(num == 0){	

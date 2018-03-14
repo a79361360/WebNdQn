@@ -262,6 +262,22 @@ namespace DAL
             int result = dal.IntExtSql(sql, parameter);
             return result;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int ActivityFlowRemoveById(int id)
+        {
+            string sql = "DELETE FROM [T_ActivityDrawLog] WHERE id=@id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@id",SqlDbType.Int)
+            };
+            parameter[0].Value = id;
+            int result = dal.IntExtSql(sql, parameter);
+            return result;
+        }
         //大转盘奖励列表删除
         public int ActivityListRemoveById(int configid)
         {
