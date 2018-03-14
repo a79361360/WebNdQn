@@ -245,7 +245,7 @@ namespace BLL
         /// <returns></returns>
         public IList<T_ActivityDrawLog> ZxdtDrawList_Search(int cooperid, string phone, int state)
         {
-            string filter = " WHERE a.type=2 AND (a.configlistid>c.lower AND a.configlistid<=c.upper)";
+            string filter = " WHERE a.type=2 AND (a.configlistid>=c.lower AND a.configlistid<=c.upper)";
             if (cooperid != -1)
                 filter += " and a.cooperid=@cooperid";
             if (!string.IsNullOrEmpty(phone))

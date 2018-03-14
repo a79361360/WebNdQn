@@ -352,5 +352,20 @@ namespace WebNdQn.Controllers
             else
                 return JsonFormat(new ExtJson { success = false, msg = "删除失败！共" + list.Count + " 成功" + result });
         }
+        /// <summary>
+        /// 更新直充记录的状态
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UpdateActivityFlowState()
+        {
+            string data = Request.Form["data"];  //用户的IDS数组
+            string state = Request.Form["state"];  //需要修改的状态
+            IList<IdListDto> list = SerializeJson<IdListDto>.JSONStringToList(data);
+            int result = Abll.UpdateActivityFlowState(list, Convert.ToInt32(state));
+            if (result == list.Count)
+                return JsonFormat(new ExtJson { success = true, msg = "更新成功！共更新" + result });
+            else
+                return JsonFormat(new ExtJson { success = false, msg = "更新失败！共" + list.Count + " 成功" + result });
+        }
     }
 }

@@ -347,6 +347,28 @@ namespace BLL
             }
             return sresult;
         }
+        public int UpdateActivityFlowState(IList<IdListDto> ids, int state) {
+            int sresult = 0;    //成功的数量
+            if (ids.Count == 0)
+                throw new ArgumentNullException();
+            else
+            {
+                try
+                {
+                    foreach (var item in ids)
+                    {
+                        int gid = item.id;        //ID
+                        int result = adal.UpdateActivityFlowState(gid, state);
+                        sresult = sresult + result;
+                    }
+                }
+                catch
+                {
+                    return -1000;
+                }
+            }
+            return sresult;
+        }
         /// <summary>
         /// 取得大转盘机率合值
         /// </summary>

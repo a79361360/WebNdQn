@@ -45,28 +45,28 @@ namespace WebNdQn.Controllers
             }
             else {
                 string gz = "0"; string openid = "";
-                //if (Request["p"] != null)
-                //{
-                //    try
-                //    {
-                //        string p = Request["p"].ToString(); //1|subscribe|openid  微信发送|是否关注|openid
-                //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + Request["p"].ToString());
-                //        string temp = DEncrypt.DESDecrypt1(p);    //取得p参数,并且进行解密
-                //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + temp);
-                //        string[] plist = temp.Split('|');   //微信发送|是否
-                //        if (plist[0] != "1") return Content("配置参数异常");
-                //        gz = plist[1]; openid = plist[2];   //是否关注,微信用户id
-                //    }
-                //    catch
-                //    {
-                //        return Content("参数错误");
-                //    }
-                //}
-                //if (string.IsNullOrEmpty(openid))
-                //    return Content("授权失败");
+                if (Request["p"] != null)
+                {
+                    try
+                    {
+                        string p = Request["p"].ToString(); //1|subscribe|openid  微信发送|是否关注|openid
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + Request["p"].ToString());
+                        string temp = DEncrypt.DESDecrypt1(p);    //取得p参数,并且进行解密
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + temp);
+                        string[] plist = temp.Split('|');   //微信发送|是否
+                        if (plist[0] != "1") return Content("配置参数异常");
+                        gz = plist[1]; openid = plist[2];   //是否关注,微信用户id
+                    }
+                    catch
+                    {
+                        return Content("参数错误");
+                    }
+                }
+                if (string.IsNullOrEmpty(openid))
+                    return Content("授权失败");
                 #region 获取微信用户的openid
-                //ViewBag.openid = openid;
-                ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkL";
+                ViewBag.openid = openid;
+                //ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkL";
                 #endregion
                 //cooperid
                 ViewBag.cooperid = dto.id;
@@ -80,8 +80,8 @@ namespace WebNdQn.Controllers
                     ViewBag.appid = dto.wx_appid;
                     long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
                     string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
-                    //string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
-                    string signatrue = "1111";                             //signatrue
+                    string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
+                    //string signatrue = "1111";                             //signatrue
                     ViewBag.timestamp = timestamp;
                     ViewBag.noncestr = noncestr;
                     ViewBag.signatrue = signatrue;

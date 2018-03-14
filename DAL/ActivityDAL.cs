@@ -290,6 +290,24 @@ namespace DAL
             int result = dal.IntExtSql(sql, parameter);
             return result;
         }
+        /// <summary>
+        /// 更新Flow的状态
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public int UpdateActivityFlowState(int id, int state)
+        {
+            string sql = "UPDATE T_ActivityDrawLog SET state=@state WHERE id=@id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@id",SqlDbType.Int),
+                new SqlParameter("@state",SqlDbType.Int),
+            };
+            parameter[0].Value = id;
+            parameter[1].Value = state;
+            return dal.IntExtSql(sql, parameter);
+        }
         //在线答题流量配置删除
         public int ZxdtScoreRemoveById(int configid)
         {
