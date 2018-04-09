@@ -110,9 +110,10 @@ namespace BLL
         /// </summary>
         /// <param name="cooperid"></param>
         /// <param name="tmts"></param>
+        /// <param name="order"></param>
         /// <returns></returns>
-        public IList<T_TopicBank> GetDttsTopic(int cooperid,int tmts) {
-            IList<T_TopicBank> list = DataTableToList.ModelConvertHelper<T_TopicBank>.ConvertToModel(zdal.GetDttsTopic(cooperid, tmts));
+        public IList<T_TopicBank> GetDttsTopic(int cooperid,int tmts,int order = 1) {
+            IList<T_TopicBank> list = DataTableToList.ModelConvertHelper<T_TopicBank>.ConvertToModel(zdal.GetDttsTopic(cooperid, tmts, order));
             return list;
         }
         #endregion
@@ -144,7 +145,7 @@ namespace BLL
         /// <param name="wximgurl"></param>
         /// <param name="wxlinkurl"></param>
         /// <returns></returns>
-        public int SetZxdtConfig(int configid, int cooperid, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl,int tmfs, int tmts, int sright, int flowamount, IList<T_ZxdtScore> list) {
+        public int SetZxdtConfig(int configid, int cooperid, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl,int tmfs, int tmts, int sright, int flowamount, IList<T_ZxdtScore> list,int random) {
             int result = 0; int resultnum = 0;
             if (string.IsNullOrEmpty(bgurl)) bgurl = "";
             //新增
@@ -152,11 +153,11 @@ namespace BLL
             {
                 int result_1 = adal.IsExistActivity(cooperid, 2);
                 if (result_1 > 0) return -2;    //已经存在当前配置,不能再添加了
-                configid = adal.AddConfig(cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts, sright, flowamount); //主表ID
+                configid = adal.AddConfig(cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts, sright, flowamount, random); //主表ID
                 result = configid;
             }
             else
-                result = adal.UpdateConfig(configid, cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts, sright, flowamount);
+                result = adal.UpdateConfig(configid, cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts, sright, flowamount, random);
             if (result < 1) return result;    //如果异常就直接返回
             foreach (var item in list)
             {

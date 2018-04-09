@@ -143,6 +143,7 @@
 
 
             var sright = $("input[name='sright']:checked").val();
+            var random = $("input[name='random']:checked").val();
             var list = JSON.stringify(getlist());       //会员列表
 
             var data = {
@@ -159,6 +160,7 @@
                 tmfs: tmfs,
                 tmts: tmts,
                 sright: sright,
+                random: random,
                 flowamount: flowamount,
                 list: list
             }
@@ -211,7 +213,9 @@
         //初始化调用
         init = function () {
             var right = '@Model.sright';
-            $("input:radio[value='" + right + "']").attr('checked', 'true');
+            var random = '@Model.random';
+            $("input:radio[name=sright][value='" + right + "']").attr('checked', 'true');
+            $("input:radio[name=random][value='" + random + "']").attr('checked', 'true');
         }
     </script>
 </head>
@@ -306,10 +310,21 @@
                 <label for="firstname" class="col-sm-2 control-label">显化答案</label>
                 <div class="col-sm-10">
                     <label class="radio-inline">
-                        <input type="radio" name="sright" id="optionsRadios3" value="1">是
+                        <input type="radio" name="sright" value="1">是
                     </label>
                     <label class="radio-inline">
-                        <input type="radio" name="sright" id="optionsRadios4" value="2" checked>否
+                        <input type="radio" name="sright" value="2" checked>否
+                    </label>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">题目显示</label>
+                <div class="col-sm-10">
+                    <label class="radio-inline">
+                        <input type="radio" name="random" value="1" checked>常规显示
+                    </label>
+                    <label class="radio-inline">
+                        <input type="radio" name="random" value="0">随机显示
                     </label>
                 </div>
             </div>

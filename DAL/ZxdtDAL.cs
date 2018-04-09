@@ -35,9 +35,14 @@ namespace DAL
         /// <summary>
         /// 随机取得设置条数的题目
         /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="tmts">题目条数</param>
+        /// <param name="order">默认常规排序,0为随机</param>
         /// <returns></returns>
-        public DataTable GetDttsTopic(int cooperid, int tmts) {
-            string sql = "SELECT TOP " + tmts + " [id],[cooperid],[topic],[answer],[keyanswer],[checkbox],[tips],[addtime] FROM T_TopicBank WHERE cooperid = @cooperid ORDER BY id";
+        public DataTable GetDttsTopic(int cooperid, int tmts, int order = 1){
+            string orderby = " ORDER BY id";
+            if (order == 0) orderby = " ORDER BY NEWID()";
+            string sql = "SELECT TOP " + tmts + " [id],[cooperid],[topic],[answer],[keyanswer],[checkbox],[tips],[addtime] FROM T_TopicBank WHERE cooperid = @cooperid"+ orderby;
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@cooperid",SqlDbType.Int),

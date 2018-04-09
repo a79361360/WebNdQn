@@ -95,6 +95,7 @@ namespace WebNdQn.Controllers
                     //答题的分享部分
                     ViewBag.tmfs = dto_act.dt_fs;       //题目分数
                     ViewBag.sright = dto_act.sright;    //1显化答案(答对才继续)2不显化答案(答对错,都只能下一题)
+                    ViewBag.random = dto_act.random;    //0随机1常规
                     ViewBag.WxTitle = dto_act.wx_title;
                     ViewBag.ShareImgPath = WebHelp.GetCurHttpHost() + dto_act.wx_imgurl;
                     ViewBag.ShareContent = dto_act.wx_descride;
@@ -117,7 +118,7 @@ namespace WebNdQn.Controllers
                     ViewBag.bgurl = bgurl;                      //页面的背景
 
                     #region 取得题目列表b
-                    var list = zbll.GetDttsTopic(dto.id, dto_act.dt_tmts);
+                    var list = zbll.GetDttsTopic(dto.id, dto_act.dt_tmts, dto_act.random);
 
                     string str = ""; int index = 0;     //题目字符串，索引
                     foreach (var item in list)
@@ -604,11 +605,12 @@ namespace WebNdQn.Controllers
             string tmfs = Request.Form["tmfs"];                     //每题的分数
             string tmts = Request.Form["tmts"];                     //随机抽取题库的条数
             string sright = Request.Form["sright"];                 //是否显化答案
+            string random = Request.Form["random"];                 //0随机1常规排序显示
             string flowamount = Request.Form["flowamount"];         //
             string list = Request.Form["list"];                     //流量配置列表
 
             IList<T_ZxdtScore> Configlist = FrameWork.Common.SerializeJson<T_ZxdtScore>.JSONStringToList(list);    //流量配置列表
-            int result = zbll.SetZxdtConfig(Convert.ToInt32(configid), Convert.ToInt32(cooperid), title, Convert.ToInt32(share), explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, Convert.ToInt32(tmfs), Convert.ToInt32(tmts), Convert.ToInt32(sright), Convert.ToInt32(flowamount), Configlist);
+            int result = zbll.SetZxdtConfig(Convert.ToInt32(configid), Convert.ToInt32(cooperid), title, Convert.ToInt32(share), explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, Convert.ToInt32(tmfs), Convert.ToInt32(tmts), Convert.ToInt32(sright), Convert.ToInt32(flowamount), Configlist,Convert.ToInt32(random));
             if (result > 0)
                 return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功." });
             else if (result == -2) {
