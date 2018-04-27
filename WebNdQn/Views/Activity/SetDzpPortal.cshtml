@@ -80,6 +80,7 @@
         //点击选中txt里面的内容
         txtselect = function (obj) {
             $(obj).select();
+            jszjgl();
         }
         @*$(function () {
             $("#qdxgtx").click(function () {
@@ -176,7 +177,8 @@
                     str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
                     str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\" value=\"1\"></div>";
                     str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
-                    str += "<div class=\"col-sm-2\"><input onclick=\"txtselect(this)\" type=\"text\" class=\"form-control\"></div>";
+                    str += "<div class=\"col-sm-2\"><input onclick=\"txtselect(this)\" type=\"text\" class=\"form-control\" value=\"0\"></div>";
+                    str += "<div class=\"col-sm-2\"><input type=\"text\" disabled class=\"form-control\"></div>";
                     str += "</div>";
                 }
                 divobj.html(str);
@@ -208,8 +210,8 @@
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
                             str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
-                            str += "<div class=\"col-sm-2\"><input onclick=\"txtselect(this)\" type=\"text\" class=\"form-control\"></div>";
-                            str += "<div class=\"col-sm-2\"><input type=\"text\" class=\"form-control\"></div>";
+                            str += "<div class=\"col-sm-2\"><input onclick=\"txtselect(this)\" type=\"text\" class=\"form-control\" value=\"0\"></div>";
+                            str += "<div class=\"col-sm-2\"><input type=\"text\" disabled class=\"form-control\"></div>";
                             str += "</div>";
                         }
                         divobj.html(str);
@@ -256,7 +258,7 @@
                     _datalist.push(obj);  //添加
                 }
                 if (parseFloat(aprob).toFixed(2) != parseFloat(0.99)) {
-                    alert("机率配置不对"); return;
+                    alert("机率配置不对,累计相加等于0.99"); return;
                 }
             }
             //console.log(_datalist)

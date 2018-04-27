@@ -94,7 +94,8 @@ namespace WebNdQn.Controllers
                         return Content("在线答题配置为空");
                     //答题的分享部分
                     ViewBag.tmfs = dto_act.dt_fs;       //题目分数
-                    ViewBag.sright = dto_act.sright;    //1显化答案(答对才继续)2不显化答案(答对错,都只能下一题)
+                    ViewBag.sright = dto_act.sright;    //0显化答案(答对才继续)1不显化答案(答对错,都只能下一题)
+                    ViewBag.Go = dto_act.sright == 0 ? 1 : 2;   //是否继续下一题,1只有答对才继续,2答错(不能修改了)也继续
                     ViewBag.random = dto_act.random;    //0随机1常规
                     ViewBag.WxTitle = dto_act.wx_title;
                     ViewBag.ShareImgPath = WebHelp.GetCurHttpHost() + dto_act.wx_imgurl;

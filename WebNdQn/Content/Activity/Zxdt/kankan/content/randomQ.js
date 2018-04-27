@@ -198,7 +198,7 @@
 	
 				}else{
 					//如果开启直接进入下一题（无论对错）
-					if("2"==isRightGo){
+				    if ("2" == isRightGo) {
 							if(e==a.length-1){
 								//最后一题
 								$("#wrongNum").val(1+Number($("#wrongNum").val()));

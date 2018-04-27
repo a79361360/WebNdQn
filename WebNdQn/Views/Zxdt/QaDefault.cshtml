@@ -329,13 +329,13 @@
     <input type="hidden" id="shareImgPath" name="shareImgPath" value="@ViewBag.ShareImgPath">
     <!--展示条数,如果与questionListSize不一致,使用questionListSize修改showQestionNum-->
     <input type="hidden" id="showQestionNum" name="showQestionNum" value="@ViewBag.Tmts">
-    <!--是否显示正确的tip-->
-    <input type="hidden" id="isShowRightTip" name="isShowRightTip" value="0">
+    <!--0显示正确的tip 其他不显示-->
+    <input type="hidden" id="isShowRightTip" name="isShowRightTip" value="@ViewBag.sright">
     <!--0为随机,空为不随机-->
     <input type="hidden" id="isRandom" name="isRandom" value="@ViewBag.random">
     <input type="hidden" id="isRecordResult" name="isRecordResult" value="0">
-    <!--2答错也继续,1只有答对才继续 -->
-    <input type="hidden" id="isRightGo" name="isRightGo" value="@ViewBag.sright">
+    <!--2答错也继续,其他答对才继续 -->
+    <input type="hidden" id="isRightGo" name="isRightGo" value="@ViewBag.Go">
     <!--背景音乐s-->
     <script type="text/javascript" src="~/Content/Activity/Zxdt/kankan/content/music.js"></script>
     <!--背景音乐e-->
