@@ -253,6 +253,7 @@ namespace BLL
                 filter += " and a.phone=@phone";
             if (state != -1)
                 filter += " and a.state=@state";
+            filter += " order by addtime";
             IList<T_ActivityDrawLog> list = DataTableToList.ModelConvertHelper<T_ActivityDrawLog>.ConvertToModel(zdal.ZxdtDrawList_Search(filter, cooperid, phone, state));
             return list;
         }

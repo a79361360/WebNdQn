@@ -44,7 +44,7 @@ namespace WebNdQn.Controllers
         public ActionResult Dzp() {
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Request.Url.AbsoluteUri :" + Request.Url.AbsoluteUri);
             int ctype = 0, issue = 1;
-            if (Request["ctype"] == null|| Request["issue"] == null || Request["code"] == null || Request["state"] == null)
+            if (Request["ctype"] == null || Request["issue"] == null || Request["code"] == null || Request["state"] == null)
                 return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
             ctype = Convert.ToInt32(Request.QueryString["ctype"]);
             issue = Convert.ToInt32(Request.QueryString["issue"]);
@@ -81,7 +81,8 @@ namespace WebNdQn.Controllers
             }
             #endregion
             #region 奖品的列表,当前用户还可摇奖次数,是否有手机号码
-            if (dto != null) {
+            if (dto != null)
+            {
                 ViewBag.cooperid = dto.id;                  //配置的ID号
                 var list = Abll.GetProbNameData(dto.id);    //奖品列表保存成字典
                 string namelist = "";
@@ -99,7 +100,7 @@ namespace WebNdQn.Controllers
             #region 大转盘的背景图和标题,活动说明
             if (dto != null)
             {
-                string ptitle = "大转盘";string bgurl = "/Content/img/bg/body_bg1.jpg"; string explain = "暂时没有游戏说明";
+                string ptitle = "大转盘"; string bgurl = "/Content/img/bg/body_bg1.jpg"; string explain = "暂时没有游戏说明";
                 T_ActivityConfig dtoc = Abll.FindActivityConfigByCooperid(ViewBag.cooperid);
                 if (dtoc != null)
                 {
@@ -111,7 +112,7 @@ namespace WebNdQn.Controllers
                     ViewBag.imgurl = WebHelp.GetCurHttpHost() + dtoc.wx_imgurl;            //图片地址
                     ViewBag.linkurl = dtoc.wx_linkurl;          //链接地址
                 }
-                ViewBag.ptitle = ptitle;ViewBag.bgurl = bgurl;ViewBag.explain = explain;
+                ViewBag.ptitle = ptitle; ViewBag.bgurl = bgurl; ViewBag.explain = explain;
             }
             #endregion
             return View();
