@@ -109,8 +109,8 @@ namespace DAL
         {
             string sql = "INSERT INTO [T_ZxdtScore]([configid],[number],[lower],[upper])";
             sql += "VALUES(@configid, @number, @lower, @upper)";
-            if (id != 0)
-                sql = "UPDATE [T_ZxdtScore] SET [configid] = @configid,[number] = @number,[lower] = @lower,[upper] = @upper,[addtime] = GETDATE() WHERE id = @id";
+            //if (id != 0)
+            //    sql = "UPDATE [T_ZxdtScore] SET [configid] = @configid,[number] = @number,[lower] = @lower,[upper] = @upper,[addtime] = GETDATE() WHERE id = @id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@configid",SqlDbType.Int),
@@ -125,6 +125,21 @@ namespace DAL
             parameter[3].Value = upper;
             parameter[4].Value = id;
             int result = Convert.ToInt32(dal.IntExtSql(sql, parameter));
+            return result;
+        }
+        /// <summary>
+        /// 移除当前在线答题的配置列表
+        /// </summary>
+        /// <param name="configid"></param>
+        /// <returns></returns>
+        public int RemoveZxdtScore(int configid) {
+            string sql = "DELETE T_ZxdtScore WHERE configid=@configid";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@configid",SqlDbType.Int)
+            };
+            parameter[0].Value = configid;
+            int result = dal.IntExtSql(sql, parameter);
             return result;
         }
         /// <summary>

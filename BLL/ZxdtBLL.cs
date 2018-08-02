@@ -159,6 +159,7 @@ namespace BLL
             else
                 result = adal.UpdateConfig(configid, cooperid, 2, title, share, explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, tmfs, tmts, sright, flowamount, random);
             if (result < 1) return result;    //如果异常就直接返回
+            result = zdal.RemoveZxdtScore(configid);
             foreach (var item in list)
             {
                 result = zdal.SetZxdtScore(item.id, configid, item.number, item.lower, item.upper);

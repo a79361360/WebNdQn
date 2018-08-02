@@ -88,7 +88,7 @@ namespace DAL
         /// <returns></returns>
         public DataTable MsgCodeList(string filter, int type, string phone)
         {
-            string sql = "SELECT [id],[type],[phone],[xh],[code],[text],[state],[addtime] FROM T_MsgCode " + filter;
+            string sql = "SELECT TOP 100 [id],[type],[phone],[xh],[code],[text],[state],[addtime] FROM T_MsgCode " + filter;
             SqlParameter[] parameter = new[]
                         {
                 new SqlParameter("@type",SqlDbType.Int),
