@@ -161,8 +161,14 @@ namespace Fgly.Common.Expand
         /// <returns></returns>
         public static string MD5(this string s)
         {
-            string md5 = System.Web.Security.FormsAuthentication.HashPasswordForStoringInConfigFile(s, "MD5");
-            return md5.ToLower();
+            MD5CryptoServiceProvider md5Hasher = new MD5CryptoServiceProvider();
+            byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(s));
+            StringBuilder sBuilder = new StringBuilder();
+            for (int i = 0; i < data.Length; i++)
+            {
+                sBuilder.Append(data[i].ToString("x2"));
+            }
+            return sBuilder.ToString();
         }
 
         /// <summary>
@@ -329,6 +335,5 @@ namespace Fgly.Common.Expand
             string returnValue = Regex.Replace(s, "<(?!br|p)[^>]+>", "", RegexOptions.Compiled | RegexOptions.IgnoreCase);
             return returnValue.Replace("<br />", "\r\n").Replace("<br>", "\r\n");
         }
-
     }
 }

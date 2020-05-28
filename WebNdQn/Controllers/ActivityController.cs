@@ -44,7 +44,7 @@ namespace WebNdQn.Controllers
         public ActionResult Dzp() {
             Common.Expend.LogTxtExpend.WriteLogs("/Logs/ActivityController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Request.Url.AbsoluteUri :" + Request.Url.AbsoluteUri);
             int ctype = 0, issue = 1;
-            if (Request["ctype"] == null|| Request["issue"] == null || Request["code"] == null || Request["state"] == null)
+            if (Request["ctype"] == null || Request["issue"] == null || Request["code"] == null || Request["state"] == null)
                 return JsonFormat(new ExtJson { success = false, msg = "参数不能为空" });
             ctype = Convert.ToInt32(Request.QueryString["ctype"]);
             issue = Convert.ToInt32(Request.QueryString["issue"]);
@@ -81,7 +81,8 @@ namespace WebNdQn.Controllers
             }
             #endregion
             #region 奖品的列表,当前用户还可摇奖次数,是否有手机号码
-            if (dto != null) {
+            if (dto != null)
+            {
                 ViewBag.cooperid = dto.id;                  //配置的ID号
                 var list = Abll.GetProbNameData(dto.id);    //奖品列表保存成字典
                 string namelist = "";
@@ -99,7 +100,7 @@ namespace WebNdQn.Controllers
             #region 大转盘的背景图和标题,活动说明
             if (dto != null)
             {
-                string ptitle = "大转盘";string bgurl = "/Content/img/bg/body_bg1.jpg"; string explain = "暂时没有游戏说明";
+                string ptitle = "大转盘"; string bgurl = "/Content/img/bg/body_bg1.jpg"; string explain = "暂时没有游戏说明";
                 T_ActivityConfig dtoc = Abll.FindActivityConfigByCooperid(ViewBag.cooperid);
                 if (dtoc != null)
                 {
@@ -111,7 +112,7 @@ namespace WebNdQn.Controllers
                     ViewBag.imgurl = WebHelp.GetCurHttpHost() + dtoc.wx_imgurl;            //图片地址
                     ViewBag.linkurl = dtoc.wx_linkurl;          //链接地址
                 }
-                ViewBag.ptitle = ptitle;ViewBag.bgurl = bgurl;ViewBag.explain = explain;
+                ViewBag.ptitle = ptitle; ViewBag.bgurl = bgurl; ViewBag.explain = explain;
             }
             #endregion
             return View();
@@ -340,6 +341,32 @@ namespace WebNdQn.Controllers
             string sharetype = Request["sharetype"].ToString();             //分享类型
             var list = adbll.GetActivityShareList_Search(Convert.ToInt32(cooperid), Convert.ToInt32(atype), Convert.ToInt32(sharetype));
             return JsonFormat(new ExtJson { success = true, code = 1000, msg = "查询成功", jsonresult = list });
+        }
+        //删除充值记录
+        public ActionResult RemoveActivityFlow()
+        {
+            string data = Request.Form["data"];  //用户的IDS数组
+            IList<IdListDto> list = SerializeJson<IdListDto>.JSONStringToList(data);
+            int result = Abll.RemoveActivityFlowLog(list);
+            if (result == list.Count)
+                return JsonFormat(new ExtJson { success = true, msg = "删除成功！共删除" + result });
+            else
+                return JsonFormat(new ExtJson { success = false, msg = "删除失败！共" + list.Count + " 成功" + result });
+        }
+        /// <summary>
+        /// 更新直充记录的状态
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult UpdateActivityFlowState()
+        {
+            string data = Request.Form["data"];  //用户的IDS数组
+            string state = Request.Form["state"];  //需要修改的状态
+            IList<IdListDto> list = SerializeJson<IdListDto>.JSONStringToList(data);
+            int result = Abll.UpdateActivityFlowState(list, Convert.ToInt32(state));
+            if (result == list.Count)
+                return JsonFormat(new ExtJson { success = true, msg = "更新成功！共更新" + result });
+            else
+                return JsonFormat(new ExtJson { success = false, msg = "更新失败！共" + list.Count + " 成功" + result });
         }
     }
 }

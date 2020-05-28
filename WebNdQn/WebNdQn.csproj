@@ -260,6 +260,8 @@
     <Content Include="Content\Activity\Zxdt\kankan\content\reset.font.js" />
     <Content Include="Content\Activity\Zxdt\kankan\content\sha1.js" />
     <Content Include="Content\Activity\Zxdt\kankan\content\style.css" />
+    <Content Include="Content\Activity\Zxdt\kankan\content\tip.png" />
+    <Content Include="Content\Activity\Zxdt\kankan\content\tip1.png" />
     <Content Include="Content\Activity\Zxdt\kankan\content\touch.js" />
     <Content Include="Content\Activity\Zxdt\kankan\content\visit.js" />
     <Content Include="Content\Activity\Zxdt\kankan\content\wxshare.js" />
@@ -328,6 +330,7 @@
     <Content Include="Content\Site.css" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
+    <None Include="Properties\PublishProfiles\NdConfig.pubxml" />
     <None Include="Properties\PublishProfiles\WebNdQn.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\commonaction.js" />
@@ -396,6 +399,8 @@
     <Content Include="Views\Zxdt\QaDefault.cshtml" />
     <Content Include="Views\Login\Index.cshtml" />
     <Content Include="Views\Login\LoginVerifyCode.cshtml" />
+    <Content Include="Views\Login\TAdminIndex.cshtml" />
+    <Content Include="Views\Login\SetTadminPortal.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

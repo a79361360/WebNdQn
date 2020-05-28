@@ -101,11 +101,11 @@
                     params: data,       //自定义请求参数
                     success: function (data) {
                         if (data.code == 1000) {
-                            var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:45px;\">CType</th><th style=\"width:200px;\">标题</th><th style=\"width:45px;\">充值多少</th><th style=\"width:45px;\">上限人数</th><th style=\"width:45px;\">当前人数</th><th style=\"width:45px;\">状态</th></tr></thead>";
+                            var str = "<table class=\"table table-bordered table-hover\"><thead><tr><th style=\"width:6%;\"><label class=\"checkbox-inline\"><input id=\"allqx\" type=\"checkbox\" />全选</label></th><th style=\"width:45px;\">CType</th><th style=\"width:200px;\">标题</th><th style=\"width:45px;\">充值多少</th><th style=\"width:45px;\">上限人数</th><th style=\"width:45px;\">当前人数</th><th style=\"width:45px;\">最大截止日期</th><th style=\"width:45px;\">状态</th></tr></thead>";
                             $.each(data.list, function (i, o) {
                                 var statestr = "未开启";
                                 if (o.state == "1") statestr = "进行中"; else if (o.state == "2") statestr = "已结束";
-                                str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td title=\"点击查看链接地址\" style=\"cursor: pointer;\" onclick=\"getindexurl(this)\">" + o.ctype + "</td><td>" + o.title + "</td><td>" + o.eachflow + "</td><td>" + o.uplimit + "</td><td>" + o.curuplimit + "</td><td>" + statestr + "</td></tr>";
+                                str += "<tr><td style=\"text-align:center\"><input type=\"checkbox\" value=\"" + o.id + "\"></td><td title=\"点击查看链接地址\" style=\"cursor: pointer;\" onclick=\"getindexurl(this)\">" + o.ctype + "</td><td>" + o.title + "</td><td>" + o.eachflow + "</td><td>" + o.uplimit + "</td><td>" + o.curuplimit + "</td><td>" + o.maxcutdate + "</td><td>" + statestr + "</td></tr>";
                             })
                             str += "</table>";
                             $("#ulist").html(str);

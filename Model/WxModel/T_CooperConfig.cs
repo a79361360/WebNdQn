@@ -31,7 +31,9 @@ namespace Model.WxModel
         public int eachflow { get; set; }
         public int uplimit { get; set; }
         public int curuplimit { get; set; }
+        public string basecutdate { get; set; }
         public string cutdate { get; set; }
+        public string maxcutdate { get; set; }
         public int state { get; set; }
         public DateTime addtime {get;set;}
     }

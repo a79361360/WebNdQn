@@ -24,7 +24,7 @@ namespace DAL
         /// <param name="id"></param>
         /// <returns></returns>
         public DataTable GetTopicById(int id) {
-            string sql = "SELECT [id],[cooperid],[topic],[answer],[keyanswer],[checkbox],[addtime] FROM [T_TopicBank] WHERE id=@id";
+            string sql = "SELECT [id],[cooperid],[topic],[answer],[keyanswer],[checkbox],[tips],[addtime] FROM [T_TopicBank] WHERE id=@id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@id",SqlDbType.Int),
@@ -35,9 +35,14 @@ namespace DAL
         /// <summary>
         /// 随机取得设置条数的题目
         /// </summary>
+        /// <param name="cooperid"></param>
+        /// <param name="tmts">题目条数</param>
+        /// <param name="order">默认常规排序,0为随机</param>
         /// <returns></returns>
-        public DataTable GetDttsTopic(int cooperid, int tmts) {
-            string sql = "SELECT TOP " + tmts + " [id],[cooperid],[topic],[answer],[keyanswer],[checkbox],[addtime] FROM T_TopicBank WHERE cooperid = @cooperid ORDER BY id";
+        public DataTable GetDttsTopic(int cooperid, int tmts, int order = 1){
+            string orderby = " ORDER BY id";
+            if (order == 0) orderby = " ORDER BY NEWID()";
+            string sql = "SELECT TOP " + tmts + " [id],[cooperid],[topic],[answer],[keyanswer],[checkbox],[tips],[addtime] FROM T_TopicBank WHERE cooperid = @cooperid"+ orderby;
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@cooperid",SqlDbType.Int),
@@ -51,9 +56,9 @@ namespace DAL
         /// <param name="dto"></param>
         /// <returns></returns>
         public int SetZxdtTopic(T_TopicBank dto) {
-            string sql = "INSERT INTO [T_TopicBank]([cooperid],[topic],[answer],[checkbox],[keyanswer])VALUES(@cooperid, @topic, @answer,@checkbox, @keyanswer)";
+            string sql = "INSERT INTO [T_TopicBank]([cooperid],[topic],[answer],[checkbox],[keyanswer],[tips])VALUES(@cooperid, @topic, @answer,@checkbox, @keyanswer,@tips)";
             if (dto.id != 0) {
-                sql = "UPDATE [T_TopicBank] SET [cooperid] = @cooperid,[topic] = @topic,[answer] = @answer,[checkbox] = @checkbox,[keyanswer] = @keyanswer WHERE id=@id";
+                sql = "UPDATE [T_TopicBank] SET [cooperid] = @cooperid,[topic] = @topic,[answer] = @answer,[checkbox] = @checkbox,[keyanswer] = @keyanswer,[tips] = @tips WHERE id=@id";
             }
             SqlParameter[] parameter = new[]
             {
@@ -63,6 +68,7 @@ namespace DAL
                 new SqlParameter("@answer",SqlDbType.NVarChar,500),
                 new SqlParameter("@checkbox",SqlDbType.Int),
                 new SqlParameter("@keyanswer",SqlDbType.NVarChar,20),
+                new SqlParameter("@tips",SqlDbType.NVarChar,500),
             };
             parameter[0].Value = dto.id;
             parameter[1].Value = dto.cooperid;
@@ -70,6 +76,7 @@ namespace DAL
             parameter[3].Value = dto.answer;
             parameter[4].Value = dto.checkbox;
             parameter[5].Value = dto.keyanswer;
+            parameter[6].Value = dto.tips;
             int result = dal.IntExtSql(sql, parameter);
             return result;
         }
@@ -102,8 +109,8 @@ namespace DAL
         {
             string sql = "INSERT INTO [T_ZxdtScore]([configid],[number],[lower],[upper])";
             sql += "VALUES(@configid, @number, @lower, @upper)";
-            if (id != 0)
-                sql = "UPDATE [T_ZxdtScore] SET [configid] = @configid,[number] = @number,[lower] = @lower,[upper] = @upper,[addtime] = GETDATE() WHERE id = @id";
+            //if (id != 0)
+            //    sql = "UPDATE [T_ZxdtScore] SET [configid] = @configid,[number] = @number,[lower] = @lower,[upper] = @upper,[addtime] = GETDATE() WHERE id = @id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@configid",SqlDbType.Int),
@@ -118,6 +125,21 @@ namespace DAL
             parameter[3].Value = upper;
             parameter[4].Value = id;
             int result = Convert.ToInt32(dal.IntExtSql(sql, parameter));
+            return result;
+        }
+        /// <summary>
+        /// 移除当前在线答题的配置列表
+        /// </summary>
+        /// <param name="configid"></param>
+        /// <returns></returns>
+        public int RemoveZxdtScore(int configid) {
+            string sql = "DELETE T_ZxdtScore WHERE configid=@configid";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@configid",SqlDbType.Int)
+            };
+            parameter[0].Value = configid;
+            int result = dal.IntExtSql(sql, parameter);
             return result;
         }
         /// <summary>

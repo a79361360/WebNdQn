@@ -33,23 +33,26 @@
             var topic = $("#txt_topic").val();
             var cooperid = $("#txt_cooperid").val();
             var checkbox = $("input[name='optionsRadiosinline']:checked").val();
-            if (checkbox == 1 & checkbox.indexOf(',')) {
-                tips("单选题的答案不能有,号", -1);
-                return;
-            }
             var answer = MergeAnswer();
             var kanswer = $("#txt_keyanswer").val();
+            var tipss = $("#txt_tips").val();
             if (answer == "-1") {
                 tips("选项里面不能出现\" | \"符号", -1);
                 return;
             }
+            if (checkbox == 1 & kanswer.indexOf(',') > 0) {
+                tips("单选题的正确选项不能有,号", -1);
+                return;
+            }
+
             var data = {
                 id:id,
                 topic: topic,
                 cooperid: cooperid,
                 checkbox:checkbox,
                 answer: answer,
-                keyanswer: kanswer
+                keyanswer: kanswer,
+                tips: tipss
             }
             $.ajax({
                 type: "post",
@@ -160,7 +163,13 @@
             <div class="form-group">
                 <label for="firstname" class="col-sm-2 control-label">正确选项</label>
                 <div class="col-sm-10">
-                    <input type="text" class="form-control" id="txt_keyanswer" name="txt_keyanswer" value="@Model.keyanswer" placeholder="单选直接填数字,多选填答案字串例如1,3为正确选项应该输入: 1,3">
+                    <input type="text" class="form-control" id="txt_keyanswer" name="txt_keyanswer" value="@Model.keyanswer" placeholder="单选直接填数字,多选填答案字串例如1,3为正确选项应该输入: 1,3(使用半角的逗号)">
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="firstname" class="col-sm-2 control-label">提示语</label>
+                <div class="col-sm-10">
+                    <input type="text" class="form-control" id="txt_tips" name="txt_tips" value="@Model.tips" placeholder="题目的提示语">
                 </div>
             </div>
             <div class="form-group">

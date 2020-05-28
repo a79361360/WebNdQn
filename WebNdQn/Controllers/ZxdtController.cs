@@ -77,24 +77,117 @@ namespace WebNdQn.Controllers
                 Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
                 if (dto != null)
                 {
-                    ViewBag.Appid = dto.wx_appid;
+                    ViewBag.appid = dto.wx_appid;
+                    long timestamp = DateTime.Now.ToUnixTimeStamp();                                        //时间戳
+                    string noncestr = TxtHelp.GetRandomString(16, true, true, true, false, "");             //随机字符串
+                    string signatrue = wxll.Get_signature(timestamp, noncestr);                             //signatrue
+                    //string signatrue = "1111";                             //signatrue
+                    ViewBag.timestamp = timestamp;
+                    ViewBag.noncestr = noncestr;
+                    ViewBag.signatrue = signatrue;
+                    ViewBag.RemoteIP = WebHelp.GetIp();     //用户IP
+                    ViewBag.areatype = dto.areatype;        //1为宁德2为莆田
+
+
                     var dto_act = zbll.GetByCooperId(dto.id, 2);                //取得在线答题配置信息
                     if (dto_act == null)
                         return Content("在线答题配置为空");
                     //答题的分享部分
+                    ViewBag.tmfs = dto_act.dt_fs;       //题目分数
+                    ViewBag.sright = dto_act.sright;    //0显化答案(答对才继续)1不显化答案(答对错,都只能下一题)
+                    ViewBag.Go = dto_act.sright == 0 ? 1 : 2;   //是否继续下一题,1只有答对才继续,2答错(不能修改了)也继续
+                    ViewBag.random = dto_act.random;    //0随机1常规
                     ViewBag.WxTitle = dto_act.wx_title;
-                    ViewBag.ShareImgPath = dto_act.wx_imgurl;
+                    ViewBag.ShareImgPath = WebHelp.GetCurHttpHost() + dto_act.wx_imgurl;
                     ViewBag.ShareContent = dto_act.wx_descride;
                     ViewBag.ShareUrl = dto_act.wx_linkurl;
-                    ViewBag.RemoteIP = WebHelp.GetIp();     //用户IP
                     ViewBag.Tmts = dto_act.dt_tmts;         //题目条数
+
+                    int userdcount = zbll.ZxdtDrawNumber(dto_act.cooperid);     //已经用掉的流量
+                    if (dto_act.flowamount - userdcount < 100) {
+                        ViewBag.activityEnd = "0";  //0活动结束
+                        ViewBag.activityEndTips = "流量赠送完毕，活动结束，请下次再来参与！";  //活动结束提示语
+                    }
+                    ViewBag.flowamount = dto_act.flowamount;                    //流量池量
+                    ViewBag.curflowcount = zbll.ZxdtDrawNumber(dto_act.cooperid);   //用户流量
+                    
+                    string explain = "暂时没有游戏说明"; string bgurl = "/Content/Img/bg/body_bg2.png";
+                    bgurl = string.IsNullOrEmpty(dto_act.bgurl) == false ? bgurl = dto_act.bgurl : "";
+                    explain = dto_act.explain.Replace("\n", "<br/>");
+                    ViewBag.explain = explain;                  //答题的说明
+                    ViewBag.ptitle = dto_act.title;             //页面的标题
+                    ViewBag.bgurl = bgurl;                      //页面的背景
+
+                    #region 取得题目列表b
+                    var list = zbll.GetDttsTopic(dto.id, dto_act.dt_tmts, dto_act.random);
+
+                    string str = ""; int index = 0;     //题目字符串，索引
+                    foreach (var item in list)
+                    {
+                        string tipstr = "";
+                        if (!string.IsNullOrEmpty(item.tips)) {
+                            tipstr = "<i><span>" + item.tips + "</span></i>";
+                        }
+                        str += "<div class=\"page page_" + index + "\">";
+                        str += "<div class=\"title\">"+ tipstr + "<em>" + index + "</em>、" + item.topic + "</div><ul>";
+                        string[] sstr = item.answer.Split('|'); int temindex = 1;
+                        foreach (var tem in sstr)
+                        {
+                            str += "<li class=\"" + Rzm1(temindex) + " " + Rzm3(item.keyanswer, temindex.ToString()) + "\" data-value=\"" + Rzm(temindex) + "\"><em>" + Rzm(temindex) + "</em>" + tem + "</li>";
+                            temindex++;
+                        }
+                        str += "<div class=\"zqda\"><p>正确答案：<em>" + Rzm2(item.keyanswer) + "</em>我的答案：<i></i></p></div>";
+                        str += "<a href=\"javascript:void(0)\" class=\"btn-00 btn-xyt\" style=\"background:url(../Content/Activity/Zxdt/kankan/content/20171102102845.png) no-repeat 0 0; background-size:100% 100%; \">下一题</a>";
+                        str += "<div class=\"pic-01\"></div>";
+                        str += "<span class=\"icon-right none\">对</span>";
+                        str += "<span class=\"icon-wrong none\">错</span>";
+                        str += "</ul></div>";
+                        index++;
+                    }
+                    ViewBag.list = str;
+                    #endregion 取得题目列表e
+
                 }
             }
 
 
             return View();
         }
-
+        private string Rzm(int num) {
+            if (num == 1) return "A";
+            else if (num == 2) return "B";
+            else if (num == 3) return "C";
+            else if (num == 4) return "D";
+            else if (num == 5) return "E";
+            else if (num == 6) return "F";
+            else return "";
+        }
+        private string Rzm1(int num)
+        {
+            if (num == 1) return "a";
+            else if (num == 2) return "b";
+            else if (num == 3) return "c";
+            else if (num == 4) return "d";
+            else if (num == 5) return "e";
+            else if (num == 6) return "f";
+            else return "";
+        }
+        private string Rzm2(string keystr) {
+            string result = "";
+            string[] intstr = keystr.Split(',');
+            foreach (var item in intstr)
+            {
+                string zm = Rzm(Convert.ToInt32(item));
+                result += zm;
+            }
+            return result;
+        }
+        private string Rzm3(string keystr, string index)
+        {
+            string[] intstr = keystr.Split(',');
+            if (intstr.Contains(index)) return "right";
+            return "";
+        }
 
         public ActionResult Last() {
             return View();
@@ -253,26 +346,26 @@ namespace WebNdQn.Controllers
             else
             {
                 string gz = "0"; string openid = "";
-                //if (Request["p"] != null)
-                //{
-                //    try
-                //    {
-                //        string p = Request["p"].ToString(); //1|subscribe|openid  微信发送|是否关注|openid
-                //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + Request["p"].ToString());
-                //        string temp = DEncrypt.DESDecrypt1(p);    //取得p参数,并且进行解密
-                //        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + temp);
-                //        string[] plist = temp.Split('|');   //微信发送|是否
-                //        if (plist[0] != "1") return Content("配置参数异常");
-                //        gz = plist[1]; openid = plist[2];   //是否关注,微信用户id
-                //    }
-                //    catch
-                //    {
-                //        return Content("参数错误");
-                //    }
-                //}
-                //if (string.IsNullOrEmpty(openid))
-                //    return Content("授权失败");
-                Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
+                if (Request["p"] != null)
+                {
+                    try
+                    {
+                        string p = Request["p"].ToString(); //1|subscribe|openid  微信发送|是否关注|openid
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + Request["p"].ToString());
+                        string temp = DEncrypt.DESDecrypt1(p);    //取得p参数,并且进行解密
+                        Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     p：" + temp);
+                        string[] plist = temp.Split('|');   //微信发送|是否
+                        if (plist[0] != "1") return Content("配置参数异常");
+                        gz = plist[1]; openid = plist[2];   //是否关注,微信用户id
+                    }
+                    catch
+                    {
+                        return Content("参数错误");
+                    }
+                }
+                if (string.IsNullOrEmpty(openid))
+                    //    return Content("授权失败");
+                    Common.Expend.LogTxtExpend.WriteLogs("/Logs/ZxdtController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Index     ctype：" + ctype + "issue：" + issue + "gzstate：" + gz);
                 #region 获取微信用户的openid
                 //ViewBag.openid = openid;
                 ViewBag.openid = "oIW7Uwk5tMFZ7aakoLLlPF4IOHkL";
@@ -457,7 +550,8 @@ namespace WebNdQn.Controllers
             int checkbox = Convert.ToInt32(Request.Form["checkbox"]);           //是否为多选
             string answer = Request.Form["answer"];                             //答案列表
             string keyanswer = Request.Form["keyanswer"];                       //答案值
-            int result = zbll.SetZxdtTopic(id, cooperid, checkbox, topic, answer, keyanswer);
+            string tips = Request.Form["tips"];                                 //提示语
+            int result = zbll.SetZxdtTopic(id, cooperid, checkbox, topic, answer, keyanswer, tips);
             if (result > 0)
                 return JsonFormat(new ExtJson { success = true, code = 1000, msg = "操作成功." });
             else
@@ -512,11 +606,12 @@ namespace WebNdQn.Controllers
             string tmfs = Request.Form["tmfs"];                     //每题的分数
             string tmts = Request.Form["tmts"];                     //随机抽取题库的条数
             string sright = Request.Form["sright"];                 //是否显化答案
+            string random = Request.Form["random"];                 //0随机1常规排序显示
             string flowamount = Request.Form["flowamount"];         //
             string list = Request.Form["list"];                     //流量配置列表
 
             IList<T_ZxdtScore> Configlist = FrameWork.Common.SerializeJson<T_ZxdtScore>.JSONStringToList(list);    //流量配置列表
-            int result = zbll.SetZxdtConfig(Convert.ToInt32(configid), Convert.ToInt32(cooperid), title, Convert.ToInt32(share), explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, Convert.ToInt32(tmfs), Convert.ToInt32(tmts), Convert.ToInt32(sright), Convert.ToInt32(flowamount), Configlist);
+            int result = zbll.SetZxdtConfig(Convert.ToInt32(configid), Convert.ToInt32(cooperid), title, Convert.ToInt32(share), explain, bgurl, wxtitle, wxdescride, wximgurl, wxlinkurl, Convert.ToInt32(tmfs), Convert.ToInt32(tmts), Convert.ToInt32(sright), Convert.ToInt32(flowamount), Configlist,Convert.ToInt32(random));
             if (result > 0)
                 return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功." });
             else if (result == -2) {

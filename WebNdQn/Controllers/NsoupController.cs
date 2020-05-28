@@ -16,6 +16,7 @@ namespace WebNdQn.Controllers
         // GET: Nsoup
         public ActionResult Index()
         {
+            if (Session["AdminID"] == null) Response.Redirect("/Login/index");
             return View();
         }
         //发送登入短信

@@ -92,7 +92,9 @@ namespace WebNdQn.Controllers
             string qrcode_url = Request.Form["qrcode_url"];                   //会员人数
             string eachflow = Request.Form["eachflow"];                   //会员人数
             string uplimit = Request.Form["uplimit"];                   //会员人数
+            string basecutdate = Request.Form["basecutdate"];                   //会员人数
             string cutdate = Request.Form["cutdate"];                   //会员人数
+            string maxcutdate = Request.Form["maxcutdate"];                   //会员人数
             string state = Request.Form["state"];                   //会员人数
             T_CooperConfig dto = new T_CooperConfig();
             dto.issue = 1;
@@ -100,7 +102,7 @@ namespace WebNdQn.Controllers
             dto.descride = descride; dto.btnurl = btnurl; dto.bgurl = bgurl; dto.imgurl = imgurl; dto.linkurl = linkurl;dto.redirecturi = redirecturi;
             dto.corpid = corpid; dto.username = username; dto.userpwd = userpwd; dto.signphone = signphone; dto.wx_appid = appid;
             dto.wx_secret = secret; dto.qrcode_url = qrcode_url; dto.eachflow = Convert.ToInt32(eachflow);
-            dto.uplimit = Convert.ToInt32(uplimit); dto.cutdate = cutdate; dto.state = Convert.ToInt32(state);
+            dto.uplimit = Convert.ToInt32(uplimit);dto.basecutdate = basecutdate;  dto.cutdate = cutdate;dto.maxcutdate = maxcutdate; dto.state = Convert.ToInt32(state);
             int result = cbll.SetCooper(dto);
             if (result > 0)
                 return JsonFormat(new ExtJson { success = true, code = 1000, msg = "成功." });

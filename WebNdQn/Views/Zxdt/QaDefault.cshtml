@@ -1,272 +1,176 @@
-﻿
-@{
-    Layout = null;
-}
+﻿<!DOCTYPE html>
 
-<!DOCTYPE html>
-
-<html>
+<html style="font-size: 53.3333px;height: 100%;">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimum-scale=1.0, maximum-scale=1.0">
     <meta name="format-detection" content="telephone=no">
-    <title>QaDefault</title>
+    <title>@ViewBag.ptitle</title>
     <link href="~/Content/Activity/Zxdt/kankan/content/base.css" rel="stylesheet" />
     <link href="~/Content/Activity/Zxdt/kankan/content/style.css" rel="stylesheet" />
     <script src="~/Content/Activity/Zxdt/kankan/content/jquery.min.js"></script>
     <script src="~/Content/Activity/Zxdt/kankan/content/reset.font.js"></script>
+    <style type="text/css">		
+		.one,.main{width:100%; margin:0 auto; background:url(../content/Activity/Zxdt/kankan/content/688947237576811649.png) center top no-repeat; background-size:100% 100%;}
+		.one{position:absolute; left:0; right:0; top:0; bottom:0; margin:0 auto;}/**/
+		.one button{position:absolute; left:50%; top:60%; margin:0 0 0 -1rem; width:2rem; height:.7rem; font-size:.3rem; color:#f60; font-weight:bold; border:.02rem solid #FEE900; outline:0; -web-kit-appearance:none; -moz-appearance: none; border-radius:.35rem; background:#FEFB00;
+        -webkit-box-shadow:0 0 .25rem rgba(0, 0, 0, .5) , -.05rem -.05rem .1rem rgba(250,150,0,.5) inset;
+		-moz-box-shadow:0 0 .25rem rgba(0, 0, 0, .5) , -.05rem -.05rem .1rem rgba(250,150,0,.5) inset;
+		box-shadow:0 0 .25rem rgba(0, 0, 0, .5) , -.05rem -.05rem .1rem rgba(250,150,0,.5) inset;
+		}
+		.one .ranlist_role{position:absolute; left:0; right:0; top:70%;}
+		.one .ranlist_role button{top:0; margin:0;}
+		.one .ranlist_role button.huodongsm{left:.3rem;}
+		.one .ranlist_role button.datixq{left:auto; right:.3rem;}
+		
+		.black{position:absolute; left:0; right:0; top:0; bottom:0; background:rgba(0,0,0,.7); display:none;/**/}
+		.black .shuoming,.black .xiangqing{position:absolute; left:.6rem; right:.6rem; top:.6rem; bottom:.6rem; font-size:.3rem; background:#fff; border-radius:.2rem; display:none;/**/}
+		.black .shuoming div,.black .xiangqing div{position:absolute; left:.3rem; right:.3rem; top:.8rem; bottom:.3rem; overflow:hidden; overflow-y:auto;}
+		.black i{background:#000; display:block; position:absolute; right:.2rem; top:.2rem; width:.5rem; height:.5rem; line-height:.5rem; text-align:center; border-radius:50%; color:#fff;}
+		.black .xiangqing div table{border:.03rem solid #ddd; border-right:0; border-bottom:0;}
+		.black .xiangqing div table td,.black .xiangqing div table th{text-align:center; border:.03rem solid #ddd; border-top:0; border-left:0; line-height:.6rem; font-size:.3rem}
+		.black .xiangqing div table th{background:#eee;}
+		
+		.main{ position:relative;width:100%;}
+		.main:before,.main:after{content:""; display:block; height:1px; width:100%;}
+		.page{margin:20% .3rem 0; border-radius:.2rem; padding:.5rem 0; background:rgba(255,255,255,.8); -webkit-box-shadow:0 0 .25rem rgba(0, 0, 0, .3); -moz-box-shadow:0 0 .25rem rgba(0, 0, 0, .3); box-shadow:0 0 .25rem rgba(0, 0, 0, .3);}
+
+        .page .title{padding:0 .4rem; position:relative;}
+		.page .title *{box-sizing:border-box;}
+		.page .title i{position:absolute; left:.2rem; right:.2rem; top:-.3rem; height:.3rem; display:block; background:url(../../Content/Activity/Zxdt/kankan/content/tip1.png) right top no-repeat; background-size:auto 100%;}
+		.page .title i span{display:none; background:#FFEEBC; position:absolute; left:0; right:1rem; top:-.2rem; width:auto; padding:.2rem; font-size:.3rem; line-height:160%; word-wrap:break-word; word-break:normal; -webkit-box-shadow:0 0 .25rem rgba(0, 0, 0, .3); -moz-box-shadow:0 0 .25rem rgba(0, 0, 0, .3); box-shadow:0 0 .25rem rgba(0, 0, 0, .3); border-radius:.2rem; z-index:222;}
+		.page .title i span:before{content:""; position:absolute; right:-.25rem; top:.2rem; width:.5rem; height:.5rem; display:block; width:0; height:0; border-top:.25rem solid transparent; border-left:.25rem solid #FFEEBC; border-bottom:.25rem solid transparent;}
+    </style>
+    <script type="text/javascript">
+        $(function () {
+            //开始答题
+            $(".start").click(function () {
+                if (checkMobile()) {
+                    //$(".one").css("display", "none");
+                    //$(".main").css("display", "block");
+                    //$(".start").unbind("click");
+                }
+                $(".one").css("display", "none");
+                $(".main").css("display", "block");
+                $(".start").unbind("click");
+            });
+            $(".page .title i").click(function () {
+                var span = $(this).children("span")
+                if (span.css("display") == "none") {
+                    span.css("display", "block")
+                } else {
+                    span.css("display", "none")
+                }
+            });
+            //改变背景
+            chg_bg = function () {
+                var bgurl = '@ViewBag.bgurl';
+                if (bgurl != "") {
+                    $(".one")[0].style.backgroundImage = "url(" + bgurl + ")";
+                    $(".main")[0].style.backgroundImage = "url(" + bgurl + ")";
+                }
+            }
+            chg_bg();   //初始调用，改变背景图
+			var wh = $(window).height();
+			var mh = $(".main").height();
+			mainheight(wh, mh);
+			$(window).resize(function () {
+			    var wh = $(window).height();
+			    var mh = $(".main").height();
+			    mainheight(wh, mh);
+			});
+			function mainheight(wh, mh) {
+			    if (mh < wh) {
+			        $(".main").css("height", wh)
+			    } else {
+			        $(".main").css("height", "auto")
+			    }
+			}
+            //活动说明
+			$(".huodongsm").click(function(){
+				$(".black").css("display","block");
+				$(".shuoming").css("display", "block");
+			});
+            //答题详情
+			$(".datixq").click(function(){
+				$(".black").css("display","block");
+				$(".xiangqing").css("display", "block");
+				opendtdetail();
+			});
+            //关闭
+			$(".close").click(function(){
+				$(this).parent().css("display","none");
+				$(this).parent().parent().css("display", "none");
+			});
+		})
+		//答题详情
+		opendtdetail = function () {
+		    var cooperid = $("#cooperid").val();
+		    var openid = $("#openId").val();
+		    $.getJSON("/Zxdt/ZxdtDrawLog", { cooperid: cooperid, openid: openid }, function (ret) {
+		        if (ret.success) {
+		            var str = "";
+		            $.each(ret.jsonresult, function (i, o) {
+		                str += "<tr><td>" + o.addtime + "</td><td>" + o.score + "</td></tr>";
+		            })
+		            $(".xiangqing tbody").html(str);
+		        }
+		    })
+		}
+		//添加分享记录
+		activityshare = function (sharetype) {
+		    var cooperid = $("#cooperid").val();
+		    var openid = $("#openId").val();
+		    $.ajax({
+		        type: "post",
+		        url: "/Zxdt/ZxdtShare",
+		        data: { cooperid: cooperid, openid: openid, sharetype: sharetype },
+		        async: false,
+		        success: function (ret) {
+		            if (ret.success) {
+		                window.location.href = window.location.href + "&id=" + 10000 * Math.random();
+		            }
+		        }
+		    });
+		}
+    </script>
 </head>
 <body>
-    <img src="~/Content/Activity/Zxdt/kankan/content/20171220172158.jpg" class="img" alt="">
-    <div class="main">
-        <div class="page page_0">
-            <div class="title"><em>3</em>、孕产妇系统保健管理要求产前检查次数不少于（）</div>
-            <ul>
-                <li class="a right" data-value="A"><em>A</em>5次</li>
-                <li class="b " data-value="B"><em>B</em>8次</li>
-                <li class="c " data-value="C"><em>C</em>6次</li>
-                <li class="d " data-value="D"><em>D</em>3次</li>
-                <div class="zqda">
-                    <p>
-                        正确答案：
-                        <em>
-                            A
-
-
-
-                        </em>
-                        我的答案：<i></i>
-                    </p>
-                </div>
-                <a href="javascript:void(0)" class="btn-00 btn-xyt" style="background:url(../Content/Activity/Zxdt/kankan/content/20171102102845.png) no-repeat 0 0;background-size:100% 100%;">下一题</a>
-                <div class="pic-01"></div>
-                <span class="icon-right none">对</span>
-                <span class="icon-wrong none">错</span>
-            </ul>
+    <div class="one">
+        <button class="start">开始答题</button>
+        <div class="ranlist_role">
+            <button class="huodongsm">活动说明</button>
+            <button class="datixq">答题详情</button>
         </div>
-        <div class="page page_1 none">
-            <div class="title"><em>3</em>、世界卫生组织（WHO）和联合国儿童基金会（UNICEF）联合倡议：在添加辅食的基础上，坚持哺乳（   ）个月。</div>
-            <ul>
-                <li class="a" data-value="A"><em>A</em>6个月</li>
-                <li class="b" data-value="B"><em>B</em>12个月</li>
-                <li class="c right active" data-value="C"><em>C</em>24个月</li>
-                <li class="d" data-value="D"><em>D</em>36个月</li>
-                <div class="zqda" style="display: none;">
-                    <p>
-                        正确答案：
-                        <em>
+    </div>
 
-
-                            C
-
-                        </em>
-                        我的答案：<i>D</i>
-                    </p>
-                </div>
-                <a href="javascript:void(0)" class="btn-00 btn-xyt" style="background:url(../Content/Activity/Zxdt/kankan/content/20171102102845.png) no-repeat 0 0;background-size:100% 100%;">下一题</a>
-                <div class="pic-01"></div>
-                <span class="icon-right">对</span>
-                <span class="icon-wrong none">错</span>
-            </ul>
+    <div class="black">
+        <div class="shuoming">
+            <i class="close">X</i>
+            <div>@Html.Raw(ViewBag.explain)</div>
         </div>
-        <div class="page page_2 none">
-            <div class="title"><em>3</em>、孕前你可以参加哪项检查预防出生缺陷？</div>
-            <ul>
-                <li class="a right active" data-value="A"><em>A</em>免费婚前医学检查、免费孕前检查</li>
-                <li class="b" data-value="B"><em>B</em>智力测验</li>
-                <li class="c" data-value="C"><em>C</em>21-三体综合征</li>
-                <div class="zqda" style="display: none;">
-                    <p>
-                        正确答案：
-                        <em>
-                            A
-
-
-                        </em>
-                        我的答案：<i></i>
-                    </p>
-                </div>
-                <a href="javascript:void(0)" class="btn-00 btn-xyt" style="background:url(../Content/Activity/Zxdt/kankan/content/20171102102845.png) no-repeat 0 0;background-size:100% 100%;">下一题</a>
-                <div class="pic-01"></div>
-                <span class="icon-right">对</span>
-                <span class="icon-wrong none">错</span>
-            </ul>
+        <div class="xiangqing">
+            <i class="close">X</i>
+            <div>
+                <table width="100%;" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th>时间</th>
+                            <th>分数</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>0</td>
+                            <td>0</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div class="page page_3 none">
-            <div class="title"><em>3</em>、弓形虫感染需治愈（   ）后才能怀孕。</div>
-            <ul>
-                <li class="a " data-value="A"><em>A</em>3个月</li>
-                <li class="b right" data-value="B"><em>B</em>6个月</li>
-                <li class="c " data-value="C"><em>C</em>10个月</li>
-                <li class="d " data-value="D"><em>D</em>2年</li>
-                <div class="zqda">
-                    <p>
-                        正确答案：
-                        <em>
-
-                            B
-
-
-                        </em>
-                        我的答案：<i></i>
-                    </p>
-                </div>
-                <a href="javascript:void(0)" class="btn-00 btn-xyt" style="background:url(../Content/Activity/Zxdt/kankan/content/20171102102845.png) no-repeat 0 0;background-size:100% 100%;">下一题</a>
-                <div class="pic-01"></div>
-                <span class="icon-right none">对</span>
-                <span class="icon-wrong none">错</span>
-            </ul>
-        </div>
-        <div class="page page_4 none">
-            <div class="title"><em>3</em>、街道社区卫生服务中心为怀孕的妇女提供的孕期保健包括（）</div>
-            <ul>
-                <li class="a" data-value="A"><em>A</em>免费建立孕产期保健册（卡）</li>
-                <li class="b" data-value="B"><em>B</em>免费5次产检</li>
-                <li class="c" data-value="C"><em>C</em>免费艾滋病、梅毒、乙肝表面抗原检测</li>
-                <li class="d right active" data-value="D"><em>D</em>以上都是</li>
-                <div class="zqda" style="display: none;">
-                    <p>
-                        正确答案：
-                        <em>
-
-
-
-                            D
-                        </em>
-                        我的答案：<i>C</i>
-                    </p>
-                </div>
-                <a href="javascript:void(0)" class="btn-00 btn-xyt" style="background:url(../Content/Activity/Zxdt/kankan/content/20171102102845.png) no-repeat 0 0;background-size:100% 100%;">下一题</a>
-                <div class="pic-01"></div>
-                <span class="icon-right">对</span>
-                <span class="icon-wrong none">错</span>
-            </ul>
-        </div>
-        <div class="page page_5 none">
-            <div class="title"><em>3</em>、孕妇孕早期检查的时间是指？</div>
-            <ul>
-                <li class="a right" data-value="A"><em>A</em>8周内</li>
-                <li class="b " data-value="B"><em>B</em>13周内</li>
-                <li class="c " data-value="C"><em>C</em>14周内</li>
-                <li class="d " data-value="D"><em>D</em>16周内</li>
-                <div class="zqda">
-                    <p>
-                        正确答案：
-                        <em>
-                            A
-
-
-
-                        </em>
-                        我的答案：<i></i>
-                    </p>
-                </div>
-                <a href="javascript:void(0)" class="btn-00 btn-xyt" style="background:url(../Content/Activity/Zxdt/kankan/content/20171102102845.png) no-repeat 0 0;background-size:100% 100%;">下一题</a>
-                <div class="pic-01"></div>
-                <span class="icon-right none">对</span>
-                <span class="icon-wrong none">错</span>
-            </ul>
-        </div>
-        <div class="page page_6 none">
-            <div class="title"><em>3</em>、下列有关地中海贫血叙述哪些是正确的？</div>
-            <ul>
-                <li class="a " data-value="A"><em>A</em>地中海贫血最常见的是α型和β型</li>
-                <li class="b " data-value="B"><em>B</em>是单基因遗传性慢性溶血性疾病</li>
-                <li class="c " data-value="C"><em>C</em>是福建省发病率最高的单基因遗传病之一</li>
-                <li class="d right" data-value="D"><em>D</em>以上都是</li>
-                <div class="zqda">
-                    <p>
-                        正确答案：
-                        <em>
-
-
-
-                            D
-                        </em>
-                        我的答案：<i></i>
-                    </p>
-                </div>
-                <a href="javascript:void(0)" class="btn-00 btn-xyt" style="background:url(../Content/Activity/Zxdt/kankan/content/20171102102845.png) no-repeat 0 0;background-size:100% 100%;">下一题</a>
-                <div class="pic-01"></div>
-                <span class="icon-right none">对</span>
-                <span class="icon-wrong none">错</span>
-            </ul>
-        </div>
-        <div class="page page_7 none">
-            <div class="title"><em>3</em>、关于胎动次数下列哪项提示胎儿缺氧（）。</div>
-            <ul>
-                <li class="a right" data-value="A"><em>A</em>胎动＜10次/12小时</li>
-                <li class="b " data-value="B"><em>B</em>胎动＜15次/12小时</li>
-                <li class="c " data-value="C"><em>C</em>胎动＜20次/12小时</li>
-                <li class="d " data-value="D"><em>D</em>胎动＜25次/12小时</li>
-                <div class="zqda">
-                    <p>
-                        正确答案：
-                        <em>
-                            A
-
-
-
-                        </em>
-                        我的答案：<i></i>
-                    </p>
-                </div>
-                <a href="javascript:void(0)" class="btn-00 btn-xyt" style="background:url(../Content/Activity/Zxdt/kankan/content/20171102102845.png) no-repeat 0 0;background-size:100% 100%;">下一题</a>
-                <div class="pic-01"></div>
-                <span class="icon-right none">对</span>
-                <span class="icon-wrong none">错</span>
-            </ul>
-        </div>
-        <div class="page page_8 none">
-            <div class="title"><em>3</em>、丰泽区惠民政策之一的“两项免费产前筛查”，具体是指哪两项？</div>
-            <ul>
-                <li class="a right" data-value="A"><em>A</em>怀孕15-20周的唐氏筛查</li>
-                <li class="b " data-value="B"><em>B</em>孕酮、血β-HCG</li>
-                <li class="c right" data-value="C"><em>C</em>怀孕22-24周的三级彩超检查</li>
-                <li class="d " data-value="D"><em>D</em>羊水穿刺产前诊断</li>
-                <div class="zqda">
-                    <p>
-                        正确答案：
-                        <em>
-                            A
-
-                            C
-
-                        </em>
-                        我的答案：<i></i>
-                    </p>
-                </div>
-                <a href="javascript:void(0)" class="btn-00 btn-xyt" style="background:url(../Content/Activity/Zxdt/kankan/content/20171102102845.png) no-repeat 0 0;background-size:100% 100%;">下一题</a>
-                <div class="pic-01"></div>
-                <span class="icon-right none">对</span>
-                <span class="icon-wrong none">错</span>
-            </ul>
-        </div>
-        <div class="page page_9 none">
-            <div class="title"><em>3</em>、婚前医学检查的四个有利的内容是什么？</div>
-            <ul>
-                <li class="a right" data-value="A"><em>A</em>有利于男女平等和下一代健康；</li>
-                <li class="b right" data-value="B"><em>B</em>有利于提高出生人口素质；</li>
-                <li class="c right" data-value="C"><em>C</em>有利于促夫妻生活的和谐；</li>
-                <li class="d right" data-value="D"><em>D</em>有利于有效的实现生育计划</li>
-                <div class="zqda">
-                    <p>
-                        正确答案：
-                        <em>
-                            A
-                            B
-                            C
-                            D
-                        </em>
-                        我的答案：<i></i>
-                    </p>
-                </div>
-                <a href="javascript:void(0)" class="btn-00 btn-xyt" style="background:url(../Content/Activity/Zxdt/kankan/content/20171102102845.png) no-repeat 0 0;background-size:100% 100%;">下一题</a>
-                <div class="pic-01"></div>
-                <span class="icon-right none">对</span>
-                <span class="icon-wrong none">错</span>
-            </ul>
-        </div>
+    </div>
+    <div class="main" style="display:none;">
+        @Html.Raw(ViewBag.list)
         <!--问题条数-->
         <input type="hidden" id="questionListSize" value="@ViewBag.Tmts">
     </div>
@@ -278,7 +182,7 @@
                 <br>
                 <strong style="color:#ff0000">
                     感谢您的积极参与，请点击右上角转发朋友圈
-                    您的100M流量正在来的路上
+                    您的流量正在来的路上
                 </strong>
             </ul>
             <!-- <div class="btn-orange" ><a href="javascript:void(0)" onClick="myrefresh();">确定</a></div> -->
@@ -372,8 +276,6 @@
                             <th>正确答案</th>
                             <th>我的答案</th>
                         </tr>
-                        <tr><td>第1题</td><td>C </td><td>C </td></tr>
-                        <tr><td>第2题</td><td>D </td><td>D </td></tr>
                     </tbody>
                 </table>
             </ul>
@@ -387,27 +289,33 @@
     <input name="" type="hidden" id="wrongNum" value="0">
     <!--当前答题明细-->
     <input name="" type="hidden" id="detailContent" value="1、世界卫生组织（WHO）和联合国儿童基金会（UNICEF）联合倡议：在添加辅食的基础上，坚持哺乳（   ）个月。C24个月2、街道社区卫生服务中心为怀孕的妇女提供的孕期保健包括（）D以上都是">
+    <input type="hidden" id="openId" name="openId" value="@ViewBag.openid">
+    <input type="hidden" id="phone" name="phone" value="@ViewBag.curphone">
+    <input type="hidden" id="cooperid" name="cooperid" value="@ViewBag.cooperid">
+    <input type="hidden" id="lotteyn" name="lotteyn" value="@ViewBag.lotteyn">
     <input type="hidden" id="appId" name="appId" value="@ViewBag.appid">
     <input type="hidden" id="timestamp" name="timestamp" value="@ViewBag.timestamp">
     <input type="hidden" id="noncestr" name="noncestr" value="@ViewBag.noncestr">
     <input type="hidden" id="signatrue" name="signatrue" value="@ViewBag.signatrue">
     <input type="hidden" id="remoteIp" name="remoteIp" value="@ViewBag.RemoteIP">
-    <input type="hidden" id="openId" name="openId" value="@ViewBag.openid">
-    <input type="hidden" id="phone" name="phone" value="@ViewBag.curphone">
+    <input type="hidden" id="area" name="area" value="@ViewBag.areatype">
+    
+    
+    <input type="hidden" id="tmfs" name="tmfs" value="@ViewBag.tmfs">
     <input type="hidden" id="id" name="id" value="629">
     <!--0为不能开始-->
     <input type="hidden" id="activityUnStart" name="activityUnStart" value="">
     <!--不能开始的提示-->
     <input type="hidden" id="activityUnStartHint" name="activityUnStartHint" value="">
     <!--0为活动结束-->
-    <input type="hidden" id="activityEnd" name="activityEnd" value="">
+    <input type="hidden" id="activityEnd" name="activityEnd" value="@ViewBag.activityEnd">
     <!--活动结束的提示-->
-    <input type="hidden" id="activityEndHint" name="activityEndHint" value="">
+    <input type="hidden" id="activityEndHint" name="activityEndHint" value="@ViewBag.activityEndTips">
     <input type="hidden" id="toDayIsUnStart" name="toDayIsUnStart" value="">
     <input type="hidden" id="todayUnStartHint" name="todayUnStartHint" value="">
     <input type="hidden" id="toDayIsEnd" name="toDayIsEnd" value="">
     <input type="hidden" id="personEnd" name="personEnd" value="">
-    <input type="hidden" id="personNoChance" name="personNoChance" value="">
+    <input type="hidden" id="personNoChance" name="personNoChance" value="没有足够的机会的参与了.">
     <input type="hidden" id="personDayEnd" name="personDayEnd" value="">
     <!--提交按钮-->
     <input type="hidden" id="picture3" name="picture3" value="~/Content/Activity/Zxdt/kankan/content/20171102102933.png">
@@ -421,21 +329,21 @@
     <input type="hidden" id="shareImgPath" name="shareImgPath" value="@ViewBag.ShareImgPath">
     <!--展示条数,如果与questionListSize不一致,使用questionListSize修改showQestionNum-->
     <input type="hidden" id="showQestionNum" name="showQestionNum" value="@ViewBag.Tmts">
-    <!--是否显示正确的tip-->
-    <input type="hidden" id="isShowRightTip" name="isShowRightTip" value="0">
-    <!--为0时展示当前题目-->
-    <input type="hidden" id="isRandom" name="isRandom" value="0">
-    <input type="hidden" id="isRecordResult" name="isRecordResult" value="1">
-    <!--如果为1,不提示错误答案-->
-    <input type="hidden" id="isRightGo" name="isRightGo" value="0">
+    <!--0显示正确的tip 其他不显示-->
+    <input type="hidden" id="isShowRightTip" name="isShowRightTip" value="@ViewBag.sright">
+    <!--0为随机,空为不随机-->
+    <input type="hidden" id="isRandom" name="isRandom" value="@ViewBag.random">
+    <input type="hidden" id="isRecordResult" name="isRecordResult" value="0">
+    <!--2答错也继续,其他答对才继续 -->
+    <input type="hidden" id="isRightGo" name="isRightGo" value="@ViewBag.Go">
     <!--背景音乐s-->
     <script type="text/javascript" src="~/Content/Activity/Zxdt/kankan/content/music.js"></script>
     <!--背景音乐e-->
     <script src="~/Content/Activity/Zxdt/kankan/content/randomQ.js?s=20171115"></script>
-    <script src="~/Content/Activity/Zxdt/kankan/content/index.js"></script>
+    <script src="~/Content/Activity/Zxdt/kankan/content/index.js?v=1"></script>
     <script src="~/Content/Activity/Zxdt/kankan/content/touch.js"></script>
     <script src="~/Content/Activity/Zxdt/kankan/content/sha1.js"></script>
-    <script src="~/Content/Activity/Zxdt/kankan/content/wxshare.js"></script>
+    <script src="~/Content/Activity/Zxdt/kankan/content/wxshare.js?v=4"></script>
     <script src="~/Content/Activity/Zxdt/kankan/content/jweixin-1.0.0.js"></script>
     <script>
 

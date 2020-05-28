@@ -12,6 +12,7 @@ namespace Model.WxModel
         public string username { get; set; }
         public string userpwd { get; set; }
         public int system { get; set; }
+        public string systemn { get; set; }
         public string addtime { get; set; }
     }
 }

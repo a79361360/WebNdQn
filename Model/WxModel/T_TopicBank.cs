@@ -14,6 +14,7 @@ namespace Model.WxModel
         public string topic { get; set; }
         public string answer { get; set; }
         public string keyanswer { get; set; }
+        public string tips { get; set; }
         public DateTime addtime { get; set; }
     }
 }

@@ -122,7 +122,7 @@ namespace DAL
             return Convert.ToInt32(list["@ReturnValue"]);
         }
         public DataTable GetActivityZb(int cooperid,int type) {
-            string sql = "SELECT id,cooperid,type,title,share,explain,bgurl,wx_title,wx_descride,wx_imgurl,wx_linkurl,dt_fs,dt_tmts,sright,flowamount FROM T_ActivityConfig where cooperid=@cooperid and type=@type";
+            string sql = "SELECT id,cooperid,type,title,share,explain,bgurl,wx_title,wx_descride,wx_imgurl,wx_linkurl,dt_fs,dt_tmts,sright,random,flowamount FROM T_ActivityConfig where cooperid=@cooperid and type=@type";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@cooperid",SqlDbType.Int),
@@ -133,9 +133,9 @@ namespace DAL
             DataTable dt = dal.ExtSql(sql, parameter);
             return dt;
         }
-        public int AddConfig(int cooperid,int type,string title,int share,string explain,string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl, int tmfs, int tmts, int sright, int flowamount) {
-            string sql = "INSERT INTO [T_ActivityConfig]([cooperid],[type],[title],[share],[explain],[bgurl],[wx_title],[wx_descride],[wx_imgurl],[wx_linkurl],[dt_fs],[dt_tmts],[sright],[flowamount])";
-            sql += "VALUES(@cooperid,@type,@title,@share,@explain,@bgurl,@wxtitle,@wxdescride,@wximgurl,@wxlinkurl,@tmfs,@tmts,@sright,@flowamount) select SCOPE_IDENTITY() as id";
+        public int AddConfig(int cooperid,int type,string title,int share,string explain,string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl, int tmfs, int tmts, int sright, int flowamount, int random = 1) {
+            string sql = "INSERT INTO [T_ActivityConfig]([cooperid],[type],[title],[share],[explain],[bgurl],[wx_title],[wx_descride],[wx_imgurl],[wx_linkurl],[dt_fs],[dt_tmts],[sright],[random],[flowamount])";
+            sql += "VALUES(@cooperid,@type,@title,@share,@explain,@bgurl,@wxtitle,@wxdescride,@wximgurl,@wxlinkurl,@tmfs,@tmts,@sright,@random,@flowamount) select SCOPE_IDENTITY() as id";
             SqlParameter[] parameter = new[]
             {
                 new SqlParameter("@cooperid",SqlDbType.Int),
@@ -151,6 +151,7 @@ namespace DAL
                 new SqlParameter("@tmfs",SqlDbType.Int),
                 new SqlParameter("@tmts",SqlDbType.Int),
                 new SqlParameter("@sright",SqlDbType.Int),
+                new SqlParameter("@random",SqlDbType.Int),
                 new SqlParameter("@flowamount",SqlDbType.Int),
             };
             parameter[0].Value = cooperid;
@@ -166,7 +167,8 @@ namespace DAL
             parameter[10].Value = tmfs;
             parameter[11].Value = tmts;
             parameter[12].Value = sright;
-            parameter[13].Value = flowamount;
+            parameter[13].Value = random;
+            parameter[14].Value = flowamount;
             int result = 0;
             try {
                 result = Convert.ToInt32(dal.ExtScalarSql(sql, parameter));
@@ -176,9 +178,9 @@ namespace DAL
             }
             return result;
         }
-        public int UpdateConfig(int configid, int cooperid, int type, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl, int tmfs, int tmts, int sright,int flowamount) {
+        public int UpdateConfig(int configid, int cooperid, int type, string title, int share, string explain, string bgurl, string wxtitle, string wxdescride, string wximgurl, string wxlinkurl, int tmfs, int tmts, int sright, int flowamount, int random = 1) {
             string sql = "UPDATE [T_ActivityConfig] SET [cooperid] = @cooperid,[type] = @type,[title] = @title,[share] = @share,[explain] = @explain,[bgurl] = @bgurl ";
-            sql += ",[wx_title] = @wxtitle,[wx_descride] = @wxdescride,[wx_imgurl] = @wximgurl,[wx_linkurl] = @wxlinkurl,[dt_fs] = @tmfs,[dt_tmts] = @tmts,[sright]=@sright,[flowamount]=@flowamount where id=@configid";
+            sql += ",[wx_title] = @wxtitle,[wx_descride] = @wxdescride,[wx_imgurl] = @wximgurl,[wx_linkurl] = @wxlinkurl,[dt_fs] = @tmfs,[dt_tmts] = @tmts,[sright]=@sright,[random]=@random,[flowamount]=@flowamount where id=@configid";
             SqlParameter[] parameter = new[]
               {
                 new SqlParameter("@cooperid",SqlDbType.Int),
@@ -195,6 +197,7 @@ namespace DAL
                 new SqlParameter("@tmfs",SqlDbType.Int),
                 new SqlParameter("@tmts",SqlDbType.Int),
                 new SqlParameter("@sright",SqlDbType.Int),
+                new SqlParameter("@random",SqlDbType.Int),
                 new SqlParameter("@flowamount",SqlDbType.Int),
             };
             parameter[0].Value = cooperid;
@@ -211,7 +214,8 @@ namespace DAL
             parameter[11].Value = tmfs;
             parameter[12].Value = tmts;
             parameter[13].Value = sright;
-            parameter[14].Value = flowamount;
+            parameter[14].Value = random;
+            parameter[15].Value = flowamount;
             int result = Convert.ToInt32(dal.IntExtSql(sql, parameter));
             return result;
         }
@@ -262,6 +266,22 @@ namespace DAL
             int result = dal.IntExtSql(sql, parameter);
             return result;
         }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public int ActivityFlowRemoveById(int id)
+        {
+            string sql = "DELETE FROM [T_ActivityDrawLog] WHERE id=@id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@id",SqlDbType.Int)
+            };
+            parameter[0].Value = id;
+            int result = dal.IntExtSql(sql, parameter);
+            return result;
+        }
         //大转盘奖励列表删除
         public int ActivityListRemoveById(int configid)
         {
@@ -273,6 +293,24 @@ namespace DAL
             parameter[0].Value = configid;
             int result = dal.IntExtSql(sql, parameter);
             return result;
+        }
+        /// <summary>
+        /// 更新Flow的状态
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="state"></param>
+        /// <returns></returns>
+        public int UpdateActivityFlowState(int id, int state)
+        {
+            string sql = "UPDATE T_ActivityDrawLog SET state=@state WHERE id=@id";
+            SqlParameter[] parameter = new[]
+            {
+                new SqlParameter("@id",SqlDbType.Int),
+                new SqlParameter("@state",SqlDbType.Int),
+            };
+            parameter[0].Value = id;
+            parameter[1].Value = state;
+            return dal.IntExtSql(sql, parameter);
         }
         //在线答题流量配置删除
         public int ZxdtScoreRemoveById(int configid)
