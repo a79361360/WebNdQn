@@ -170,6 +170,7 @@
     <Compile Include="Controllers\MobileController.cs" />
     <Compile Include="Controllers\NsoupController.cs" />
     <Compile Include="Controllers\WeiXController.cs" />
+    <Compile Include="Controllers\WishController.cs" />
     <Compile Include="Controllers\ZxdtController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>

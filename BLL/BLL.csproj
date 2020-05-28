@@ -58,6 +58,7 @@
     <Compile Include="NsoupBLL.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WeiXinBLL.cs" />
+    <Compile Include="WishBLL.cs" />
     <Compile Include="ZxdtBLL.cs" />
   </ItemGroup>
   <ItemGroup>

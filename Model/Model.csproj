@@ -45,6 +45,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ViewModel\IdListDto.cs" />
     <Compile Include="ViewModel\V_IndexDto.cs" />
+    <Compile Include="WishModel\Wish_dto.cs" />
     <Compile Include="WxModel\T_ActivityConfig.cs" />
     <Compile Include="WxModel\T_ActivityConfigList.cs" />
     <Compile Include="WxModel\T_ActivityDrawLog.cs" />

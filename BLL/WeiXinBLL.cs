@@ -62,7 +62,25 @@ namespace BLL
             string signature = Encryptor.SHA1Encrypt(str.ToString());
             return signature.ToLower();
         }
-
+        public string Get_signatureurl(long timestamp, string noncestr, string url)
+        {
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WeiXController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Get_signatureurl 1");
+            string access_token = Get_Access_Token(Wx_config.appid, Wx_config.appsecret);   //access_token
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WeiXController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Get_signatureurl 2");
+            string jsapi_ticket = Get_Jsapi_Ticket(access_token);                                               //jsapi_ticket
+            Common.Expend.LogTxtExpend.WriteLogs("/Logs/WeiXController_" + DateTime.Now.ToString("yyyyMMddHH") + ".log", "Get_signatureurl 3");
+            //string url = WebHelp.GetUrl();                                                                      //url
+            List<Parameter> listParam = new List<Parameter>();
+            listParam.Add(new Parameter("noncestr", noncestr));
+            listParam.Add(new Parameter("jsapi_ticket", jsapi_ticket));
+            listParam.Add(new Parameter("timestamp", timestamp.ToString()));
+            listParam.Add(new Parameter("url", url));
+            StringBuilder str = DicSort(listParam);
+            //string ll = "jsapi_ticket=sM4AOVdWfPE4DxkXGEs8VMCPGGVi4C3VM0P37wVUCFvkVAy_90u5h9nbSlYy3-Sl-HhTdfl2fzFy1AOcHKP7qg&noncestr=Wm3WZYTPz0wzccnW&timestamp=1414587457&url=http://mp.weixin.qq.com?params=value";
+            //string signature = Encryptor.MD5Encrypt(ll);
+            string signature = Encryptor.SHA1Encrypt(str.ToString());
+            return signature.ToLower();
+        }
         /// <summary>
         /// 取得CGI的TOKEN值,这种方式取不到用户的openid,所以需要code先取一下openid值
         /// </summary>
